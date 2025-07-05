@@ -42,7 +42,7 @@ const Index = () => {
             </span>
           </h1>
           <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-            Experience fast, flexible stacking with choice over your rewards. Earn in STX or sBTC, 
+            Experience fast, flexible stacking with choice over your rewards. Earn in STX or sBTC,
             choose your impact, and join a community making a difference together.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -71,7 +71,7 @@ const Index = () => {
             </CardHeader>
             <CardContent>
               <p className="text-gray-300">
-                Choose to receive your stacking rewards in STX or sBTC. Fast Pool technology 
+                Choose to receive your stacking rewards in STX or sBTC. Fast Pool technology
                 with no lock-up periods and daily distributions.
               </p>
             </CardContent>
@@ -84,7 +84,7 @@ const Index = () => {
             </CardHeader>
             <CardContent>
               <p className="text-gray-300">
-                Decide if and how much you want to donate to meaningful projects. 
+                Decide if and how much you want to donate to meaningful projects.
                 Your stacking, your choice, your impact.
               </p>
             </CardContent>
@@ -97,7 +97,7 @@ const Index = () => {
             </CardHeader>
             <CardContent>
               <p className="text-gray-300">
-                Join a community of stackers sharing their contributions. 
+                Join a community of stackers sharing their contributions.
                 Celebrate good deeds and inspire others to make a difference.
               </p>
             </CardContent>
@@ -112,11 +112,11 @@ const Index = () => {
             Stack Together, Impact Together
           </h2>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            When you choose to donate, you join a visible community of contributors. 
+            When you choose to donate, you join a visible community of contributors.
             Share your impact, inspire others, and be part of something bigger.
           </p>
         </div>
-        
+
         <div className="grid md:grid-cols-2 gap-8">
           <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
             <CardHeader>
@@ -125,7 +125,7 @@ const Index = () => {
             </CardHeader>
             <CardContent>
               <p className="text-gray-300">
-                See real-time contributions from the community. Track collective impact 
+                See real-time contributions from the community. Track collective impact
                 and celebrate milestones together as we support meaningful causes.
               </p>
             </CardContent>
@@ -138,7 +138,7 @@ const Index = () => {
             </CardHeader>
             <CardContent>
               <p className="text-gray-300">
-                Share your contributions on social media with beautiful impact cards. 
+                Share your contributions on social media with beautiful impact cards.
                 Inspire your network and grow the movement of crypto for good.
               </p>
             </CardContent>
@@ -180,7 +180,7 @@ const Index = () => {
         <div className="flex flex-col md:flex-row justify-between items-center text-gray-400">
           <Logo size="sm" />
           <div className="text-sm">
-            © 2024 Fast Pool. Built on Stacks blockchain.
+            © 2025 Fast Pool. Built on Stacks blockchain.
           </div>
         </div>
       </footer>
