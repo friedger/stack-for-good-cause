@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { SecondaryButton } from "@/components/ui/secondary-button";
 import { Wallet, Menu, X, User, LogOut } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -56,17 +57,12 @@ const Header = ({ showCreateProject, onCreateProject }: HeaderProps) => {
           </Link>
 
           {showCreateProject && onCreateProject && (
-            <Button
-              onClick={onCreateProject}
-              variant="outline"
-              className="text-white border-white hover:bg-white hover:text-gray-900"
-            >
+            <SecondaryButton onClick={onCreateProject}>
               Create Project
-            </Button>
+            </SecondaryButton>
           )}
 
           {isConnected() ?
-
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="h-10 w-10 rounded-full p-0">
@@ -106,10 +102,10 @@ const Header = ({ showCreateProject, onCreateProject }: HeaderProps) => {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            : <Button variant="outline" className="text-white border-white hover:bg-white hover:text-gray-900">
+            : <SecondaryButton>
               <Wallet className="h-4 w-4 mr-2" />
               <span className="hidden lg:inline">Connect Wallet</span>
-            </Button>
+            </SecondaryButton>
           }
         </div>
 
@@ -156,8 +152,7 @@ const Header = ({ showCreateProject, onCreateProject }: HeaderProps) => {
                   onCreateProject();
                   setIsMobileMenuOpen(false);
                 }}
-                variant="outline"
-                className="text-white border-white hover:bg-white hover:text-gray-900 w-fit"
+                className="w-fit"
               >
                 Create Project
               </SecondaryButton>
@@ -200,10 +195,10 @@ const Header = ({ showCreateProject, onCreateProject }: HeaderProps) => {
                 </Button>
               </div>
               :
-              <Button variant="outline" className="text-white border-white hover:bg-white hover:text-gray-900 w-fit">
+              <SecondaryButton className="w-fit">
                 <Wallet className="h-4 w-4 mr-2" />
                 Connect Wallet
-              </Button>
+              </SecondaryButton>
             }
           </div>
         </div>
