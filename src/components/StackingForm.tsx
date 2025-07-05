@@ -5,10 +5,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { TrendingUp } from "lucide-react";
+import { TrendingUp, Plus, X, Heart, Gift } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Project } from "@/services/projectService";
+import RewardTypeSelector from "./stacking/RewardTypeSelector";
+import ProjectSelectionModal from "./stacking/ProjectSelectionModal";
 
 interface StackingFormProps {
   stxAmount: string;
@@ -19,8 +21,8 @@ interface StackingFormProps {
   setEnableDonation: (value: boolean) => void;
   donationPercentage: number[];
   setDonationPercentage: (value: number[]) => void;
-  selectedProject: string;
-  setSelectedProject: (value: string) => void;
+  selectedProjects: Project[];
+  setSelectedProjects: (value: Project[]) => void;
   sharePublicly: boolean;
   setSharePublicly: (value: boolean) => void;
 }
@@ -34,18 +36,13 @@ const StackingForm = ({
   setEnableDonation,
   donationPercentage,
   setDonationPercentage,
-  selectedProject,
-  setSelectedProject,
+  selectedProjects,
+  setSelectedProjects,
   sharePublicly,
   setSharePublicly
 }: StackingFormProps) => {
   const { toast } = useToast();
-
-  const mockProjects = [
-    { id: "1", name: "Clean Water Initiative", description: "Bringing clean water to communities" },
-    { id: "2", name: "Education for All", description: "Supporting education in underserved areas" },
-    { id: "3", name: "Renewable Energy", description: "Funding solar panel installations" },
-  ];
+  const [showProjectModal, setShowProjectModal] = useState(false);
 
   const handleStack = () => {
     if (!stxAmount) {
@@ -57,22 +54,28 @@ const StackingForm = ({
       return;
     }
 
-    if (enableDonation && !selectedProject) {
+    if (enableDonation && selectedProjects.length === 0) {
       toast({
-        title: "Select Project",
-        description: "Please select a project to support with your donation.",
+        title: "Select Projects",
+        description: "Please select at least one project to support with your donation.",
         variant: "destructive",
       });
       return;
     }
 
     const rewardText = rewardType === "sbtc" ? "sBTC" : "STX";
-    const donationText = enableDonation ? ` with ${donationPercentage[0]}% donated to charity` : "";
+    const donationText = enableDonation 
+      ? ` with ${donationPercentage[0]}% donated to ${selectedProjects.length} project${selectedProjects.length !== 1 ? 's' : ''}` 
+      : "";
     
     toast({
       title: "Stacking Started!",
       description: `Successfully stacked ${stxAmount} STX. Rewards in ${rewardText}${donationText}.`,
     });
+  };
+
+  const removeProject = (projectId: string) => {
+    setSelectedProjects(selectedProjects.filter(p => p.id !== projectId));
   };
 
   return (
@@ -97,29 +100,18 @@ const StackingForm = ({
           <p className="text-sm text-gray-400 mt-1">Minimum: 1,000 STX</p>
         </div>
 
-        <div>
-          <Label className="text-white">Receive Rewards In</Label>
-          <Select value={rewardType} onValueChange={setRewardType}>
-            <SelectTrigger className="bg-white/10 border-white/20 text-white">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="stx">STX (Stacks Token)</SelectItem>
-              <SelectItem value="sbtc">sBTC (Synthetic Bitcoin)</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        <RewardTypeSelector value={rewardType} onChange={setRewardType} />
 
-        <div className="space-y-4">
+        <div className={`space-y-4 transition-all duration-300 ${!enableDonation ? 'opacity-60' : ''}`}>
           <div className="flex items-center justify-between">
-            <Label className="text-white">Donate to Project</Label>
+            <Label className="text-white">Donate to Projects</Label>
             <Switch
               checked={enableDonation}
               onCheckedChange={setEnableDonation}
             />
           </div>
 
-          {enableDonation && (
+          {enableDonation ? (
             <>
               <div>
                 <Label className="text-white">Donation Percentage: {donationPercentage[0]}%</Label>
@@ -138,19 +130,50 @@ const StackingForm = ({
               </div>
 
               <div>
-                <Label className="text-white">Select Project to Support</Label>
-                <Select value={selectedProject} onValueChange={setSelectedProject}>
-                  <SelectTrigger className="bg-white/10 border-white/20 text-white">
-                    <SelectValue placeholder="Choose a project" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {mockProjects.map((project) => (
-                      <SelectItem key={project.id} value={project.id}>
-                        {project.name}
-                      </SelectItem>
+                <Label className="text-white mb-2 block">Selected Projects ({selectedProjects.length}/5)</Label>
+                
+                {selectedProjects.length > 0 && (
+                  <div className="space-y-2 mb-3">
+                    {selectedProjects.map((project) => (
+                      <div
+                        key={project.id}
+                        className="flex items-center justify-between bg-white/5 rounded-lg p-3 border border-white/10"
+                      >
+                        <div className="flex items-center space-x-3">
+                          {project.imageUrl && (
+                            <img
+                              src={project.imageUrl}
+                              alt={project.name}
+                              className="w-10 h-10 rounded object-cover"
+                            />
+                          )}
+                          <div>
+                            <p className="text-white font-medium">{project.name}</p>
+                            <p className="text-gray-400 text-sm">{project.totalRaised.toLocaleString()} STX raised</p>
+                          </div>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeProject(project.id)}
+                          className="text-gray-400 hover:text-red-400"
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
                     ))}
-                  </SelectContent>
-                </Select>
+                  </div>
+                )}
+
+                <Button
+                  variant="outline"
+                  onClick={() => setShowProjectModal(true)}
+                  className="w-full bg-white/5 border-white/20 text-white hover:bg-white/10"
+                  disabled={selectedProjects.length >= 5}
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  {selectedProjects.length === 0 ? 'Select Projects' : 'Add More Projects'}
+                </Button>
               </div>
 
               <div className="flex items-center justify-between">
@@ -161,6 +184,26 @@ const StackingForm = ({
                 />
               </div>
             </>
+          ) : (
+            <Card className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 border-purple-500/20">
+              <CardContent className="p-6 text-center">
+                <div className="flex flex-col items-center space-y-4">
+                  <div className="p-4 rounded-full bg-purple-500/20">
+                    <Heart className="h-8 w-8 text-purple-400" />
+                  </div>
+                  <div>
+                    <h3 className="text-white font-semibold mb-2">Keep All Your Rewards</h3>
+                    <p className="text-gray-300 text-sm mb-4">
+                      You've chosen to keep 100% of your stacking rewards. You can always change this later!
+                    </p>
+                    <div className="flex items-center justify-center space-x-2 text-sm text-purple-400">
+                      <Gift className="h-4 w-4" />
+                      <span>Maximum earnings mode</span>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           )}
         </div>
 
@@ -172,6 +215,13 @@ const StackingForm = ({
           Start Stacking
         </Button>
       </CardContent>
+
+      <ProjectSelectionModal
+        open={showProjectModal}
+        onOpenChange={setShowProjectModal}
+        selectedProjects={selectedProjects}
+        onProjectsChange={setSelectedProjects}
+      />
     </Card>
   );
 };

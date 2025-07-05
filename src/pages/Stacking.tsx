@@ -4,13 +4,14 @@ import AppNavigation from "@/components/AppNavigation";
 import StackingForm from "@/components/StackingForm";
 import RewardsBreakdown from "@/components/RewardsBreakdown";
 import StatsDisplay from "@/components/StatsDisplay";
+import { Project } from "@/services/projectService";
 
-const App = () => {
+const Stacking = () => {
   const [stxAmount, setStxAmount] = useState("");
   const [rewardType, setRewardType] = useState("stx");
   const [enableDonation, setEnableDonation] = useState(true);
   const [donationPercentage, setDonationPercentage] = useState([10]);
-  const [selectedProject, setSelectedProject] = useState("");
+  const [selectedProjects, setSelectedProjects] = useState<Project[]>([]);
   const [sharePublicly, setSharePublicly] = useState(true);
 
   return (
@@ -33,8 +34,8 @@ const App = () => {
               setEnableDonation={setEnableDonation}
               donationPercentage={donationPercentage}
               setDonationPercentage={setDonationPercentage}
-              selectedProject={selectedProject}
-              setSelectedProject={setSelectedProject}
+              selectedProjects={selectedProjects}
+              setSelectedProjects={setSelectedProjects}
               sharePublicly={sharePublicly}
               setSharePublicly={setSharePublicly}
             />
@@ -55,4 +56,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default Stacking;

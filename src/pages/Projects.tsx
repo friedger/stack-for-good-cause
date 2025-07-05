@@ -22,8 +22,8 @@ const Projects = () => {
         <div className="flex items-center justify-between">
           <Logo />
           <div className="flex items-center space-x-6">
-            <Link to="/app" className="text-white hover:text-orange-400 transition-colors">
-              App
+            <Link to="/stacking" className="text-white hover:text-orange-400 transition-colors">
+              Stacking
             </Link>
             <Link to="/dashboard" className="text-white hover:text-orange-400 transition-colors">
               Dashboard
