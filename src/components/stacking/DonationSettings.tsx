@@ -5,6 +5,7 @@ import DonationToggle from "./DonationToggle";
 import DonationPercentageSlider from "./DonationPercentageSlider";
 import PublicSharingToggle from "./PublicSharingToggle";
 import DonationInactiveMessage from "./DonationInactiveMessage";
+import RewardDistribution from "./RewardDistribution";
 
 interface DonationSettingsProps {
   enableDonation: boolean;
@@ -30,35 +31,46 @@ const DonationSettings = ({
   disabled
 }: DonationSettingsProps) => {
   return (
-    <div className={`space-y-4 transition-all duration-300 ${!enableDonation ? 'opacity-60' : ''}`}>
-      <DonationToggle
-        enableDonation={enableDonation}
-        onEnableDonationChange={onEnableDonationChange}
-        disabled={disabled}
-      />
+    <div className="space-y-6">
+      <div className={`space-y-4 transition-all duration-300 ${!enableDonation ? 'opacity-60' : ''}`}>
+        <DonationToggle
+          enableDonation={enableDonation}
+          onEnableDonationChange={onEnableDonationChange}
+          disabled={disabled}
+        />
 
-      {enableDonation ? (
-        <>
-          <DonationPercentageSlider
-            donationPercentage={donationPercentage}
-            onDonationPercentageChange={onDonationPercentageChange}
-            disabled={disabled}
-          />
+        {enableDonation ? (
+          <>
+            <DonationPercentageSlider
+              donationPercentage={donationPercentage}
+              onDonationPercentageChange={onDonationPercentageChange}
+              disabled={disabled}
+            />
 
-          <ProjectManager
-            selectedProjects={selectedProjects}
-            onSelectedProjectsChange={onSelectedProjectsChange}
-            disabled={disabled}
-          />
+            <ProjectManager
+              selectedProjects={selectedProjects}
+              onSelectedProjectsChange={onSelectedProjectsChange}
+              disabled={disabled}
+            />
 
-          <PublicSharingToggle
-            sharePublicly={sharePublicly}
-            onSharePubliclyChange={onSharePubliclyChange}
-            disabled={disabled}
-          />
-        </>
-      ) : (
-        <DonationInactiveMessage />
+            <PublicSharingToggle
+              sharePublicly={sharePublicly}
+              onSharePubliclyChange={onSharePubliclyChange}
+              disabled={disabled}
+            />
+          </>
+        ) : (
+          <DonationInactiveMessage />
+        )}
+      </div>
+
+      {/* Show reward distribution when donation is enabled and projects are selected */}
+      {enableDonation && selectedProjects.length > 0 && (
+        <RewardDistribution
+          selectedProjects={selectedProjects}
+          donationPercentage={donationPercentage[0]}
+          enableDonation={enableDonation}
+        />
       )}
     </div>
   );

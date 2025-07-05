@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -21,7 +21,18 @@ const ProjectSelectionModal = ({
   onProjectsChange
 }: ProjectSelectionModalProps) => {
   const [tempSelected, setTempSelected] = useState<Project[]>(selectedProjects);
-  const allProjects = projectService.getAllProjects();
+  
+  // Filter out pending projects and Fast Pool (since it's always included)
+  const availableProjects = projectService.getAllProjects().filter(
+    project => project.status === "approved" && project.name !== "Fast Pool"
+  );
+
+  // Update temp selection when modal opens or selectedProjects change
+  useEffect(() => {
+    if (open) {
+      setTempSelected(selectedProjects);
+    }
+  }, [open, selectedProjects]);
 
   const toggleProject = (project: Project) => {
     const isSelected = tempSelected.find(p => p.id === project.id);
@@ -33,7 +44,12 @@ const ProjectSelectionModal = ({
   };
 
   const handleSave = () => {
-    onProjectsChange(tempSelected);
+    // Always ensure Fast Pool is included as the first project
+    const fastPoolProject = projectService.getAllProjects().find(p => p.name === "Fast Pool");
+    const otherProjects = tempSelected.filter(p => p.name !== "Fast Pool");
+    const finalSelection = fastPoolProject ? [fastPoolProject, ...otherProjects] : otherProjects;
+    
+    onProjectsChange(finalSelection);
     onOpenChange(false);
   };
 
@@ -42,22 +58,25 @@ const ProjectSelectionModal = ({
     onOpenChange(false);
   };
 
+  // Count projects excluding Fast Pool for the limit
+  const selectedCountExcludingFastPool = tempSelected.filter(p => p.name !== "Fast Pool").length;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto bg-gray-900 border-gray-700">
         <DialogHeader>
           <DialogTitle className="text-white text-xl">
-            Select Projects to Support (up to 5)
+            Select Projects to Support (up to 4 additional)
           </DialogTitle>
           <p className="text-gray-400 text-sm">
-            {tempSelected.length}/5 projects selected
+            {selectedCountExcludingFastPool}/4 additional projects selected (Fast Pool is always included)
           </p>
         </DialogHeader>
 
         <div className="grid md:grid-cols-2 gap-4 py-4">
-          {allProjects.map((project) => {
+          {availableProjects.map((project) => {
             const isSelected = tempSelected.find(p => p.id === project.id);
-            const canSelect = tempSelected.length < 5 || isSelected;
+            const canSelect = selectedCountExcludingFastPool < 4 || isSelected;
 
             return (
               <Card

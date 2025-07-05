@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrendingUp } from "lucide-react";
@@ -48,29 +49,43 @@ const StackingForm = ({
   const [stackingState, setStackingState] = useState<StackingState>("not-stacking");
   const [isProcessingTx, setIsProcessingTx] = useState(false);
 
-  // Load projects from cart on component mount
+  // Load projects from cart on component mount and ensure Fast Pool is always first
   useEffect(() => {
     const cartProjects = cartService.getCartProjects();
+    const fastPoolProject = projectService.getAllProjects().find(p => p.name === "Fast Pool");
+    
+    let projectsToSet: Project[] = [];
+    
+    // Always add Fast Pool as the first project
+    if (fastPoolProject) {
+      projectsToSet.push(fastPoolProject);
+    }
+    
     if (cartProjects.length > 0) {
-      // Convert cart projects to Project objects
-      const projectsFromCart = cartProjects.map(cartProject => {
-        const fullProject = projectService.getAllProjects().find(p => p.id === cartProject.id);
-        return fullProject || {
-          id: cartProject.id,
-          name: cartProject.name,
-          description: cartProject.description,
-          image: cartProject.image,
-          totalRaised: cartProject.totalRaised,
-          category: "Unknown",
-          backers: 0,
-          status: "approved" as const,
-          creator: "Unknown",
-          slug: cartProject.id
-        };
-      });
-      setSelectedProjects(projectsFromCart);
-
-      // Auto-enable donation if there are projects in cart
+      // Convert cart projects to Project objects, excluding Fast Pool (already added)
+      const projectsFromCart = cartProjects
+        .filter(cartProject => cartProject.name !== "Fast Pool")
+        .map(cartProject => {
+          const fullProject = projectService.getAllProjects().find(p => p.id === cartProject.id);
+          return fullProject || {
+            id: cartProject.id,
+            name: cartProject.name,
+            description: cartProject.description,
+            image: cartProject.image,
+            totalRaised: cartProject.totalRaised,
+            category: "Unknown",
+            backers: 0,
+            status: "approved" as const,
+            creator: "Unknown",
+            slug: cartProject.id
+          };
+        });
+      projectsToSet.push(...projectsFromCart);
+    }
+    
+    if (projectsToSet.length > 0) {
+      setSelectedProjects(projectsToSet);
+      // Auto-enable donation if there are projects
       if (!enableDonation) {
         setEnableDonation(true);
       }
@@ -127,7 +142,7 @@ const StackingForm = ({
         // Share impact on Nostr if enabled and donating to projects
         if (sharePublicly && enableDonation && selectedProjects.length > 0) {
           try {
-            await nostrService.shareStackingImpact(stxAmount, selectedProjects.map(p => p.name), rewardType, donationPercentage[0]);
+            await nostrService.shareStackingImpact(stxAmount, selectedProjects.map(p => p.name), rewardType);
             toast({
               title: "Stacking Started!",
               description: `Transaction broadcast: ${txId.slice(0, 8)}...${txId.slice(-4)}. Rewards in ${rewardText}${donationText}. Impact shared on Nostr!`,
