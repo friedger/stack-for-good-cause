@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import App from "./pages/App";
 import Projects from "./pages/Projects";
+import ProjectDetail from "./pages/ProjectDetail";
 import Admin from "./pages/Admin";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
@@ -23,6 +24,7 @@ const AppRouter = () => (
           <Route path="/" element={<Index />} />
           <Route path="/app" element={<App />} />
           <Route path="/projects" element={<Projects />} />
+          <Route path="/projects/:slug" element={<ProjectDetail />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="*" element={<NotFound />} />

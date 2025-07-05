@@ -6,12 +6,13 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Plus, Heart, Users, DollarSign, Clock } from "lucide-react";
+import { ArrowLeft, Plus, Heart, Users, DollarSign, Clock, Eye } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { PrimaryButton } from "@/components/ui/primary-button";
 import { SecondaryButton } from "@/components/ui/secondary-button";
 import { ImageUpload } from "@/components/ui/image-upload";
+import Logo from "@/components/Logo";
 
 const Projects = () => {
   const [projects, setProjects] = useState([
@@ -24,7 +25,8 @@ const Projects = () => {
       backers: 23,
       status: "approved",
       creator: "WaterForAll",
-      image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=250&fit=crop"
+      image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=250&fit=crop",
+      slug: "clean-water-initiative"
     },
     {
       id: "2",
@@ -35,7 +37,8 @@ const Projects = () => {
       backers: 18,
       status: "approved",
       creator: "EduGlobal",
-      image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400&h=250&fit=crop"
+      image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400&h=250&fit=crop",
+      slug: "education-for-all"
     },
     {
       id: "3",
@@ -46,7 +49,8 @@ const Projects = () => {
       backers: 31,
       status: "approved",
       creator: "GreenFuture",
-      image: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=250&fit=crop"
+      image: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=250&fit=crop",
+      slug: "renewable-energy-hub"
     },
     {
       id: "4",
@@ -57,7 +61,8 @@ const Projects = () => {
       backers: 0,
       status: "pending",
       creator: "CodeBridge",
-      image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=250&fit=crop"
+      image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=250&fit=crop",
+      slug: "tech-skills-training"
     }
   ]);
 
@@ -119,10 +124,7 @@ const Projects = () => {
       {/* Navigation */}
       <nav className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
-          <Link to="/" className="flex items-center text-white hover:text-orange-400 transition-colors">
-            <ArrowLeft className="h-5 w-5 mr-2" />
-            <span className="text-2xl font-bold">Stack<span className="text-orange-400">Give</span></span>
-          </Link>
+          <Logo />
           <div className="flex items-center space-x-6">
             <Link to="/app" className="text-white hover:text-orange-400 transition-colors">
               App
@@ -239,7 +241,14 @@ const Projects = () => {
                     </div>
                   </div>
 
-                  <div className="mt-auto pt-4">
+                  <div className="mt-auto pt-4 space-y-2">
+                    <Link to={`/projects/${project.slug}`}>
+                      <SecondaryButton className="w-full" size="sm">
+                        <Eye className="h-4 w-4 mr-2" />
+                        View Details
+                      </SecondaryButton>
+                    </Link>
+
                     {project.status === "approved" && (
                       <PrimaryButton className="w-full bg-pink-500 hover:bg-pink-600" size="sm">
                         <Heart className="h-4 w-4 mr-2" />

@@ -1,9 +1,9 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowRight, Shield, Heart, TrendingUp, Zap, Share2, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 import { PrimaryButton } from "@/components/ui/primary-button";
 import { SecondaryButton } from "@/components/ui/secondary-button";
+import Logo from "@/components/Logo";
 
 const Index = () => {
   return (
@@ -11,9 +11,7 @@ const Index = () => {
       {/* Navigation */}
       <nav className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
-          <div className="text-2xl font-bold text-white">
-            Fast<span className="text-orange-400">Pool</span>
-          </div>
+          <Logo />
           <div className="flex items-center space-x-6">
             <Link to="/app" className="text-white hover:text-orange-400 transition-colors">
               App
@@ -187,9 +185,7 @@ const Index = () => {
       {/* Footer */}
       <footer className="container mx-auto px-6 py-8 border-t border-white/10">
         <div className="flex flex-col md:flex-row justify-between items-center text-gray-400">
-          <div className="text-lg font-bold mb-4 md:mb-0">
-            Fast<span className="text-orange-400">Pool</span>
-          </div>
+          <Logo size="sm" />
           <div className="text-sm">
             © 2024 Fast Pool. Built on Stacks blockchain.
           </div>
