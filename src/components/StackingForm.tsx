@@ -70,7 +70,7 @@ const StackingForm = ({
         };
       });
       setSelectedProjects(projectsFromCart);
-      
+
       // Auto-enable donation if there are projects in cart
       if (!enableDonation) {
         setEnableDonation(true);
@@ -78,7 +78,7 @@ const StackingForm = ({
     }
   }, [setSelectedProjects, enableDonation, setEnableDonation]);
 
-  const handleStack = async () => {
+  const handleStacking = async () => {
     if (!walletService.isWalletConnected()) {
       toast({
         title: "Wallet Not Connected",
@@ -110,8 +110,8 @@ const StackingForm = ({
 
     try {
       // Use Fast Pool address (this would be the actual pool contract address)
-      const poolAddress = "SP2H8PY27SEZ03MWRK5XABF2CVZDE6HQMGHCCRX9P";
-      const txId = await walletService.stackStx(stxAmount, poolAddress);
+      const poolAddress = "SPMPMA1V6P430M8C91QS1G9XJ95S59JS1TZFZ4Q4.pox4-multi-pool-v1";
+      const txId = await walletService.delegateStx(stxAmount, poolAddress);
 
       if (txId) {
         // Update stacking stats service
@@ -259,7 +259,7 @@ const StackingForm = ({
         <StackingActions
           isStacking={isStacking}
           isProcessing={isProcessingTx}
-          onStartStacking={handleStack}
+          onStartStacking={handleStacking}
           onStopStacking={handleStopStacking}
         />
       </CardContent>
