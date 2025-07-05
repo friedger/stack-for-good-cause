@@ -13,11 +13,18 @@ import Header from "@/components/Header";
 const Dashboard = () => {
   const [stackingHistory, setStackingHistory] = useState<StackingData[]>([]);
   const [supportedProjects, setSupportedProjects] = useState<SupportedProject[]>([]);
+  const [userStats, setUserStats] = useState<UserStats>({
+    totalStacked: 0,
+    totalEarned: 0,
+    totalDonated: 0,
+    activeStacks: 0
+  });
 
   useEffect(() => {
     // Load data from services
     setStackingHistory(stackingService.getStackingHistory());
     setSupportedProjects(stackingService.getSupportedProjects());
+    setUserStats(stackingService.getUserStats());
   }, []);
 
   return (
@@ -34,7 +41,7 @@ const Dashboard = () => {
 
           <div className="grid lg:grid-cols-2 gap-8">
             <StackingActivity stackingHistory={stackingHistory} />
-            <SupportedProjectsList supportedProjects={supportedProjects} />
+            <SupportedProjectsList supportedProjects={supportedProjects} userStats={userStats} />
           </div>
 
           <ImpactSummary />

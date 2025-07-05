@@ -55,8 +55,8 @@ class WalletService {
         memo: 'Fast Pool Stacking',
       });
 
-      console.log('Stacking transaction broadcast:', response.txId);
-      return response.txId;
+      console.log('Stacking transaction broadcast:', response.txid);
+      return response.txid;
     } catch (error) {
       console.error('Failed to broadcast stacking transaction:', error);
       return null;
@@ -73,8 +73,8 @@ class WalletService {
         memo: 'Revoke Fast Pool Stacking',
       });
 
-      console.log('Revoke stacking transaction broadcast:', response.txId);
-      return response.txId;
+      console.log('Revoke stacking transaction broadcast:', response.txid);
+      return response.txid;
     } catch (error) {
       console.error('Failed to broadcast revoke transaction:', error);
       return null;
