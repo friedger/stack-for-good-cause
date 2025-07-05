@@ -1,3 +1,4 @@
+
 import {
   connect,
   disconnect,
@@ -65,7 +66,7 @@ class WalletService {
   async delegateStx(
     amount: string,
     poolAddress: string,
-    currency: "stx" | "sbtc",
+    currency: "stx" | "sbtc" = "stx",
     projects: { addr: string; part: number }[] = []
   ): Promise<string | null> {
     try {
