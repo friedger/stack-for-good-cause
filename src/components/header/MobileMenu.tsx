@@ -5,6 +5,7 @@ import { SecondaryButton } from "@/components/ui/secondary-button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { User, LogOut, Wallet } from "lucide-react";
 import { WalletInfo } from "@/services/walletService";
+import { useStackingNotification } from "@/hooks/useStackingNotification";
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -29,19 +30,33 @@ const MobileMenu = ({
   const shortAddress = walletInfo?.stxAddress 
     ? `${walletInfo.stxAddress.slice(0, 6)}...${walletInfo.stxAddress.slice(-4)}`
     : '';
+  const { projectCount, isStacking, showNotification } = useStackingNotification();
 
   if (!isOpen) return null;
 
   return (
     <div className="md:hidden mt-4 pb-4 border-t border-gray-700">
       <div className="flex flex-col space-y-4 pt-4">
-        <Link
-          to="/stacking"
-          className="text-white hover:text-orange-400 transition-colors px-2 py-1"
-          onClick={onClose}
-        >
-          Stacking
-        </Link>
+        <div className="relative">
+          <Link
+            to="/stacking"
+            className="text-white hover:text-orange-400 transition-colors px-2 py-1 block"
+            onClick={onClose}
+          >
+            Stacking
+          </Link>
+          {showNotification && (
+            <div className="absolute top-0 left-16">
+              {isStacking ? (
+                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+              ) : (
+                <div className="w-5 h-5 bg-orange-500 rounded-full flex items-center justify-center text-xs text-white font-bold">
+                  {projectCount}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
         <Link
           to="/projects"
           className="text-white hover:text-orange-400 transition-colors px-2 py-1"
