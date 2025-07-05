@@ -1,7 +1,6 @@
 
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Bitcoin } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface RewardTypeSelectorProps {
   value: string;
@@ -15,15 +14,15 @@ const RewardTypeSelector = ({ value, onChange, disabled = false }: RewardTypeSel
       id: "stx",
       name: "STX",
       description: "Stacks Token",
-      icon: "🟠",
-      color: "from-orange-500 to-orange-600"
+      icon: <img src="/img/stx.jpg" className="h-8 w-8 rounded-sm" />,
+      color: "from-gray-500 to-gray-600"
     },
     {
       id: "sbtc",
       name: "sBTC",
       description: "Synthetic Bitcoin",
-      icon: <Bitcoin className="h-8 w-8" />,
-      color: "from-yellow-500 to-orange-500"
+      icon: <img src="/img/sbtc.png" className="h-8 w-8 rounded-sm" />,
+      color: "from-gray-500 to-gray-600"
     }
   ];
 
@@ -34,18 +33,16 @@ const RewardTypeSelector = ({ value, onChange, disabled = false }: RewardTypeSel
         {options.map((option) => (
           <Card
             key={option.id}
-            className={`cursor-pointer transition-all duration-200 ${
-              disabled ? 'opacity-50 cursor-not-allowed' : ''
-            } ${
-              value === option.id
+            className={`cursor-pointer transition-all duration-200 ${disabled ? 'opacity-50 cursor-not-allowed' : ''
+              } ${value === option.id
                 ? "bg-white/20 border-white/40 ring-2 ring-orange-400"
                 : "bg-white/5 border-white/20 hover:bg-white/10"
-            }`}
+              }`}
             onClick={() => !disabled && onChange(option.id)}
           >
             <CardContent className="p-4 text-center">
               <div className="flex flex-col items-center space-y-2">
-                <div className={`p-3 rounded-full bg-gradient-to-r ${option.color}`}>
+                <div className={`p-3`}>
                   {typeof option.icon === 'string' ? (
                     <span className="text-2xl">{option.icon}</span>
                   ) : (
