@@ -223,11 +223,11 @@ const StackingForm = ({
   const isStacking = stackingState === "stacking" || stackingState === "stacking-revoked";
 
   return (
-    <Card className="bg-white/10 backdrop-blur-sm border-white/20">
+    <Card className="bg-card/50 backdrop-blur-sm border-border">
       <CardHeader>
         <CardTitle className="text-white flex items-center justify-between">
           <div className="flex items-center">
-            <TrendingUp className="h-6 w-6 mr-2 text-orange-400" />
+            <TrendingUp className="h-6 w-6 mr-2 text-purple-400" />
             Configure Your Stack
           </div>
           <div className="text-sm font-normal text-gray-300">

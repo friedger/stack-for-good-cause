@@ -49,7 +49,7 @@ const ProjectDetail = () => {
 
   if (!project) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
         <div className="text-center text-white">
           <h1 className="text-2xl font-bold mb-4">Project Not Found</h1>
           <Link to="/projects">
@@ -64,13 +64,13 @@ const ProjectDetail = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       <Header />
 
       <div className="container mx-auto px-6 py-12">
         <div className="max-w-6xl mx-auto">
           {/* Back Button */}
-          <Link to="/projects" className="inline-flex items-center text-white hover:text-orange-400 transition-colors mb-8">
+          <Link to="/projects" className="inline-flex items-center text-white hover:text-purple-400 transition-colors mb-8">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Projects
           </Link>

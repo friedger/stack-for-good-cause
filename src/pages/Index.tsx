@@ -10,7 +10,7 @@ import Header from "@/components/Header";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       {/* Navigation */}
       <Header />
 
@@ -20,7 +20,7 @@ const Index = () => {
           <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
             Stack Your Way,
             <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-pink-400">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
               Earn Your Rewards
             </span>
           </h1>
@@ -47,10 +47,10 @@ const Index = () => {
           Why Choose Fast Pool?
         </h2>
         <div className="grid md:grid-cols-3 gap-8">
-          <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
+          <Card className="bg-card/50 backdrop-blur-sm border-border">
             <CardHeader>
-              <Shield className="h-12 w-12 text-orange-400 mb-4" />
-              <CardTitle className="text-xl">Your Choice, Your Rewards</CardTitle>
+              <Shield className="h-12 w-12 text-purple-400 mb-4" />
+              <CardTitle className="text-xl text-white">Your Choice, Your Rewards</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-gray-300">
@@ -60,10 +60,10 @@ const Index = () => {
             </CardContent>
           </Card>
 
-          <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
+          <Card className="bg-card/50 backdrop-blur-sm border-border">
             <CardHeader>
               <Heart className="h-12 w-12 text-pink-400 mb-4" />
-              <CardTitle className="text-xl">Optional Impact</CardTitle>
+              <CardTitle className="text-xl text-white">Optional Impact</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-gray-300">
@@ -73,10 +73,10 @@ const Index = () => {
             </CardContent>
           </Card>
 
-          <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
+          <Card className="bg-card/50 backdrop-blur-sm border-border">
             <CardHeader>
               <Share2 className="h-12 w-12 text-green-400 mb-4" />
-              <CardTitle className="text-xl">Share Your Impact</CardTitle>
+              <CardTitle className="text-xl text-white">Share Your Impact</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-gray-300">
@@ -101,10 +101,10 @@ const Index = () => {
         </div>
 
         <div className="grid md:grid-cols-2 gap-8">
-          <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
+          <Card className="bg-card/50 backdrop-blur-sm border-border">
             <CardHeader>
               <Users className="h-12 w-12 text-blue-400 mb-4" />
-              <CardTitle className="text-xl">Community Dashboard</CardTitle>
+              <CardTitle className="text-xl text-white">Community Dashboard</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-gray-300">
@@ -114,10 +114,10 @@ const Index = () => {
             </CardContent>
           </Card>
 
-          <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
+          <Card className="bg-card/50 backdrop-blur-sm border-border">
             <CardHeader>
               <Share2 className="h-12 w-12 text-purple-400 mb-4" />
-              <CardTitle className="text-xl">Social Sharing</CardTitle>
+              <CardTitle className="text-xl text-white">Social Sharing</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-gray-300">
@@ -133,7 +133,7 @@ const Index = () => {
       <section className="container mx-auto px-6 py-20">
         <div className="grid md:grid-cols-3 gap-8 text-center">
           <div>
-            <div className="text-4xl font-bold text-orange-400 mb-2">$2.5M+</div>
+            <div className="text-4xl font-bold text-purple-400 mb-2">$2.5M+</div>
             <div className="text-gray-200 font-medium">Total Value Stacked</div>
           </div>
           <div>
@@ -159,7 +159,7 @@ const Index = () => {
       </section>
 
       {/* Footer */}
-      <footer className="container mx-auto px-6 py-8 border-t border-white/10">
+      <footer className="container mx-auto px-6 py-8 border-t border-border">
         <div className="flex flex-col md:flex-row justify-between items-center text-gray-400">
           <Logo size="sm" />
           <div className="text-sm">

@@ -14,7 +14,7 @@ const SecondaryButton = React.forwardRef<HTMLButtonElement, SecondaryButtonProps
         ref={ref}
         variant="outline"
         className={cn(
-          "text-white border-white/30 bg-white/10 hover:bg-white hover:text-gray-900 font-medium transition-colors backdrop-blur-sm",
+          "text-white border-white/20 bg-white/5 hover:bg-white/10 hover:border-white/30 font-medium transition-all duration-200 backdrop-blur-sm",
           className
         )}
         {...props}
