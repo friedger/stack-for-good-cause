@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -5,11 +6,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
-import { TrendingUp, Plus, X, Heart, Gift } from "lucide-react";
+import { TrendingUp, Plus, X, Heart, Gift, StopCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { Project } from "@/services/projectService";
+import { Project, projectService } from "@/services/projectService";
+import { nostrService } from "@/services/nostrService";
 import RewardTypeSelector from "./stacking/RewardTypeSelector";
 import ProjectSelectionModal from "./stacking/ProjectSelectionModal";
+
+type StackingState = "not-stacking" | "stacking" | "stacking-revoked" | "revoked-not-stacking";
 
 interface StackingFormProps {
   stxAmount: string;
@@ -42,6 +46,7 @@ const StackingForm = ({
 }: StackingFormProps) => {
   const { toast } = useToast();
   const [showProjectModal, setShowProjectModal] = useState(false);
+  const [stackingState, setStackingState] = useState<StackingState>("not-stacking");
 
   const handleStack = async () => {
     if (!stxAmount) {
@@ -70,7 +75,7 @@ const StackingForm = ({
     // Share impact on Nostr if enabled and donating to projects
     if (sharePublicly && enableDonation && selectedProjects.length > 0) {
       try {
-        await projectService.shareStackingImpact(stxAmount, selectedProjects, rewardType);
+        await nostrService.shareStackingImpact(stxAmount, selectedProjects.map(p => p.name), rewardType);
         toast({
           title: "Stacking Started!",
           description: `Successfully stacked ${stxAmount} STX. Rewards in ${rewardText}${donationText}. Impact shared on Nostr!`,
@@ -87,18 +92,48 @@ const StackingForm = ({
         description: `Successfully stacked ${stxAmount} STX. Rewards in ${rewardText}${donationText}.`,
       });
     }
+
+    setStackingState("stacking");
+  };
+
+  const handleStopStacking = () => {
+    toast({
+      title: "Stacking Stopped",
+      description: "Your stacking has been stopped. You can restart anytime.",
+    });
+    setStackingState("not-stacking");
   };
 
   const removeProject = (projectId: string) => {
     setSelectedProjects(selectedProjects.filter(p => p.id !== projectId));
   };
 
+  const getStatusMessage = () => {
+    switch (stackingState) {
+      case "stacking":
+        return "🟢 Currently stacking - earning rewards";
+      case "stacking-revoked":
+        return "🟡 Stacking with revoked delegation";
+      case "revoked-not-stacking":
+        return "🔴 Delegation revoked - not stacking";
+      default:
+        return "⚪ Ready to start stacking";
+    }
+  };
+
+  const isStacking = stackingState === "stacking" || stackingState === "stacking-revoked";
+
   return (
     <Card className="bg-white/10 backdrop-blur-sm border-white/20">
       <CardHeader>
-        <CardTitle className="text-white flex items-center">
-          <TrendingUp className="h-6 w-6 mr-2 text-orange-400" />
-          Configure Your Stack
+        <CardTitle className="text-white flex items-center justify-between">
+          <div className="flex items-center">
+            <TrendingUp className="h-6 w-6 mr-2 text-orange-400" />
+            Configure Your Stack
+          </div>
+          <div className="text-sm font-normal text-gray-300">
+            {getStatusMessage()}
+          </div>
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -111,11 +146,12 @@ const StackingForm = ({
             value={stxAmount}
             onChange={(e) => setStxAmount(e.target.value)}
             className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+            disabled={isStacking}
           />
           <p className="text-sm text-gray-400 mt-1">Minimum: 1,000 STX</p>
         </div>
 
-        <RewardTypeSelector value={rewardType} onChange={setRewardType} />
+        <RewardTypeSelector value={rewardType} onChange={setRewardType} disabled={isStacking} />
 
         <div className={`space-y-4 transition-all duration-300 ${!enableDonation ? 'opacity-60' : ''}`}>
           <div className="flex items-center justify-between">
@@ -123,6 +159,7 @@ const StackingForm = ({
             <Switch
               checked={enableDonation}
               onCheckedChange={setEnableDonation}
+              disabled={isStacking}
             />
           </div>
 
@@ -137,6 +174,7 @@ const StackingForm = ({
                   min={1}
                   step={1}
                   className="mt-2"
+                  disabled={isStacking}
                 />
                 <div className="flex justify-between text-sm text-gray-400 mt-1">
                   <span>1% (Minimum)</span>
@@ -172,6 +210,7 @@ const StackingForm = ({
                           size="sm"
                           onClick={() => removeProject(project.id)}
                           className="text-gray-400 hover:text-red-400"
+                          disabled={isStacking}
                         >
                           <X className="h-4 w-4" />
                         </Button>
@@ -184,7 +223,7 @@ const StackingForm = ({
                   variant="outline"
                   onClick={() => setShowProjectModal(true)}
                   className="w-full bg-white/5 border-white/20 text-white hover:bg-white/10"
-                  disabled={selectedProjects.length >= 5}
+                  disabled={selectedProjects.length >= 5 || isStacking}
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   {selectedProjects.length === 0 ? 'Select Projects' : 'Add More Projects'}
@@ -196,6 +235,7 @@ const StackingForm = ({
                 <Switch
                   checked={sharePublicly}
                   onCheckedChange={setSharePublicly}
+                  disabled={isStacking}
                 />
               </div>
             </>
@@ -222,13 +262,25 @@ const StackingForm = ({
           )}
         </div>
 
-        <Button 
-          onClick={handleStack}
-          className="w-full bg-orange-500 hover:bg-orange-600"
-          size="lg"
-        >
-          Start Stacking
-        </Button>
+        {!isStacking ? (
+          <Button 
+            onClick={handleStack}
+            className="w-full bg-orange-500 hover:bg-orange-600"
+            size="lg"
+          >
+            Start Stacking
+          </Button>
+        ) : (
+          <Button 
+            onClick={handleStopStacking}
+            className="w-full bg-red-500 hover:bg-red-600"
+            size="lg"
+            variant="destructive"
+          >
+            <StopCircle className="h-4 w-4 mr-2" />
+            Stop Stacking
+          </Button>
+        )}
       </CardContent>
 
       <ProjectSelectionModal

@@ -6,9 +6,10 @@ import { Bitcoin } from "lucide-react";
 interface RewardTypeSelectorProps {
   value: string;
   onChange: (value: string) => void;
+  disabled?: boolean;
 }
 
-const RewardTypeSelector = ({ value, onChange }: RewardTypeSelectorProps) => {
+const RewardTypeSelector = ({ value, onChange, disabled = false }: RewardTypeSelectorProps) => {
   const options = [
     {
       id: "stx",
@@ -34,11 +35,13 @@ const RewardTypeSelector = ({ value, onChange }: RewardTypeSelectorProps) => {
           <Card
             key={option.id}
             className={`cursor-pointer transition-all duration-200 ${
+              disabled ? 'opacity-50 cursor-not-allowed' : ''
+            } ${
               value === option.id
                 ? "bg-white/20 border-white/40 ring-2 ring-orange-400"
                 : "bg-white/5 border-white/20 hover:bg-white/10"
             }`}
-            onClick={() => onChange(option.id)}
+            onClick={() => !disabled && onChange(option.id)}
           >
             <CardContent className="p-4 text-center">
               <div className="flex flex-col items-center space-y-2">

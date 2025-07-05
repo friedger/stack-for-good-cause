@@ -14,7 +14,7 @@ const ProjectUpdates = ({ project }: ProjectUpdatesProps) => {
         <CardTitle className="text-white flex items-center">
           <MessageCircle className="h-5 w-5 mr-2" />
           Project Updates
-          <Zap className="h-4 w-4 ml-2 text-purple-400" title="Powered by Nostr" />
+          <Zap className="h-4 w-4 ml-2 text-purple-400" />
         </CardTitle>
         <p className="text-sm text-gray-400">Updates are published to the Nostr network for transparency and decentralization</p>
       </CardHeader>

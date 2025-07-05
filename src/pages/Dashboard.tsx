@@ -36,8 +36,8 @@ const Dashboard = () => {
             <span className="text-2xl font-bold">Stack<span className="text-orange-400">Give</span></span>
           </Link>
           <div className="flex items-center space-x-6">
-            <Link to="/app" className="text-white hover:text-orange-400 transition-colors">
-              App
+            <Link to="/stacking" className="text-white hover:text-orange-400 transition-colors">
+              Stacking
             </Link>
             <Link to="/projects" className="text-white hover:text-orange-400 transition-colors">
               Projects

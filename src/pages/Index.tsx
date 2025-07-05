@@ -1,9 +1,11 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowRight, Shield, Heart, TrendingUp, Zap, Share2, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 import { PrimaryButton } from "@/components/ui/primary-button";
 import { SecondaryButton } from "@/components/ui/secondary-button";
 import Logo from "@/components/Logo";
+import CtaSection from "@/components/shared/CtaSection";
 
 const Index = () => {
   return (
@@ -13,8 +15,8 @@ const Index = () => {
         <div className="flex items-center justify-between">
           <Logo />
           <div className="flex items-center space-x-6">
-            <Link to="/app" className="text-white hover:text-orange-400 transition-colors">
-              App
+            <Link to="/stacking" className="text-white hover:text-orange-400 transition-colors">
+              Stacking
             </Link>
             <Link to="/projects" className="text-white hover:text-orange-400 transition-colors">
               Projects
@@ -23,7 +25,7 @@ const Index = () => {
               Dashboard
             </Link>
             <PrimaryButton asChild>
-              <Link to="/app">Get Started</Link>
+              <Link to="/stacking">Get Started</Link>
             </PrimaryButton>
           </div>
         </div>
@@ -45,7 +47,7 @@ const Index = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <PrimaryButton asChild size="lg" className="text-lg px-8 py-6">
-              <Link to="/app">
+              <Link to="/stacking">
                 Start Stacking <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </PrimaryButton>
@@ -164,22 +166,13 @@ const Index = () => {
 
       {/* CTA Section */}
       <section className="container mx-auto px-6 py-20 text-center">
-        <Card className="bg-gradient-to-r from-orange-500/20 to-pink-500/20 border-orange-500/30 backdrop-blur-sm">
-          <CardContent className="py-16">
-            <h3 className="text-3xl font-bold text-white mb-4">
-              Ready to Stack Your Way?
-            </h3>
-            <p className="text-gray-100 mb-8 max-w-2xl mx-auto font-medium">
-              Join Fast Pool today and experience stacking on your terms. Choose your rewards, 
-              decide your impact, and be part of a community doing good together.
-            </p>
-            <PrimaryButton asChild size="lg" className="text-lg px-8 py-6">
-              <Link to="/app">
-                Launch Fast Pool <Zap className="ml-2 h-5 w-5" />
-              </Link>
-            </PrimaryButton>
-          </CardContent>
-        </Card>
+        <CtaSection
+          title="Ready to Stack Your Way?"
+          description="Join Fast Pool today and experience stacking on your terms. Choose your rewards, decide your impact, and be part of a community doing good together."
+          buttonText="Launch Fast Pool"
+          buttonHref="/stacking"
+          buttonIcon={<Zap className="ml-2 h-5 w-5" />}
+        />
       </section>
 
       {/* Footer */}

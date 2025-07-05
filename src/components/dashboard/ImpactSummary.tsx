@@ -1,6 +1,6 @@
 
-import { Card, CardContent } from "@/components/ui/card";
 import { UserStats } from "@/services/stackingService";
+import CtaSection from "@/components/shared/CtaSection";
 
 interface ImpactSummaryProps {
   userStats: UserStats;
@@ -8,25 +8,20 @@ interface ImpactSummaryProps {
 
 const ImpactSummary = ({ userStats }: ImpactSummaryProps) => {
   return (
-    <Card className="mt-8 bg-gradient-to-r from-pink-500/10 to-orange-500/10 border-pink-500/20 backdrop-blur-sm">
-      <CardContent className="py-8 text-center">
-        <h3 className="text-2xl font-bold text-white mb-4">Your Impact Summary</h3>
-        <div className="grid md:grid-cols-3 gap-6">
-          <div>
-            <div className="text-3xl font-bold text-green-400 mb-2">8.5%</div>
-            <div className="text-gray-300">Average APY Earned</div>
-          </div>
-          <div>
-            <div className="text-3xl font-bold text-pink-400 mb-2">30%</div>
-            <div className="text-gray-300">Of Earnings Donated</div>
-          </div>
-          <div>
-            <div className="text-3xl font-bold text-orange-400 mb-2">{userStats.supportedProjects}</div>
-            <div className="text-gray-300">Projects Supported</div>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+    <div className="mt-8">
+      <CtaSection
+        title="Your Impact Summary"
+        description="See how your stacking choices are making a difference in the world while earning you rewards."
+        buttonText="Share Your Impact"
+        buttonHref="/stacking"
+        gradient="from-pink-500/10 to-orange-500/10 border-pink-500/20"
+        stats={[
+          { value: "8.5%", label: "Average APY Earned", color: "text-green-400" },
+          { value: "30%", label: "Of Earnings Donated", color: "text-pink-400" },
+          { value: userStats.supportedProjects.toString(), label: "Projects Supported", color: "text-orange-400" }
+        ]}
+      />
+    </div>
   );
 };
 
