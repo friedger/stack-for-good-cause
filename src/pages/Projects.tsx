@@ -1,6 +1,5 @@
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,6 +9,9 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Plus, Heart, Users, DollarSign, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { PrimaryButton } from "@/components/ui/primary-button";
+import { SecondaryButton } from "@/components/ui/secondary-button";
+import { ImageUpload } from "@/components/ui/image-upload";
 
 const Projects = () => {
   const [projects, setProjects] = useState([
@@ -21,7 +23,8 @@ const Projects = () => {
       totalRaised: 2450.75,
       backers: 23,
       status: "approved",
-      creator: "WaterForAll"
+      creator: "WaterForAll",
+      image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=250&fit=crop"
     },
     {
       id: "2",
@@ -31,7 +34,8 @@ const Projects = () => {
       totalRaised: 1825.30,
       backers: 18,
       status: "approved",
-      creator: "EduGlobal"
+      creator: "EduGlobal",
+      image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400&h=250&fit=crop"
     },
     {
       id: "3",
@@ -41,7 +45,8 @@ const Projects = () => {
       totalRaised: 3200.45,
       backers: 31,
       status: "approved",
-      creator: "GreenFuture"
+      creator: "GreenFuture",
+      image: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=250&fit=crop"
     },
     {
       id: "4",
@@ -51,14 +56,16 @@ const Projects = () => {
       totalRaised: 0,
       backers: 0,
       status: "pending",
-      creator: "CodeBridge"
+      creator: "CodeBridge",
+      image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=250&fit=crop"
     }
   ]);
 
   const [newProject, setNewProject] = useState({
     name: "",
     description: "",
-    category: ""
+    category: "",
+    image: null as File | null
   });
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -82,11 +89,12 @@ const Projects = () => {
       totalRaised: 0,
       backers: 0,
       status: "pending" as const,
-      creator: "You"
+      creator: "You",
+      image: newProject.image ? URL.createObjectURL(newProject.image) : "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=250&fit=crop"
     };
 
     setProjects([...projects, project]);
-    setNewProject({ name: "", description: "", category: "" });
+    setNewProject({ name: "", description: "", category: "", image: null });
     setIsDialogOpen(false);
 
     toast({
@@ -124,23 +132,23 @@ const Projects = () => {
             </Link>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="bg-orange-500 hover:bg-orange-600">
+                <PrimaryButton>
                   <Plus className="h-4 w-4 mr-2" />
                   Create Project
-                </Button>
+                </PrimaryButton>
               </DialogTrigger>
-              <DialogContent className="bg-gray-900 border-gray-700 text-white">
+              <DialogContent className="bg-gray-900 border-gray-700 text-white max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>Create New Project</DialogTitle>
                 </DialogHeader>
-                <div className="space-y-4">
+                <div className="space-y-6">
                   <div>
                     <Label htmlFor="project-name">Project Name</Label>
                     <Input
                       id="project-name"
                       value={newProject.name}
                       onChange={(e) => setNewProject({ ...newProject, name: e.target.value })}
-                      className="bg-gray-800 border-gray-600"
+                      className="bg-gray-800 border-gray-600 text-white"
                       placeholder="Enter project name"
                     />
                   </div>
@@ -150,7 +158,7 @@ const Projects = () => {
                       id="project-category"
                       value={newProject.category}
                       onChange={(e) => setNewProject({ ...newProject, category: e.target.value })}
-                      className="bg-gray-800 border-gray-600"
+                      className="bg-gray-800 border-gray-600 text-white"
                       placeholder="e.g., Education, Environment, Technology"
                     />
                   </div>
@@ -160,14 +168,17 @@ const Projects = () => {
                       id="project-description"
                       value={newProject.description}
                       onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
-                      className="bg-gray-800 border-gray-600"
+                      className="bg-gray-800 border-gray-600 text-white"
                       placeholder="Describe your project and its impact"
                       rows={4}
                     />
                   </div>
-                  <Button onClick={handleCreateProject} className="w-full bg-orange-500 hover:bg-orange-600">
+                  <ImageUpload
+                    onImageSelect={(file) => setNewProject({ ...newProject, image: file })}
+                  />
+                  <PrimaryButton onClick={handleCreateProject} className="w-full">
                     Submit for Approval
-                  </Button>
+                  </PrimaryButton>
                 </div>
               </DialogContent>
             </Dialog>
@@ -183,18 +194,25 @@ const Projects = () => {
           
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {projects.map((project) => (
-              <Card key={project.id} className="bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/15 transition-all duration-300">
-                <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <CardTitle className="text-white text-lg">{project.name}</CardTitle>
+              <Card key={project.id} className="bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/15 transition-all duration-300 flex flex-col">
+                <div className="relative">
+                  <img
+                    src={project.image}
+                    alt={project.name}
+                    className="w-full h-48 object-cover rounded-t-lg"
+                  />
+                  <div className="absolute top-3 right-3">
                     {getStatusBadge(project.status)}
                   </div>
+                </div>
+                <CardHeader className="flex-grow">
+                  <CardTitle className="text-white text-lg">{project.name}</CardTitle>
                   <Badge variant="outline" className="text-gray-300 border-gray-500 w-fit">
                     {project.category}
                   </Badge>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-gray-300 text-sm">{project.description}</p>
+                <CardContent className="space-y-4 flex-grow flex flex-col">
+                  <p className="text-gray-300 text-sm flex-grow">{project.description}</p>
                   
                   <div className="space-y-3">
                     <div className="flex justify-between items-center text-sm">
@@ -221,19 +239,21 @@ const Projects = () => {
                     </div>
                   </div>
 
-                  {project.status === "approved" && (
-                    <Button className="w-full bg-pink-500 hover:bg-pink-600" size="sm">
-                      <Heart className="h-4 w-4 mr-2" />
-                      Support This Project
-                    </Button>
-                  )}
+                  <div className="mt-auto pt-4">
+                    {project.status === "approved" && (
+                      <PrimaryButton className="w-full bg-pink-500 hover:bg-pink-600" size="sm">
+                        <Heart className="h-4 w-4 mr-2" />
+                        Support This Project
+                      </PrimaryButton>
+                    )}
 
-                  {project.status === "pending" && (
-                    <div className="flex items-center justify-center py-2 text-yellow-400 text-sm">
-                      <Clock className="h-4 w-4 mr-2" />
-                      Awaiting Admin Approval
-                    </div>
-                  )}
+                    {project.status === "pending" && (
+                      <div className="flex items-center justify-center py-2 text-yellow-400 text-sm">
+                        <Clock className="h-4 w-4 mr-2" />
+                        Awaiting Admin Approval
+                      </div>
+                    )}
+                  </div>
                 </CardContent>
               </Card>
             ))}
@@ -246,10 +266,10 @@ const Projects = () => {
               <p className="text-gray-400 mb-6">Be the first to create a project and make a difference!</p>
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button className="bg-orange-500 hover:bg-orange-600">
+                  <PrimaryButton>
                     <Plus className="h-4 w-4 mr-2" />
                     Create First Project
-                  </Button>
+                  </PrimaryButton>
                 </DialogTrigger>
               </Dialog>
             </div>

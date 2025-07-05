@@ -1,8 +1,9 @@
 
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowRight, Shield, Heart, TrendingUp, Users, Zap } from "lucide-react";
+import { ArrowRight, Shield, Heart, TrendingUp, Zap } from "lucide-react";
 import { Link } from "react-router-dom";
+import { PrimaryButton } from "@/components/ui/primary-button";
+import { SecondaryButton } from "@/components/ui/secondary-button";
 
 const Index = () => {
   return (
@@ -23,9 +24,9 @@ const Index = () => {
             <Link to="/dashboard" className="text-white hover:text-orange-400 transition-colors">
               Dashboard
             </Link>
-            <Button asChild className="bg-orange-500 hover:bg-orange-600">
+            <PrimaryButton asChild>
               <Link to="/app">Get Started</Link>
-            </Button>
+            </PrimaryButton>
           </div>
         </div>
       </nav>
@@ -45,14 +46,14 @@ const Index = () => {
             Choose how much of your yield to donate and make a difference.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg" className="bg-orange-500 hover:bg-orange-600 text-lg px-8 py-6">
+            <PrimaryButton asChild size="lg" className="text-lg px-8 py-6">
               <Link to="/app">
                 Start Stacking <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
-            </Button>
-            <Button asChild variant="outline" size="lg" className="text-white border-white hover:bg-white hover:text-gray-900 text-lg px-8 py-6">
+            </PrimaryButton>
+            <SecondaryButton asChild size="lg" className="text-lg px-8 py-6">
               <Link to="/projects">Browse Projects</Link>
-            </Button>
+            </SecondaryButton>
           </div>
         </div>
       </section>
@@ -129,15 +130,15 @@ const Index = () => {
             <h3 className="text-3xl font-bold text-white mb-4">
               Ready to Stack and Give?
             </h3>
-            <p className="text-gray-300 mb-8 max-w-2xl mx-auto">
+            <p className="text-gray-200 mb-8 max-w-2xl mx-auto">
               Join our community of stackers who believe in earning rewards while making a positive impact. 
               Start your journey today.
             </p>
-            <Button asChild size="lg" className="bg-orange-500 hover:bg-orange-600 text-lg px-8 py-6">
+            <PrimaryButton asChild size="lg" className="text-lg px-8 py-6">
               <Link to="/app">
                 Launch App <Zap className="ml-2 h-5 w-5" />
               </Link>
-            </Button>
+            </PrimaryButton>
           </CardContent>
         </Card>
       </section>
