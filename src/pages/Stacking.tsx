@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import AppNavigation from "@/components/AppNavigation";
+import Header from "@/components/Header";
 import StackingForm from "@/components/StackingForm";
 import RewardsBreakdown from "@/components/RewardsBreakdown";
 import StatsDisplay from "@/components/StatsDisplay";
@@ -16,15 +16,15 @@ const Stacking = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
-      <AppNavigation />
+      <Header />
 
-      <div className="container mx-auto px-6 py-12">
+      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-4xl font-bold text-white mb-8 text-center">
+          <h1 className="text-3xl sm:text-4xl font-bold text-white mb-6 sm:mb-8 text-center">
             Stack Your Way with Fast Pool
           </h1>
           
-          <div className="grid lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
             <StackingForm
               stxAmount={stxAmount}
               setStxAmount={setStxAmount}
@@ -49,7 +49,9 @@ const Stacking = () => {
             />
           </div>
 
-          <StatsDisplay rewardType={rewardType} />
+          <div className="mt-8 sm:mt-12">
+            <StatsDisplay rewardType={rewardType} />
+          </div>
         </div>
       </div>
     </div>

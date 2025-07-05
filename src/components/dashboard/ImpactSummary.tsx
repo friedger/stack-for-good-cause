@@ -8,7 +8,7 @@ interface ImpactSummaryProps {
 
 const ImpactSummary = ({ userStats }: ImpactSummaryProps) => {
   return (
-    <div className="mt-8">
+    <div className="mt-6 sm:mt-8">
       <CtaSection
         title="Your Impact Summary"
         description="See how your stacking choices are making a difference in the world while earning you rewards."

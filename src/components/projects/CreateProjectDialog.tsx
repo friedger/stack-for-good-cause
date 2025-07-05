@@ -12,17 +12,23 @@ import { projectService, type CreateProjectData } from "@/services/projectServic
 
 interface CreateProjectDialogProps {
   onProjectCreated: () => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-const CreateProjectDialog = ({ onProjectCreated }: CreateProjectDialogProps) => {
+const CreateProjectDialog = ({ onProjectCreated, open, onOpenChange }: CreateProjectDialogProps) => {
   const [newProject, setNewProject] = useState({
     name: "",
     description: "",
     category: "",
     image: null as File | null
   });
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
   const { toast } = useToast();
+
+  const isControlled = open !== undefined && onOpenChange !== undefined;
+  const isDialogOpen = isControlled ? open : internalOpen;
+  const setIsDialogOpen = isControlled ? onOpenChange : setInternalOpen;
 
   const handleCreateProject = () => {
     if (!newProject.name || !newProject.description || !newProject.category) {
@@ -52,21 +58,23 @@ const CreateProjectDialog = ({ onProjectCreated }: CreateProjectDialogProps) => 
     });
   };
 
-  return (
+  const DialogComponent = (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-      <DialogTrigger asChild>
-        <PrimaryButton>
-          <Plus className="h-4 w-4 mr-2" />
-          Create Project
-        </PrimaryButton>
-      </DialogTrigger>
-      <DialogContent className="bg-gray-900 border-gray-700 text-white max-w-2xl max-h-[90vh] overflow-y-auto">
+      {!isControlled && (
+        <DialogTrigger asChild>
+          <PrimaryButton>
+            <Plus className="h-4 w-4 mr-2" />
+            Create Project
+          </PrimaryButton>
+        </DialogTrigger>
+      )}
+      <DialogContent className="bg-gray-900 border-gray-700 text-white w-[95vw] max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Create New Project</DialogTitle>
+          <DialogTitle className="text-lg sm:text-xl">Create New Project</DialogTitle>
         </DialogHeader>
-        <div className="space-y-6">
-          <div>
-            <Label htmlFor="project-name">Project Name</Label>
+        <div className="space-y-4 sm:space-y-6">
+          <div className="space-y-2">
+            <Label htmlFor="project-name" className="text-sm font-medium">Project Name</Label>
             <Input
               id="project-name"
               value={newProject.name}
@@ -75,8 +83,8 @@ const CreateProjectDialog = ({ onProjectCreated }: CreateProjectDialogProps) => 
               placeholder="Enter project name"
             />
           </div>
-          <div>
-            <Label htmlFor="project-category">Category</Label>
+          <div className="space-y-2">
+            <Label htmlFor="project-category" className="text-sm font-medium">Category</Label>
             <Input
               id="project-category"
               value={newProject.category}
@@ -85,27 +93,32 @@ const CreateProjectDialog = ({ onProjectCreated }: CreateProjectDialogProps) => 
               placeholder="e.g., Education, Environment, Technology"
             />
           </div>
-          <div>
-            <Label htmlFor="project-description">Description</Label>
+          <div className="space-y-2">
+            <Label htmlFor="project-description" className="text-sm font-medium">Description</Label>
             <Textarea
               id="project-description"
               value={newProject.description}
               onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
-              className="bg-gray-800 border-gray-600 text-white"
+              className="bg-gray-800 border-gray-600 text-white min-h-[100px]"
               placeholder="Describe your project and its impact"
               rows={4}
             />
           </div>
-          <ImageUpload
-            onImageSelect={(file) => setNewProject({ ...newProject, image: file })}
-          />
-          <PrimaryButton onClick={handleCreateProject} className="w-full">
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">Project Image</Label>
+            <ImageUpload
+              onImageSelect={(file) => setNewProject({ ...newProject, image: file })}
+            />
+          </div>
+          <PrimaryButton onClick={handleCreateProject} className="w-full py-3">
             Submit for Approval
           </PrimaryButton>
         </div>
       </DialogContent>
     </Dialog>
   );
+
+  return DialogComponent;
 };
 
 export default CreateProjectDialog;
