@@ -19,14 +19,14 @@ interface CtaSectionProps {
   stats?: StatItem[];
 }
 
-const DEFAULT_GRADIENT = "from-orange-500/20 to-pink-500/20 border-orange-500/30";
+const DEFAULT_GRADIENT = "from-blue-900/90 to-purple-900/90 border-blue-500/30";
 
 const StatDisplay = ({ stat }: { stat: StatItem }) => (
   <div className="text-center">
     <div className={`text-2xl sm:text-3xl font-bold ${stat.color} mb-2`}>
       {stat.value}
     </div>
-    <div className="text-gray-600 text-sm sm:text-base">
+    <div className="text-gray-200 text-sm sm:text-base">
       {stat.label}
     </div>
   </div>
@@ -53,11 +53,11 @@ const CtaSection = ({
     <Card className={`bg-gradient-to-r ${gradient} backdrop-blur-sm`}>
       <CardContent className="py-12 sm:py-16 px-4 sm:px-6">
         <div className="text-center">
-          <h3 className="text-2xl sm:text-3xl font-bold text-gray-700 mb-4">
+          <h3 className="text-2xl sm:text-3xl font-bold text-white mb-4">
             {title}
           </h3>
 
-          <p className="text-gray-600 mb-6 sm:mb-8 max-w-2xl mx-auto font-medium text-sm sm:text-base">
+          <p className="text-gray-200 mb-6 sm:mb-8 max-w-2xl mx-auto font-medium text-sm sm:text-base">
             {description}
           </p>
 

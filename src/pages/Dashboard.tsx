@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { stackingService, type UserStats, type StackingData, type SupportedProject } from "@/services/stackingService";
+import { projectService } from "@/services/projectService";
+import { cartService } from "@/services/cartService";
 import StatsOverview from "@/components/dashboard/StatsOverview";
 import StackingActivity from "@/components/dashboard/StackingActivity";
 import SupportedProjectsList from "@/components/dashboard/SupportedProjectsList";
@@ -24,8 +26,29 @@ const Dashboard = () => {
   useEffect(() => {
     // Load data from services
     setStackingHistory(stackingService.getStackingHistory());
-    setSupportedProjects(stackingService.getSupportedProjects());
-    setUserStats(stackingService.getUserStats());
+    
+    // Get supported projects from cart service and project service
+    const cartProjects = cartService.getCartProjects();
+    const allProjects = projectService.getAllProjects();
+    
+    const supportedProjectsData: SupportedProject[] = cartProjects.map(cartProject => {
+      const fullProject = allProjects.find(p => p.id === cartProject.id);
+      return {
+        name: cartProject.name,
+        totalDonated: Math.random() * 100, // Mock donation amount
+        lastDonation: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toLocaleDateString()
+      };
+    });
+    
+    setSupportedProjects(supportedProjectsData);
+    
+    // Update user stats
+    const updatedStats = {
+      ...stackingService.getUserStats(),
+      supportedProjects: supportedProjectsData.length,
+      totalDonated: supportedProjectsData.reduce((sum, project) => sum + project.totalDonated, 0)
+    };
+    setUserStats(updatedStats);
   }, []);
 
   return (

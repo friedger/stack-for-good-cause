@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { PrimaryButton } from "@/components/ui/primary-button";
 import { SecondaryButton } from "@/components/ui/secondary-button";
-import { Heart, Share2, Check } from "lucide-react";
+import { Heart, Share2, Check, Lock } from "lucide-react";
 import { Project } from "@/services/projectService";
 import { cartService } from "@/services/cartService";
 import { useToast } from "@/hooks/use-toast";
@@ -15,12 +15,22 @@ interface ProjectHeaderProps {
 const ProjectHeader = ({ project }: ProjectHeaderProps) => {
   const [isInCart, setIsInCart] = useState(false);
   const { toast } = useToast();
+  const isFastPool = project.name === "Fast Pool";
 
   useEffect(() => {
     setIsInCart(cartService.isProjectInCart(project.id));
   }, [project.id]);
 
   const handleSupportToggle = () => {
+    if (isFastPool) {
+      toast({
+        title: "Fast Pool Required",
+        description: "Fast Pool is a required project and cannot be removed.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (isInCart) {
       // Remove from cart
       const success = cartService.removeProject(project.id);
@@ -67,11 +77,29 @@ const ProjectHeader = ({ project }: ProjectHeaderProps) => {
       </div>
       <div className="space-y-6">
         <div>
-          <Badge variant="outline" className="text-gray-300 border-gray-500 mb-2">
-            {project.category}
-          </Badge>
-          <h1 className="text-4xl font-bold text-white mb-4">{project.name}</h1>
+          <div className="flex items-center gap-2 mb-2">
+            <Badge variant="outline" className="text-gray-300 border-gray-500">
+              {project.category}
+            </Badge>
+            {isFastPool && (
+              <Badge className="bg-orange-500/80 text-white border-orange-500/30">
+                Required
+              </Badge>
+            )}
+          </div>
+          <h1 className="text-4xl font-bold text-white mb-4 flex items-center">
+            {project.name}
+            {isFastPool && <Lock className="h-6 w-6 ml-3 text-orange-400" />}
+          </h1>
           <p className="text-gray-300">{project.fullDescription || project.description}</p>
+          {isFastPool && (
+            <div className="mt-4 p-3 bg-orange-500/10 border border-orange-500/30 rounded-lg">
+              <p className="text-orange-300 text-sm">
+                <Lock className="h-4 w-4 inline mr-2" />
+                This is a required project that supports the Fast Pool infrastructure.
+              </p>
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-2 gap-4">
@@ -91,10 +119,16 @@ const ProjectHeader = ({ project }: ProjectHeaderProps) => {
 
         <div className="flex gap-4">
           <PrimaryButton 
-            className="flex-1 bg-pink-500 hover:bg-pink-600"
+            className={`flex-1 ${isFastPool ? 'bg-orange-500 hover:bg-orange-600 opacity-75 cursor-not-allowed' : 'bg-pink-500 hover:bg-pink-600'}`}
             onClick={handleSupportToggle}
+            disabled={isFastPool && isInCart}
           >
-            {isInCart ? (
+            {isFastPool ? (
+              <>
+                <Lock className="h-4 w-4 mr-2" />
+                Required Project
+              </>
+            ) : isInCart ? (
               <>
                 <Check className="h-4 w-4 mr-2" />
                 Remove Support

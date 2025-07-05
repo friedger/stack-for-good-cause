@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PrimaryButton } from "@/components/ui/primary-button";
 import { SecondaryButton } from "@/components/ui/secondary-button";
-import { DollarSign, Users, Eye, Heart, Clock, Check } from "lucide-react";
+import { DollarSign, Users, Eye, Heart, Clock, Check, Lock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Project } from "@/services/projectService";
 import { SupportButton } from "../ui/support-button";
@@ -18,12 +18,22 @@ interface ProjectCardProps {
 const ProjectCard = ({ project }: ProjectCardProps) => {
   const [isInCart, setIsInCart] = useState(false);
   const { toast } = useToast();
+  const isFastPool = project.name === "Fast Pool";
 
   useEffect(() => {
     setIsInCart(cartService.isProjectInCart(project.id));
   }, [project.id]);
 
   const handleSupportToggle = () => {
+    if (isFastPool) {
+      toast({
+        title: "Fast Pool Required",
+        description: "Fast Pool is a required project and cannot be removed.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (isInCart) {
       // Remove from cart
       const success = cartService.removeProject(project.id);
@@ -60,6 +70,10 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
   };
 
   const getStatusBadge = (status: string) => {
+    if (isFastPool) {
+      return <Badge className="bg-orange-500/80 text-white border-orange-500/30">Required</Badge>;
+    }
+    
     switch (status) {
       case "approved":
         return <Badge className="bg-green-500/80 text-gray-600 border-green-500/30">Approved</Badge>;
@@ -71,7 +85,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
   };
 
   return (
-    <Card className="bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/15 transition-all duration-300 flex flex-col">
+    <Card className={`bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/15 transition-all duration-300 flex flex-col ${isFastPool ? 'ring-2 ring-orange-500/50' : ''}`}>
       <div className="relative">
         <img
           src={project.image}
@@ -81,9 +95,17 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
         <div className="absolute top-3 right-3">
           {getStatusBadge(project.status)}
         </div>
+        {isFastPool && (
+          <div className="absolute top-3 left-3">
+            <Lock className="h-5 w-5 text-orange-400" />
+          </div>
+        )}
       </div>
       <CardHeader className="flex-grow">
-        <CardTitle className="text-white text-lg">{project.name}</CardTitle>
+        <CardTitle className="text-white text-lg flex items-center">
+          {project.name}
+          {isFastPool && <Lock className="h-4 w-4 ml-2 text-orange-400" />}
+        </CardTitle>
         <Badge variant="outline" className="text-gray-300 border-gray-500 w-fit">
           {project.category}
         </Badge>
@@ -126,11 +148,17 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
 
           {project.status === "approved" && (
             <SupportButton
-              className="w-full"
+              className={`w-full ${isFastPool ? 'opacity-75 cursor-not-allowed' : ''}`}
               size="sm"
               onClick={handleSupportToggle}
+              disabled={isFastPool && isInCart}
             >
-              {isInCart ? (
+              {isFastPool ? (
+                <>
+                  <Lock className="h-4 w-4 mr-2" />
+                  Required Project
+                </>
+              ) : isInCart ? (
                 <>
                   <Check className="h-4 w-4 mr-2" />
                   Remove Support
