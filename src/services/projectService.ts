@@ -108,4 +108,4 @@ class ProjectService {
 }
 
 export const projectService = new ProjectService();
-export { Project, CreateProjectData } from "./projectCore";
+export type { Project, CreateProjectData } from "./projectCore";

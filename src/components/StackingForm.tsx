@@ -1,20 +1,14 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrendingUp } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
 import { Project } from "@/services/projectService";
-import { nostrService } from "@/services/nostrService";
-import { cartService } from "@/services/cartService";
-import { projectService } from "@/services/projectService";
 import RewardTypeSelector from "./stacking/RewardTypeSelector";
 import StackingAmountInput from "./stacking/StackingAmountInput";
 import DonationSettings from "./stacking/DonationSettings";
 import StackingActions from "./stacking/StackingActions";
-import { walletService } from "@/services/walletService";
-import { stackingStatsService } from "@/services/stackingStatsService";
-
-type StackingState = "not-stacking" | "stacking" | "stacking-revoked" | "revoked-not-stacking";
+import { useStackingLogic } from "@/hooks/useStackingLogic";
+import { useProjectInitialization } from "@/hooks/useProjectInitialization";
 
 interface StackingFormProps {
   stxAmount: string;
@@ -45,196 +39,27 @@ const StackingForm = ({
   sharePublicly,
   setSharePublicly
 }: StackingFormProps) => {
-  const { toast } = useToast();
-  const [stackingState, setStackingState] = useState<StackingState>("not-stacking");
-  const [isProcessingTx, setIsProcessingTx] = useState(false);
+  const {
+    isProcessingTx,
+    isStacking,
+    handleStacking,
+    handleStopStacking,
+    getStatusMessage,
+  } = useStackingLogic();
 
-  // Load projects from cart on component mount and ensure Fast Pool is always first
-  useEffect(() => {
-    const cartProjects = cartService.getCartProjects();
-    const fastPoolProject = projectService.getAllProjects().find(p => p.name === "Fast Pool");
-    
-    let projectsToSet: Project[] = [];
-    
-    // Always add Fast Pool as the first project
-    if (fastPoolProject) {
-      projectsToSet.push(fastPoolProject);
-    }
-    
-    if (cartProjects.length > 0) {
-      // Convert cart projects to Project objects, excluding Fast Pool (already added)
-      const projectsFromCart = cartProjects
-        .filter(cartProject => cartProject.name !== "Fast Pool")
-        .map(cartProject => {
-          const fullProject = projectService.getAllProjects().find(p => p.id === cartProject.id);
-          return fullProject || {
-            id: cartProject.id,
-            name: cartProject.name,
-            description: cartProject.description,
-            image: cartProject.image,
-            totalRaised: cartProject.totalRaised,
-            category: "Unknown",
-            backers: 0,
-            status: "approved" as const,
-            creator: "Unknown",
-            slug: cartProject.id
-          };
-        });
-      projectsToSet.push(...projectsFromCart);
-    }
-    
-    if (projectsToSet.length > 0) {
-      setSelectedProjects(projectsToSet);
-      // Auto-enable donation if there are projects
-      if (!enableDonation) {
-        setEnableDonation(true);
-      }
-    }
-  }, [setSelectedProjects, enableDonation, setEnableDonation]);
+  // Initialize projects from cart
+  useProjectInitialization(setSelectedProjects, enableDonation, setEnableDonation);
 
-  const handleStacking = async () => {
-    if (!walletService.isWalletConnected()) {
-      toast({
-        title: "Wallet Not Connected",
-        description: "Please connect your wallet first.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (!stxAmount) {
-      toast({
-        title: "Missing Information",
-        description: "Please enter STX amount to start stacking.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (enableDonation && selectedProjects.length === 0) {
-      toast({
-        title: "Select Projects",
-        description: "Please select at least one project to support with your donation.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsProcessingTx(true);
-
-    try {
-      // Use Fast Pool address (this would be the actual pool contract address)
-      const poolAddress = "SPMPMA1V6P430M8C91QS1G9XJ95S59JS1TZFZ4Q4.pox4-multi-pool-v1";
-      const txId = await walletService.delegateStx(stxAmount, poolAddress);
-
-      if (txId) {
-        // Update stacking stats service
-        stackingStatsService.startStacking(parseFloat(stxAmount));
-        if (enableDonation) {
-          stackingStatsService.updateDonationStats(selectedProjects.length);
-        }
-
-        const rewardText = rewardType === "sbtc" ? "sBTC" : "STX";
-        const donationText = enableDonation
-          ? ` with ${donationPercentage[0]}% donated to ${selectedProjects.length} project${selectedProjects.length !== 1 ? 's' : ''}`
-          : "";
-
-        // Share impact on Nostr if enabled and donating to projects
-        if (sharePublicly && enableDonation && selectedProjects.length > 0) {
-          try {
-            await nostrService.shareStackingImpact(stxAmount, selectedProjects.map(p => p.name), rewardType);
-            toast({
-              title: "Stacking Started!",
-              description: `Transaction broadcast: ${txId.slice(0, 8)}...${txId.slice(-4)}. Rewards in ${rewardText}${donationText}. Impact shared on Nostr!`,
-            });
-          } catch (error) {
-            toast({
-              title: "Stacking Started!",
-              description: `Transaction broadcast: ${txId.slice(0, 8)}...${txId.slice(-4)}. Rewards in ${rewardText}${donationText}. (Note: Nostr sharing failed)`,
-            });
-          }
-        } else {
-          toast({
-            title: "Stacking Started!",
-            description: `Transaction broadcast: ${txId.slice(0, 8)}...${txId.slice(-4)}. Rewards in ${rewardText}${donationText}.`,
-          });
-        }
-
-        setStackingState("stacking");
-      } else {
-        toast({
-          title: "Transaction Failed",
-          description: "Failed to broadcast stacking transaction. Please try again.",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "An error occurred while processing the transaction.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsProcessingTx(false);
-    }
+  const onStartStacking = () => {
+    handleStacking(
+      stxAmount,
+      rewardType,
+      enableDonation,
+      donationPercentage,
+      selectedProjects,
+      sharePublicly
+    );
   };
-
-  const handleStopStacking = async () => {
-    if (!walletService.isWalletConnected()) {
-      toast({
-        title: "Wallet Not Connected",
-        description: "Please connect your wallet first.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsProcessingTx(true);
-
-    try {
-      const txId = await walletService.revokeStacking();
-
-      if (txId) {
-        // Update stacking stats service
-        stackingStatsService.stopStacking();
-
-        toast({
-          title: "Stacking Revoked",
-          description: `Revoke transaction broadcast: ${txId.slice(0, 8)}...${txId.slice(-4)}. Your stacking has been stopped.`,
-        });
-        setStackingState("not-stacking");
-      } else {
-        toast({
-          title: "Transaction Failed",
-          description: "Failed to broadcast revoke transaction. Please try again.",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "An error occurred while revoking stacking.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsProcessingTx(false);
-    }
-  };
-
-  const getStatusMessage = () => {
-    switch (stackingState) {
-      case "stacking":
-        return "🟢 Currently stacking - earning rewards";
-      case "stacking-revoked":
-        return "🟡 Stacking with revoked delegation";
-      case "revoked-not-stacking":
-        return "🔴 Delegation revoked - not stacking";
-      default:
-        return "⚪ Ready to start stacking";
-    }
-  };
-
-  const isStacking = stackingState === "stacking" || stackingState === "stacking-revoked";
 
   return (
     <Card className="bg-card/50 backdrop-blur-sm border-border">
@@ -273,7 +98,7 @@ const StackingForm = ({
         <StackingActions
           isStacking={isStacking}
           isProcessing={isProcessingTx}
-          onStartStacking={handleStacking}
+          onStartStacking={onStartStacking}
           onStopStacking={handleStopStacking}
         />
       </CardContent>
