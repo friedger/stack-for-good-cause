@@ -1,18 +1,64 @@
 
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PrimaryButton } from "@/components/ui/primary-button";
 import { SecondaryButton } from "@/components/ui/secondary-button";
-import { DollarSign, Users, Eye, Heart, Clock } from "lucide-react";
+import { DollarSign, Users, Eye, Heart, Clock, Check } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Project } from "@/services/projectService";
 import { SupportButton } from "../ui/support-button";
+import { cartService } from "@/services/cartService";
+import { useToast } from "@/hooks/use-toast";
 
 interface ProjectCardProps {
   project: Project;
 }
 
 const ProjectCard = ({ project }: ProjectCardProps) => {
+  const [isInCart, setIsInCart] = useState(false);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    setIsInCart(cartService.isProjectInCart(project.id));
+  }, [project.id]);
+
+  const handleSupportToggle = () => {
+    if (isInCart) {
+      // Remove from cart
+      const success = cartService.removeProject(project.id);
+      if (success) {
+        setIsInCart(false);
+        toast({
+          title: "Removed from Cart",
+          description: `${project.name} has been removed from your support list.`,
+        });
+      }
+    } else {
+      // Add to cart
+      const success = cartService.addProject({
+        id: project.id,
+        name: project.name,
+        description: project.description,
+        image: project.image,
+        totalRaised: project.totalRaised
+      });
+      if (success) {
+        setIsInCart(true);
+        toast({
+          title: "Added to Cart",
+          description: `${project.name} has been added to your support list.`,
+        });
+      } else {
+        toast({
+          title: "Already in Cart",
+          description: `${project.name} is already in your support list.`,
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "approved":
@@ -79,9 +125,22 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
           </Link>
 
           {project.status === "approved" && (
-            <SupportButton className="w-full" size="sm">
-              <Heart className="h-4 w-4 mr-2" />
-              Support This Project
+            <SupportButton 
+              className="w-full" 
+              size="sm"
+              onClick={handleSupportToggle}
+            >
+              {isInCart ? (
+                <>
+                  <Check className="h-4 w-4 mr-2" />
+                  Remove Support
+                </>
+              ) : (
+                <>
+                  <Heart className="h-4 w-4 mr-2" />
+                  Support This Project
+                </>
+              )}
             </SupportButton>
           )}
 

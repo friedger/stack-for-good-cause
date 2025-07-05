@@ -1,15 +1,16 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
-import { TrendingUp, Plus, X, Heart, Gift, StopCircle } from "lucide-react";
+import { TrendingUp, Plus, X, Heart, Gift, StopCircle, ShoppingCart } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Project, projectService } from "@/services/projectService";
 import { nostrService } from "@/services/nostrService";
+import { cartService } from "@/services/cartService";
 import RewardTypeSelector from "./stacking/RewardTypeSelector";
 import ProjectSelectionModal from "./stacking/ProjectSelectionModal";
 import { SecondaryButton } from "./ui/secondary-button";
@@ -48,6 +49,35 @@ const StackingForm = ({
   const { toast } = useToast();
   const [showProjectModal, setShowProjectModal] = useState(false);
   const [stackingState, setStackingState] = useState<StackingState>("not-stacking");
+
+  // Load projects from cart on component mount
+  useEffect(() => {
+    const cartProjects = cartService.getCartProjects();
+    if (cartProjects.length > 0) {
+      // Convert cart projects to Project objects
+      const projectsFromCart = cartProjects.map(cartProject => {
+        const fullProject = projectService.getAllProjects().find(p => p.id === cartProject.id);
+        return fullProject || {
+          id: cartProject.id,
+          name: cartProject.name,
+          description: cartProject.description,
+          image: cartProject.image,
+          totalRaised: cartProject.totalRaised,
+          category: "Unknown",
+          backers: 0,
+          status: "approved" as const,
+          creator: "Unknown",
+          slug: cartProject.id
+        };
+      });
+      setSelectedProjects(projectsFromCart);
+      
+      // Auto-enable donation if there are projects in cart
+      if (!enableDonation) {
+        setEnableDonation(true);
+      }
+    }
+  }, [setSelectedProjects, enableDonation, setEnableDonation]);
 
   const handleStack = async () => {
     if (!stxAmount) {
@@ -107,6 +137,41 @@ const StackingForm = ({
 
   const removeProject = (projectId: string) => {
     setSelectedProjects(selectedProjects.filter(p => p.id !== projectId));
+    // Also remove from cart
+    cartService.removeProject(projectId);
+  };
+
+  const loadFromCart = () => {
+    const cartProjects = cartService.getCartProjects();
+    if (cartProjects.length > 0) {
+      const projectsFromCart = cartProjects.map(cartProject => {
+        const fullProject = projectService.getAllProjects().find(p => p.id === cartProject.id);
+        return fullProject || {
+          id: cartProject.id,
+          name: cartProject.name,
+          description: cartProject.description,
+          image: cartProject.image,
+          totalRaised: cartProject.totalRaised,
+          category: "Unknown",
+          backers: 0,
+          status: "approved" as const,
+          creator: "Unknown",
+          slug: cartProject.id
+        };
+      });
+      setSelectedProjects(projectsFromCart);
+      setEnableDonation(true);
+      
+      toast({
+        title: "Projects Loaded",
+        description: `Loaded ${cartProjects.length} project${cartProjects.length !== 1 ? 's' : ''} from your support cart.`,
+      });
+    } else {
+      toast({
+        title: "Cart is Empty",
+        description: "Visit the Projects page to add projects to your support cart.",
+      });
+    }
   };
 
   const getStatusMessage = () => {
@@ -123,6 +188,7 @@ const StackingForm = ({
   };
 
   const isStacking = stackingState === "stacking" || stackingState === "stacking-revoked";
+  const cartCount = cartService.getCartCount();
 
   return (
     <Card className="bg-white/10 backdrop-blur-sm border-white/20">
@@ -184,7 +250,19 @@ const StackingForm = ({
               </div>
 
               <div>
-                <Label className="text-white mb-2 block">Selected Projects ({selectedProjects.length}/5)</Label>
+                <div className="flex items-center justify-between mb-2">
+                  <Label className="text-white">Selected Projects ({selectedProjects.length}/5)</Label>
+                  {cartCount > 0 && selectedProjects.length === 0 && (
+                    <SecondaryButton
+                      onClick={loadFromCart}
+                      size="sm"
+                      disabled={isStacking}
+                    >
+                      <ShoppingCart className="h-4 w-4 mr-2" />
+                      Load Cart ({cartCount})
+                    </SecondaryButton>
+                  )}
+                </div>
 
                 {selectedProjects.length > 0 && (
                   <div className="space-y-2 mb-3">

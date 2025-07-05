@@ -1,15 +1,61 @@
 
+import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { PrimaryButton } from "@/components/ui/primary-button";
 import { SecondaryButton } from "@/components/ui/secondary-button";
-import { Heart, Share2 } from "lucide-react";
+import { Heart, Share2, Check } from "lucide-react";
 import { Project } from "@/services/projectService";
+import { cartService } from "@/services/cartService";
+import { useToast } from "@/hooks/use-toast";
 
 interface ProjectHeaderProps {
   project: Project;
 }
 
 const ProjectHeader = ({ project }: ProjectHeaderProps) => {
+  const [isInCart, setIsInCart] = useState(false);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    setIsInCart(cartService.isProjectInCart(project.id));
+  }, [project.id]);
+
+  const handleSupportToggle = () => {
+    if (isInCart) {
+      // Remove from cart
+      const success = cartService.removeProject(project.id);
+      if (success) {
+        setIsInCart(false);
+        toast({
+          title: "Removed from Cart",
+          description: `${project.name} has been removed from your support list.`,
+        });
+      }
+    } else {
+      // Add to cart
+      const success = cartService.addProject({
+        id: project.id,
+        name: project.name,
+        description: project.description,
+        image: project.image,
+        totalRaised: project.totalRaised
+      });
+      if (success) {
+        setIsInCart(true);
+        toast({
+          title: "Added to Cart",
+          description: `${project.name} has been added to your support list.`,
+        });
+      } else {
+        toast({
+          title: "Already in Cart",
+          description: `${project.name} is already in your support list.`,
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
   return (
     <div className="grid lg:grid-cols-2 gap-8 mb-12">
       <div>
@@ -44,9 +90,21 @@ const ProjectHeader = ({ project }: ProjectHeaderProps) => {
         </div>
 
         <div className="flex gap-4">
-          <PrimaryButton className="flex-1 bg-pink-500 hover:bg-pink-600">
-            <Heart className="h-4 w-4 mr-2" />
-            Support This Project
+          <PrimaryButton 
+            className="flex-1 bg-pink-500 hover:bg-pink-600"
+            onClick={handleSupportToggle}
+          >
+            {isInCart ? (
+              <>
+                <Check className="h-4 w-4 mr-2" />
+                Remove Support
+              </>
+            ) : (
+              <>
+                <Heart className="h-4 w-4 mr-2" />
+                Support This Project
+              </>
+            )}
           </PrimaryButton>
           <SecondaryButton>
             <Share2 className="h-4 w-4 mr-2" />
