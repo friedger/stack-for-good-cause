@@ -110,15 +110,15 @@ const Index = () => {
         <div className="grid md:grid-cols-3 gap-8 text-center">
           <div>
             <div className="text-4xl font-bold text-orange-400 mb-2">$2.5M+</div>
-            <div className="text-gray-300">Total Value Stacked</div>
+            <div className="text-gray-200 font-medium">Total Value Stacked</div>
           </div>
           <div>
             <div className="text-4xl font-bold text-pink-400 mb-2">$125K+</div>
-            <div className="text-gray-300">Donated to Projects</div>
+            <div className="text-gray-200 font-medium">Donated to Projects</div>
           </div>
           <div>
             <div className="text-4xl font-bold text-green-400 mb-2">150+</div>
-            <div className="text-gray-300">Active Stackers</div>
+            <div className="text-gray-200 font-medium">Active Stackers</div>
           </div>
         </div>
       </section>
@@ -130,7 +130,7 @@ const Index = () => {
             <h3 className="text-3xl font-bold text-white mb-4">
               Ready to Stack and Give?
             </h3>
-            <p className="text-gray-200 mb-8 max-w-2xl mx-auto">
+            <p className="text-gray-100 mb-8 max-w-2xl mx-auto font-medium">
               Join our community of stackers who believe in earning rewards while making a positive impact. 
               Start your journey today.
             </p>
