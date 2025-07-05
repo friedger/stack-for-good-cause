@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrendingUp } from "lucide-react";
@@ -128,7 +127,7 @@ const StackingForm = ({
         // Share impact on Nostr if enabled and donating to projects
         if (sharePublicly && enableDonation && selectedProjects.length > 0) {
           try {
-            await nostrService.shareStackingImpact(stxAmount, selectedProjects.map(p => p.name), rewardType);
+            await nostrService.shareStackingImpact(stxAmount, selectedProjects.map(p => p.name), rewardType, donationPercentage[0]);
             toast({
               title: "Stacking Started!",
               description: `Transaction broadcast: ${txId.slice(0, 8)}...${txId.slice(-4)}. Rewards in ${rewardText}${donationText}. Impact shared on Nostr!`,
@@ -227,7 +226,7 @@ const StackingForm = ({
       <CardHeader>
         <CardTitle className="text-white flex items-center justify-between">
           <div className="flex items-center">
-            <TrendingUp className="h-6 w-6 mr-2 text-purple-400" />
+            <TrendingUp className="h-6 w-6 mr-2 text-blue-400" />
             Configure Your Stack
           </div>
           <div className="text-sm font-normal text-gray-300">

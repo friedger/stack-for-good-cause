@@ -15,7 +15,7 @@ const StackingActions = ({ isStacking, isProcessing, onStartStacking, onStopStac
       {!isStacking ? (
         <Button
           onClick={onStartStacking}
-          className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white"
+          className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white"
           size="lg"
           disabled={isProcessing}
         >

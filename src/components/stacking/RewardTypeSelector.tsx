@@ -35,7 +35,7 @@ const RewardTypeSelector = ({ value, onChange, disabled = false }: RewardTypeSel
             key={option.id}
             className={`cursor-pointer transition-all duration-200 ${disabled ? 'opacity-50 cursor-not-allowed' : ''
               } ${value === option.id
-                ? "bg-white/20 border-white/40 ring-2 ring-orange-400"
+                ? "bg-white/20 border-white/40 ring-2 ring-blue-400"
                 : "bg-white/5 border-white/20 hover:bg-white/10"
               }`}
             onClick={() => !disabled && onChange(option.id)}
@@ -54,7 +54,7 @@ const RewardTypeSelector = ({ value, onChange, disabled = false }: RewardTypeSel
                   <p className="text-gray-400 text-sm">{option.description}</p>
                 </div>
                 {value === option.id && (
-                  <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30">
+                  <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30">
                     Selected
                   </Badge>
                 )}

@@ -13,7 +13,7 @@ const PrimaryButton = React.forwardRef<HTMLButtonElement, PrimaryButtonProps>(
       <Button
         ref={ref}
         className={cn(
-          "bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white border-0 font-medium transition-all duration-200 shadow-lg hover:shadow-xl",
+          "bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white border-0 font-medium transition-all duration-200 shadow-lg hover:shadow-xl",
           className
         )}
         {...props}
