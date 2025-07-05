@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -44,7 +43,7 @@ const StackingForm = ({
   const { toast } = useToast();
   const [showProjectModal, setShowProjectModal] = useState(false);
 
-  const handleStack = () => {
+  const handleStack = async () => {
     if (!stxAmount) {
       toast({
         title: "Missing Information",
@@ -68,10 +67,26 @@ const StackingForm = ({
       ? ` with ${donationPercentage[0]}% donated to ${selectedProjects.length} project${selectedProjects.length !== 1 ? 's' : ''}` 
       : "";
     
-    toast({
-      title: "Stacking Started!",
-      description: `Successfully stacked ${stxAmount} STX. Rewards in ${rewardText}${donationText}.`,
-    });
+    // Share impact on Nostr if enabled and donating to projects
+    if (sharePublicly && enableDonation && selectedProjects.length > 0) {
+      try {
+        await projectService.shareStackingImpact(stxAmount, selectedProjects, rewardType);
+        toast({
+          title: "Stacking Started!",
+          description: `Successfully stacked ${stxAmount} STX. Rewards in ${rewardText}${donationText}. Impact shared on Nostr!`,
+        });
+      } catch (error) {
+        toast({
+          title: "Stacking Started!",
+          description: `Successfully stacked ${stxAmount} STX. Rewards in ${rewardText}${donationText}. (Note: Nostr sharing failed)`,
+        });
+      }
+    } else {
+      toast({
+        title: "Stacking Started!",
+        description: `Successfully stacked ${stxAmount} STX. Rewards in ${rewardText}${donationText}.`,
+      });
+    }
   };
 
   const removeProject = (projectId: string) => {
@@ -140,9 +155,9 @@ const StackingForm = ({
                         className="flex items-center justify-between bg-white/5 rounded-lg p-3 border border-white/10"
                       >
                         <div className="flex items-center space-x-3">
-                          {project.imageUrl && (
+                          {project.image && (
                             <img
-                              src={project.imageUrl}
+                              src={project.image}
                               alt={project.name}
                               className="w-10 h-10 rounded object-cover"
                             />

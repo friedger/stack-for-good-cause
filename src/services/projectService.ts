@@ -1,3 +1,4 @@
+import { nostrService, NostrUpdate } from './nostrService';
 
 export interface Project {
   id: string;
@@ -16,6 +17,7 @@ export interface Project {
     title: string;
     content: string;
     date: string;
+    nostrEventId?: string;
   }>;
   backersList?: Array<{
     id: string;
@@ -52,13 +54,15 @@ class ProjectService {
           id: "1",
           title: "First Well Completed!",
           content: "We're excited to announce that our first well has been completed in Rural Village A. The community now has access to clean water for the first time in decades!",
-          date: "2024-01-15"
+          date: "2024-01-15",
+          nostrEventId: "nostr_1704902400000_abc123def"
         },
         {
           id: "2",
           title: "Community Training Program Launched",
           content: "We've started training local community members on well maintenance and water conservation practices to ensure long-term sustainability.",
-          date: "2024-01-10"
+          date: "2024-01-10",
+          nostrEventId: "nostr_1704470400000_xyz789ghi"
         }
       ],
       backersList: [
@@ -140,7 +144,7 @@ class ProjectService {
     return this.projects.find(project => project.slug === slug) || null;
   }
 
-  createProject(projectData: CreateProjectData): Project {
+  async createProject(projectData: CreateProjectData): Promise<Project> {
     const slug = projectData.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
     
     const newProject: Project = {
@@ -157,6 +161,15 @@ class ProjectService {
     };
 
     this.projects.push(newProject);
+
+    // Announce the project on Nostr
+    try {
+      await nostrService.announceProject(newProject.name, newProject.description, newProject.id);
+      console.log('Project announced on Nostr successfully');
+    } catch (error) {
+      console.error('Failed to announce project on Nostr:', error);
+    }
+
     return newProject;
   }
 
@@ -168,8 +181,55 @@ class ProjectService {
     return this.projects[projectIndex];
   }
 
+  async addProjectUpdate(projectId: string, title: string, content: string): Promise<boolean> {
+    const project = this.projects.find(p => p.id === projectId);
+    if (!project) return false;
+
+    try {
+      // Publish update to Nostr
+      const nostrUpdate = await nostrService.publishUpdate({
+        title,
+        content,
+        projectId,
+        author: project.creator,
+        tags: ['project-update', project.category.toLowerCase()]
+      });
+
+      // Add update to project
+      if (!project.updates) {
+        project.updates = [];
+      }
+
+      project.updates.unshift({
+        id: nostrUpdate.id,
+        title: nostrUpdate.title,
+        content: nostrUpdate.content,
+        date: nostrUpdate.date,
+        nostrEventId: nostrUpdate.nostrEventId
+      });
+
+      console.log('Project update published to Nostr and added to project');
+      return true;
+    } catch (error) {
+      console.error('Failed to publish project update:', error);
+      return false;
+    }
+  }
+
   getUserProjects(creator: string): Project[] {
     return this.projects.filter(project => project.creator === creator);
+  }
+
+  async shareStackingImpact(stxAmount: string, selectedProjects: Project[], rewardType: string): Promise<void> {
+    if (selectedProjects.length === 0) return;
+
+    try {
+      const projectNames = selectedProjects.map(p => p.name);
+      await nostrService.shareStackingImpact(stxAmount, projectNames, rewardType);
+      console.log('Stacking impact shared on Nostr successfully');
+    } catch (error) {
+      console.error('Failed to share stacking impact on Nostr:', error);
+    }
   }
 }
 

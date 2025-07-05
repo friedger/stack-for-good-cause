@@ -82,10 +82,10 @@ const ProjectSelectionModal = ({
                     )}
                   </div>
 
-                  {project.imageUrl && (
+                  {project.image && (
                     <div className="mb-3">
                       <img
-                        src={project.imageUrl}
+                        src={project.image}
                         alt={project.name}
                         className="w-full h-24 object-cover rounded"
                       />
