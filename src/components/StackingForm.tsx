@@ -1,14 +1,11 @@
 
-import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp } from "lucide-react";
-import { Project } from "@/services/projectService";
-import RewardTypeSelector from "./stacking/RewardTypeSelector";
-import StackingAmountInput from "./stacking/StackingAmountInput";
-import DonationSettings from "./stacking/DonationSettings";
-import StackingActions from "./stacking/StackingActions";
 import { useStackingLogic } from "@/hooks/useStackingLogic";
-import { useProjectInitialization } from "@/hooks/useProjectInitialization";
+import { Project } from "@/services/projectService";
+import { TrendingUp } from "lucide-react";
+import RewardTypeSelector from "./stacking/RewardTypeSelector";
+import StackingActions from "./stacking/StackingActions";
+import StackingAmountInput from "./stacking/StackingAmountInput";
 
 interface StackingFormProps {
   stxAmount: string;
@@ -16,13 +13,10 @@ interface StackingFormProps {
   rewardType: "stx" | "sbtc";
   setRewardType: (value: "stx" | "sbtc") => void;
   enableDonation: boolean;
-  setEnableDonation: (value: boolean) => void;
   donationPercentage: number[];
-  setDonationPercentage: (value: number[]) => void;
+
   selectedProjects: Project[];
-  setSelectedProjects: (value: Project[]) => void;
   sharePublicly: boolean;
-  setSharePublicly: (value: boolean) => void;
 }
 
 const StackingForm = ({
@@ -31,13 +25,9 @@ const StackingForm = ({
   rewardType,
   setRewardType,
   enableDonation,
-  setEnableDonation,
   donationPercentage,
-  setDonationPercentage,
   selectedProjects,
-  setSelectedProjects,
   sharePublicly,
-  setSharePublicly
 }: StackingFormProps) => {
   const {
     isProcessingTx,
@@ -46,9 +36,6 @@ const StackingForm = ({
     handleStopStacking,
     getStatusMessage,
   } = useStackingLogic();
-
-  // Initialize projects from cart
-  useProjectInitialization(setSelectedProjects, enableDonation, setEnableDonation);
 
   const onStartStacking = () => {
     handleStacking(
@@ -67,7 +54,7 @@ const StackingForm = ({
         <CardTitle className="text-white flex items-center justify-between">
           <div className="flex items-center">
             <TrendingUp className="h-6 w-6 mr-2 text-blue-400" />
-            Configure Your Stack
+            Configure Your Stacking
           </div>
           <div className="text-sm font-normal text-gray-300">
             {getStatusMessage()}
@@ -82,18 +69,6 @@ const StackingForm = ({
         />
 
         <RewardTypeSelector value={rewardType} onChange={setRewardType} disabled={isStacking} />
-
-        <DonationSettings
-          enableDonation={enableDonation}
-          onEnableDonationChange={setEnableDonation}
-          donationPercentage={donationPercentage}
-          onDonationPercentageChange={setDonationPercentage}
-          selectedProjects={selectedProjects}
-          onSelectedProjectsChange={setSelectedProjects}
-          sharePublicly={sharePublicly}
-          onSharePubliclyChange={setSharePublicly}
-          disabled={isStacking}
-        />
 
         <StackingActions
           isStacking={isStacking}

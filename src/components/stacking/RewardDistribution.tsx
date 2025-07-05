@@ -34,12 +34,12 @@ const RewardDistribution = ({ selectedProjects, donationPercentage, enableDonati
       </CardHeader>
       <CardContent className="space-y-3">
         {/* Your rewards */}
-        <div className="flex items-center justify-between p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
+        <div className="flex items-center justify-between p-3 bg-green-500/10 rounded-lg border border-green-500/20">
           <div className="flex items-center space-x-3">
-            <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
             <span className="text-white font-medium">Your Rewards</span>
           </div>
-          <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30">
+          <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
             {yourRewardsPercentage.toFixed(1)}%
           </Badge>
         </div>
@@ -60,15 +60,15 @@ const RewardDistribution = ({ selectedProjects, donationPercentage, enableDonati
 
         {/* Other selected projects */}
         {otherProjects.map((project, index) => (
-          <div key={project.id} className="flex items-center justify-between p-3 bg-green-500/10 rounded-lg border border-green-500/20">
+          <div key={project.id} className="flex items-center justify-between p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
             <div className="flex items-center space-x-3">
-              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+              <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
               <div>
                 <span className="text-white font-medium">{project.name}</span>
                 <div className="text-xs text-gray-400">Project Support</div>
               </div>
             </div>
-            <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+            <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30">
               {percentagePerOtherProject.toFixed(1)}%
             </Badge>
           </div>

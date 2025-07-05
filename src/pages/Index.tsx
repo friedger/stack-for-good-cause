@@ -1,21 +1,17 @@
 
+import CtaSection from "@/components/shared/CtaSection";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowRight, Shield, Heart, TrendingUp, Zap, Share2, Users } from "lucide-react";
-import { Link } from "react-router-dom";
 import { PrimaryButton } from "@/components/ui/primary-button";
 import { SecondaryButton } from "@/components/ui/secondary-button";
-import Logo from "@/components/Logo";
-import CtaSection from "@/components/shared/CtaSection";
-import Header from "@/components/Header";
+import { ArrowRight, Heart, Share2, Shield, Users } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      {/* Navigation */}
-      <Header />
+    <>
 
       {/* Hero Section */}
-      <section className="container mx-auto px-6 py-20 text-center">
+      < section className="container mx-auto px-6 py-20 text-center" >
         <div className="max-w-4xl mx-auto">
           <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
             Stack Your Way,
@@ -39,10 +35,10 @@ const Index = () => {
             </SecondaryButton>
           </div>
         </div>
-      </section>
+      </section >
 
       {/* Features Section */}
-      <section className="container mx-auto px-6 py-20">
+      < section className="container mx-auto px-6 py-20" >
         <h2 className="text-4xl font-bold text-white text-center mb-16">
           Why Choose Fast Pool?
         </h2>
@@ -86,10 +82,10 @@ const Index = () => {
             </CardContent>
           </Card>
         </div>
-      </section>
+      </section >
 
       {/* Social Impact Section */}
-      <section className="container mx-auto px-6 py-20">
+      < section className="container mx-auto px-6 py-20" >
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold text-white mb-6">
             Stack Together, Impact Together
@@ -127,10 +123,10 @@ const Index = () => {
             </CardContent>
           </Card>
         </div>
-      </section>
+      </section >
 
       {/* Stats Section */}
-      <section className="container mx-auto px-6 py-20">
+      < section className="container mx-auto px-6 py-20" >
         <div className="grid md:grid-cols-3 gap-8 text-center">
           <div>
             <div className="text-4xl font-bold text-purple-400 mb-2">$2.5M+</div>
@@ -145,10 +141,10 @@ const Index = () => {
             <div className="text-gray-200 font-medium">Active Community Members</div>
           </div>
         </div>
-      </section>
+      </section >
 
       {/* CTA Section */}
-      <section className="container mx-auto px-6 py-20 text-center">
+      < section className="container mx-auto px-6 py-20 text-center" >
         <CtaSection
           title="Ready to Stack Your Way?"
           description="Join Fast Pool today and experience stacking on your terms. Choose your rewards, decide your impact, and be part of a community doing good together."
@@ -156,18 +152,9 @@ const Index = () => {
           buttonHref="/stacking"
           buttonIcon={<ArrowRight className="ml-2 h-5 w-5" />}
         />
-      </section>
+      </section >
 
-      {/* Footer */}
-      <footer className="container mx-auto px-6 py-8 border-t border-border">
-        <div className="flex flex-col md:flex-row justify-between items-center text-gray-400">
-          <Logo size="sm" />
-          <div className="text-sm">
-            © 2025 Fast Pool. Built on Stacks blockchain.
-          </div>
-        </div>
-      </footer>
-    </div>
+    </>
   );
 };
 

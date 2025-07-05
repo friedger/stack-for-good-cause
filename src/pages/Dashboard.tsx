@@ -26,11 +26,11 @@ const Dashboard = () => {
   useEffect(() => {
     // Load data from services
     setStackingHistory(stackingService.getStackingHistory());
-    
+
     // Get supported projects from cart service and project service
     const cartProjects = cartService.getCartProjects();
     const allProjects = projectService.getAllProjects();
-    
+
     const supportedProjectsData: SupportedProject[] = cartProjects.map(cartProject => {
       const fullProject = allProjects.find(p => p.id === cartProject.id);
       return {
@@ -39,9 +39,9 @@ const Dashboard = () => {
         lastDonation: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toLocaleDateString()
       };
     });
-    
+
     setSupportedProjects(supportedProjectsData);
-    
+
     // Update user stats
     const updatedStats = {
       ...stackingService.getUserStats(),
@@ -52,24 +52,22 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      <Header />
 
-      <div className="container mx-auto px-6 py-12">
-        <div className="max-w-6xl mx-auto">
-          <h1 className="text-4xl font-bold text-white mb-8 text-center">
-            Your Dashboard
-          </h1>
 
-          <StatsOverview />
+    <div className="container mx-auto px-6 py-12">
+      <div className="max-w-6xl mx-auto">
+        <h1 className="text-4xl font-bold text-white mb-8 text-center">
+          Your Dashboard
+        </h1>
 
-          <div className="grid lg:grid-cols-2 gap-8">
-            <StackingActivity stackingHistory={stackingHistory} />
-            <SupportedProjectsList supportedProjects={supportedProjects} userStats={userStats} />
-          </div>
+        <StatsOverview />
 
-          <ImpactSummary />
+        <div className="grid lg:grid-cols-2 gap-8">
+          <StackingActivity stackingHistory={stackingHistory} />
+          <SupportedProjectsList supportedProjects={supportedProjects} userStats={userStats} />
         </div>
+
+        <ImpactSummary />
       </div>
     </div>
   );

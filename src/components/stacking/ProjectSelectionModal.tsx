@@ -6,6 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Check, X } from "lucide-react";
 import { Project, projectService } from "@/services/projectService";
+import { PrimaryButton } from "../ui/primary-button";
+import { SecondaryButton } from "../ui/secondary-button";
 
 interface ProjectSelectionModalProps {
   open: boolean;
@@ -21,7 +23,7 @@ const ProjectSelectionModal = ({
   onProjectsChange
 }: ProjectSelectionModalProps) => {
   const [tempSelected, setTempSelected] = useState<Project[]>(selectedProjects);
-  
+
   // Filter out pending projects and Fast Pool (since it's always included)
   const availableProjects = projectService.getAllProjects().filter(
     project => project.status === "approved" && project.name !== "Fast Pool"
@@ -48,7 +50,7 @@ const ProjectSelectionModal = ({
     const fastPoolProject = projectService.getAllProjects().find(p => p.name === "Fast Pool");
     const otherProjects = tempSelected.filter(p => p.name !== "Fast Pool");
     const finalSelection = fastPoolProject ? [fastPoolProject, ...otherProjects] : otherProjects;
-    
+
     onProjectsChange(finalSelection);
     onOpenChange(false);
   };
@@ -81,13 +83,12 @@ const ProjectSelectionModal = ({
             return (
               <Card
                 key={project.id}
-                className={`cursor-pointer transition-all ${
-                  isSelected
+                className={`cursor-pointer transition-all ${isSelected
                     ? "bg-orange-500/20 border-orange-500"
                     : canSelect
-                    ? "bg-white/5 border-white/20 hover:bg-white/10"
-                    : "bg-gray-800/50 border-gray-600 opacity-50 cursor-not-allowed"
-                }`}
+                      ? "bg-white/5 border-white/20 hover:bg-white/10"
+                      : "bg-gray-800/50 border-gray-600 opacity-50 cursor-not-allowed"
+                  }`}
                 onClick={() => canSelect && toggleProject(project)}
               >
                 <CardContent className="p-4">
@@ -126,12 +127,12 @@ const ProjectSelectionModal = ({
         </div>
 
         <div className="flex justify-end space-x-3 pt-4 border-t border-gray-700">
-          <Button variant="outline" onClick={handleCancel}>
+          <SecondaryButton onClick={handleCancel}>
             Cancel
-          </Button>
-          <Button onClick={handleSave} className="bg-orange-500 hover:bg-orange-600">
+          </SecondaryButton>
+          <PrimaryButton onClick={handleSave} >
             Save Selection
-          </Button>
+          </PrimaryButton>
         </div>
       </DialogContent>
     </Dialog>

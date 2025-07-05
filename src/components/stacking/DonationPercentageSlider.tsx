@@ -8,10 +8,10 @@ interface DonationPercentageSliderProps {
   disabled?: boolean;
 }
 
-const DonationPercentageSlider = ({ 
-  donationPercentage, 
-  onDonationPercentageChange, 
-  disabled 
+const DonationPercentageSlider = ({
+  donationPercentage,
+  onDonationPercentageChange,
+  disabled
 }: DonationPercentageSliderProps) => {
   return (
     <div>
@@ -19,7 +19,7 @@ const DonationPercentageSlider = ({
       <Slider
         value={donationPercentage}
         onValueChange={onDonationPercentageChange}
-        max={50}
+        max={100}
         min={4.7}
         step={0.1}
         className="mt-2"
@@ -27,7 +27,7 @@ const DonationPercentageSlider = ({
       />
       <div className="flex justify-between text-sm text-gray-400 mt-1">
         <span>4.7% (Fast Pool Required)</span>
-        <span>50% (Maximum)</span>
+        <span>100% </span>
       </div>
     </div>
   );

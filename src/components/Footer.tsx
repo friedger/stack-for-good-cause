@@ -1,0 +1,16 @@
+import Logo from "./Logo";
+
+const Footer = () => {
+    return (
+        < footer className="container mx-auto px-6 py-8 border-t border-border" >
+            <div className="flex flex-col md:flex-row justify-between items-center text-gray-400">
+                <Logo size="sm" />
+                <div className="text-sm">
+                    © 2025 Fast Pool. Built on Stacks blockchain.
+                </div>
+            </div>
+        </footer >
+    );
+}
+
+export default Footer;

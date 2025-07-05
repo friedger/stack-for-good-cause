@@ -64,31 +64,29 @@ const ProjectDetail = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      <Header />
 
-      <div className="container mx-auto px-6 py-12">
-        <div className="max-w-6xl mx-auto">
-          {/* Back Button */}
-          <Link to="/projects" className="inline-flex items-center text-white hover:text-purple-400 transition-colors mb-8">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Projects
-          </Link>
 
-          <ProjectHeader project={project} />
+    <div className="container mx-auto px-6 py-12">
+      <div className="max-w-6xl mx-auto">
+        {/* Back Button */}
+        <Link to="/projects" className="inline-flex items-center text-white hover:text-purple-400 transition-colors mb-8">
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Projects
+        </Link>
 
-          {/* Project Content */}
-          <div className="grid lg:grid-cols-3 gap-8">
-            {/* Main Content */}
-            <div className="lg:col-span-2 space-y-8">
-              <ProjectUpdates project={project} />
-            </div>
+        <ProjectHeader project={project} />
 
-            {/* Sidebar */}
-            <div className="space-y-6">
-              <RecentBackers project={project} />
-              <ProjectStats project={project} />
-            </div>
+        {/* Project Content */}
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Main Content */}
+          <div className="lg:col-span-2 space-y-8">
+            <ProjectUpdates project={project} />
+          </div>
+
+          {/* Sidebar */}
+          <div className="space-y-6">
+            <RecentBackers project={project} />
+            <ProjectStats project={project} />
           </div>
         </div>
       </div>

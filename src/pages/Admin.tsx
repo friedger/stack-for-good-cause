@@ -8,6 +8,7 @@ import { ArrowLeft, Check, X, Users, TrendingUp, Heart, Shield } from "lucide-re
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import FastPoolName from "@/components/shared/FastPoolName";
+import { PrimaryButton } from "@/components/ui/primary-button";
 
 const Admin = () => {
   const [pendingProjects, setPendingProjects] = useState([
@@ -82,7 +83,7 @@ const Admin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
+    <>
       {/* Navigation */}
       <nav className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
@@ -177,13 +178,13 @@ const Admin = () => {
                       </div>
 
                       <div className="flex space-x-3">
-                        <Button
+                        <PrimaryButton
                           onClick={() => handleApproveProject(project.id)}
-                          className="bg-green-500 hover:bg-green-600 flex-1"
+                          className="flex-1"
                         >
                           <Check className="h-4 w-4 mr-2" />
                           Approve Project
-                        </Button>
+                        </PrimaryButton>
                         <Button
                           onClick={() => handleRejectProject(project.id)}
                           variant="destructive"
@@ -240,7 +241,7 @@ const Admin = () => {
           </Tabs>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

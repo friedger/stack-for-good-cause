@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { walletService } from "@/services/walletService";
 import { Wallet, TrendingUp } from "lucide-react";
+import { useStackingService } from "@/hooks/useStackingService";
 
 interface StackingAmountInputProps {
   value: string;
@@ -17,6 +18,7 @@ const StackingAmountInput = ({ value, onChange, disabled }: StackingAmountInputP
   const [balance, setBalance] = useState<number>(0);
   const [isLoadingBalance, setIsLoadingBalance] = useState(false);
   const [sliderValue, setSliderValue] = useState([parseFloat(value) || 40]);
+  const { estimatedApy } = useStackingService();
 
   // Mock balance loading - in real app this would fetch from blockchain
   useEffect(() => {
@@ -62,14 +64,13 @@ const StackingAmountInput = ({ value, onChange, disabled }: StackingAmountInputP
     }
   };
 
-  const maxSliderValue = balance > 0 ? balance : 50000;
+  const maxSliderValue = balance > 0 ? 2 * balance : 50_000_000;
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <Label htmlFor="stx-amount" className="text-white flex items-center">
-          <TrendingUp className="h-4 w-4 mr-2 text-blue-400" />
-          STX Amount
+          Stacking Amount
         </Label>
         {walletService.isWalletConnected() && (
           <div className="flex items-center text-sm text-gray-400">
@@ -118,7 +119,7 @@ const StackingAmountInput = ({ value, onChange, disabled }: StackingAmountInputP
           <div className="flex justify-between text-xs text-gray-400">
             <span>40 STX (Min)</span>
             <span className="text-blue-400">{sliderValue[0].toLocaleString()} STX</span>
-            <span>{maxSliderValue.toLocaleString()} STX {balance > 0 ? "(Max)" : ""}</span>
+            <span>{maxSliderValue.toLocaleString()} STX</span>
           </div>
         </div>
       </div>
@@ -127,7 +128,7 @@ const StackingAmountInput = ({ value, onChange, disabled }: StackingAmountInputP
         <span>Minimum: 40 STX</span>
         {value && parseFloat(value) >= 40 && (
           <span className="text-green-400">
-            Est. Rewards: ~{(parseFloat(value) * 0.085).toFixed(2)} STX/year
+            Est. Rewards: ~{(parseFloat(value) * estimatedApy).toFixed(2)} STX/year
           </span>
         )}
       </div>
@@ -136,3 +137,4 @@ const StackingAmountInput = ({ value, onChange, disabled }: StackingAmountInputP
 };
 
 export default StackingAmountInput;
+

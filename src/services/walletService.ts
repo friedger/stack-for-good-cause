@@ -69,6 +69,7 @@ class WalletService {
     rewardCurrency: "stx" | "sbtc",
     projects: { addr: string; part: number }[] = []
   ): Promise<string | null> {
+    console.log("Delegating STX:", projects);
     try {
       const response = await request("stx_callContract", {
         contract: poolAddress,

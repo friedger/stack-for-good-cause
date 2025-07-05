@@ -21,9 +21,7 @@ const Projects = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      <Header showCreateProject onCreateProject={handleOpenCreateDialog} />
-
+    <>
       <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <div className="max-w-6xl mx-auto">
           <h1 className="text-3xl sm:text-4xl font-bold text-white mb-6 sm:mb-8 text-center">
@@ -56,7 +54,7 @@ const Projects = () => {
         onOpenChange={setIsCreateDialogOpen}
         onProjectCreated={handleProjectCreated}
       />
-    </div>
+    </ >
   );
 };
 

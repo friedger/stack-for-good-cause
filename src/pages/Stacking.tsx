@@ -8,50 +8,48 @@ import { Project } from "@/services/projectService";
 
 const Stacking = () => {
   const [stxAmount, setStxAmount] = useState("");
-  const [rewardType, setRewardType] = useState("stx");
+  const [rewardType, setRewardType] = useState<"stx" | "sbtc">("stx");
   const [enableDonation, setEnableDonation] = useState(true);
-  const [donationPercentage, setDonationPercentage] = useState([4.7]); // Changed to 4.7% minimum
+  const [donationPercentage, setDonationPercentage] = useState([10]); // Changed to 4.7% minimum
   const [selectedProjects, setSelectedProjects] = useState<Project[]>([]);
   const [sharePublicly, setSharePublicly] = useState(true);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      <Header />
 
-      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-3xl sm:text-4xl font-bold text-white mb-6 sm:mb-8 text-center">
-            Stack Your Way with Fast Pool
-          </h1>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
-            <StackingForm
-              stxAmount={stxAmount}
-              setStxAmount={setStxAmount}
-              rewardType={rewardType}
-              setRewardType={setRewardType}
-              enableDonation={enableDonation}
-              setEnableDonation={setEnableDonation}
-              donationPercentage={donationPercentage}
-              setDonationPercentage={setDonationPercentage}
-              selectedProjects={selectedProjects}
-              setSelectedProjects={setSelectedProjects}
-              sharePublicly={sharePublicly}
-              setSharePublicly={setSharePublicly}
-            />
+    <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-3xl sm:text-4xl font-bold text-white mb-6 sm:mb-8 text-center">
+          Stack Your Way with Fast Pool
+        </h1>
 
-            <RewardsBreakdown
-              stxAmount={stxAmount}
-              rewardType={rewardType}
-              enableDonation={enableDonation}
-              donationPercentage={donationPercentage}
-              sharePublicly={sharePublicly}
-            />
-          </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+          <StackingForm
+            stxAmount={stxAmount}
+            setStxAmount={setStxAmount}
+            rewardType={rewardType}
+            setRewardType={setRewardType}
+            enableDonation={enableDonation}
+            donationPercentage={donationPercentage}
+            selectedProjects={selectedProjects}
+            sharePublicly={sharePublicly}
+          />
 
-          <div className="mt-8 sm:mt-12">
-            <StatsDisplay rewardType={rewardType} />
-          </div>
+          <RewardsBreakdown
+            stxAmount={stxAmount}
+            rewardType={rewardType}
+            enableDonation={enableDonation}
+            setEnableDonation={setEnableDonation}
+            donationPercentage={donationPercentage}
+            setDonationPercentage={setDonationPercentage}
+            selectedProjects={selectedProjects}
+            setSelectedProjects={setSelectedProjects}
+            sharePublicly={sharePublicly}
+            setSharePublicly={setSharePublicly}
+          />
+        </div>
+
+        <div className="mt-8 sm:mt-12">
+          <StatsDisplay rewardType={rewardType} />
         </div>
       </div>
     </div>

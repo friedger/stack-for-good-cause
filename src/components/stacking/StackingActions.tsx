@@ -1,6 +1,8 @@
 
 import { Button } from "@/components/ui/button";
 import { StopCircle } from "lucide-react";
+import { PrimaryButton } from "../ui/primary-button";
+import { SecondaryButton } from "../ui/secondary-button";
 
 interface StackingActionsProps {
   isStacking: boolean;
@@ -13,25 +15,25 @@ const StackingActions = ({ isStacking, isProcessing, onStartStacking, onStopStac
   return (
     <>
       {!isStacking ? (
-        <Button
+        <PrimaryButton
           onClick={onStartStacking}
-          className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white"
+          className="w-full"
           size="lg"
           disabled={isProcessing}
         >
           {isProcessing ? "Processing..." : "Start Stacking"}
-        </Button>
+        </PrimaryButton>
       ) : (
-        <Button
+        <SecondaryButton
           onClick={onStopStacking}
-          className="w-full bg-red-500 hover:bg-red-600"
+          className="w-full"
           size="lg"
           variant="destructive"
           disabled={isProcessing}
         >
           <StopCircle className="h-4 w-4 mr-2" />
           {isProcessing ? "Processing..." : "Stop Stacking"}
-        </Button>
+        </SecondaryButton>
       )}
     </>
   );

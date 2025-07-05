@@ -53,11 +53,11 @@ const DonationSettings = ({
               disabled={disabled}
             />
 
-            <PublicSharingToggle
+            {/* <PublicSharingToggle
               sharePublicly={sharePublicly}
               onSharePubliclyChange={onSharePubliclyChange}
               disabled={disabled}
-            />
+            /> */}
           </>
         ) : (
           <DonationInactiveMessage />
