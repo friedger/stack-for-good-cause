@@ -19,8 +19,8 @@ type StackingState = "not-stacking" | "stacking" | "stacking-revoked" | "revoked
 interface StackingFormProps {
   stxAmount: string;
   setStxAmount: (value: string) => void;
-  rewardType: string;
-  setRewardType: (value: string) => void;
+  rewardType: "stx" | "sbtc";
+  setRewardType: (value: "stx" | "sbtc") => void;
   enableDonation: boolean;
   setEnableDonation: (value: boolean) => void;
   donationPercentage: number[];
@@ -106,16 +106,21 @@ const StackingForm = ({
       return;
     }
 
+    const projectsForDonation = selectedProjects.map(project => ({
+      addr: project.creator,
+      part: Math.floor((donationPercentage[0] / 100) * 1000) // Convert percentage to promille
+    }));
+
     setIsProcessingTx(true);
 
     try {
+      const stxAmountNumber = parseFloat(stxAmount);
       // Use Fast Pool address (this would be the actual pool contract address)
-      const poolAddress = "SPMPMA1V6P430M8C91QS1G9XJ95S59JS1TZFZ4Q4.pox4-multi-pool-v1";
-      const txId = await walletService.delegateStx(stxAmount, poolAddress);
+      const txId = await walletService.delegateStx(stxAmountNumber, rewardType, projectsForDonation);
 
       if (txId) {
         // Update stacking stats service
-        stackingStatsService.startStacking(parseFloat(stxAmount));
+        stackingStatsService.startStacking(stxAmountNumber);
         if (enableDonation) {
           stackingStatsService.updateDonationStats(selectedProjects.length);
         }

@@ -21,6 +21,8 @@ export interface WalletInfo {
   btcAddress?: string;
   isConnected: boolean;
 }
+const poolAddress =
+  "SPMPMA1V6P430M8C91QS1G9XJ95S59JS1TZFZ4Q4.pox4-multi-pool-v1";
 
 class WalletService {
   async connectWallet(): Promise<WalletInfo | null> {
@@ -63,9 +65,8 @@ class WalletService {
   }
 
   async delegateStx(
-    amount: string,
-    poolAddress: string,
-    currency: "stx" | "sbtc",
+    amount: number,
+    rewardCurrency: "stx" | "sbtc",
     projects: { addr: string; part: number }[] = []
   ): Promise<string | null> {
     try {
@@ -77,15 +78,15 @@ class WalletService {
           bufferCVFromString(
             serializeCV(
               tupleCV({
-                v: uintCV(1),
-                c: stringAsciiCV(currency),
-                p: listCV(projects.map((p) => principalCV(p.addr))),
-                r: listCV(projects.map((p) => uintCV(p.part))),
+                v: uintCV(1), // version 1
+                c: stringAsciiCV(rewardCurrency), // payout requested in "stx" or "sbtc"
+                p: listCV(projects.map((p) => principalCV(p.addr))), // list of prinicpals receiving a share of rewards
+                r: listCV(projects.map((p) => uintCV(p.part))), // list of promille for each participant
               })
             )
           ),
         ],
-      } as CallContractParams);
+      });
 
       console.log("Stacking transaction broadcast:", response.txid);
       return response.txid;
