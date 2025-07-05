@@ -1,4 +1,3 @@
-
 import { Project } from "./projectCore";
 
 export const mockProjects: Project[] = [
@@ -13,6 +12,7 @@ export const mockProjects: Project[] = [
     backers: 23,
     status: "approved",
     creator: "FastPool",
+    stxAddress: "SP2ZNPXGZ8S4GE568QSCF66PT02BZ63Y4W3Y7BHNZ",
     image:
       "https://images.unsplash.com/photo-1563209304-83decde702ce?w=400&h=250&fit=crop",
     slug: "fast-pool",
@@ -70,7 +70,8 @@ export const mockProjects: Project[] = [
     totalRaised: 1825.3,
     backers: 18,
     status: "approved",
-    creator: "EduGlobal",
+    creator: "polimartlabs",
+    stxAddress: "",
     image:
       "https://images.unsplash.com/photo-1578912084730-23a3182cdf27?w=400&h=250&fit=crop",
     slug: "smart-wallet",
@@ -105,6 +106,7 @@ export const mockProjects: Project[] = [
     backers: 31,
     status: "approved",
     creator: "Zero",
+    stxAddress: "SP2GW18TVQR75W1VT53HYGBRGKFRV5BFYNAF5SS5J", // ZeroAuthorityDAO.btc
     image:
       "https://images.unsplash.com/photo-1725383219768-aecec2f1c1d5?w=400&h=250&fit=crop",
     slug: "zero-authority-dao",
@@ -137,6 +139,7 @@ export const mockProjects: Project[] = [
     backers: 0,
     status: "pending",
     creator: "OpenCollective",
+    stxAddress: "",
     image:
       "https://images.unsplash.com/photo-1526841803814-753ac32aa9e2?w=400&h=250&fit=crop",
     slug: "tx-info",

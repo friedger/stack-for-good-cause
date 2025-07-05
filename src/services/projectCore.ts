@@ -1,4 +1,3 @@
-
 export interface Project {
   id: string;
   name: string;
@@ -8,6 +7,7 @@ export interface Project {
   backers: number;
   status: "approved" | "pending";
   creator: string;
+  stxAddress: string;
   image: string;
   slug: string;
   fullDescription?: string;

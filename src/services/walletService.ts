@@ -1,3 +1,4 @@
+import { hexToBytes } from "@stacks/common";
 import {
   connect,
   disconnect,
@@ -5,15 +6,14 @@ import {
   isConnected,
   request,
 } from "@stacks/connect";
-import { CallContractParams } from "@stacks/connect/dist/types/methods";
 import {
-  bufferCVFromString,
   listCV,
   principalCV,
   serializeCV,
   stringAsciiCV,
   tupleCV,
   uintCV,
+  bufferCV,
 } from "@stacks/transactions";
 
 export interface WalletInfo {
@@ -75,14 +75,16 @@ class WalletService {
         functionName: "delegate-stx",
         functionArgs: [
           uintCV(amount),
-          bufferCVFromString(
-            serializeCV(
-              tupleCV({
-                v: uintCV(1), // version 1
-                c: stringAsciiCV(rewardCurrency), // payout requested in "stx" or "sbtc"
-                p: listCV(projects.map((p) => principalCV(p.addr))), // list of prinicpals receiving a share of rewards
-                r: listCV(projects.map((p) => uintCV(p.part))), // list of promille for each participant
-              })
+          bufferCV(
+            hexToBytes(
+              serializeCV(
+                tupleCV({
+                  v: uintCV(1), // version 1
+                  c: stringAsciiCV(rewardCurrency), // payout requested in "stx" or "sbtc"
+                  p: listCV(projects.map((p) => principalCV(p.addr))), // list of prinicpals receiving a share of rewards
+                  r: listCV(projects.map((p) => uintCV(p.part))), // list of promille for each participant
+                })
+              )
             )
           ),
         ],
