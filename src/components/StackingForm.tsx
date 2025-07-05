@@ -13,8 +13,8 @@ import { useProjectInitialization } from "@/hooks/useProjectInitialization";
 interface StackingFormProps {
   stxAmount: string;
   setStxAmount: (value: string) => void;
-  rewardType: string;
-  setRewardType: (value: string) => void;
+  rewardType: "stx" | "sbtc";
+  setRewardType: (value: "stx" | "sbtc") => void;
   enableDonation: boolean;
   setEnableDonation: (value: boolean) => void;
   donationPercentage: number[];
