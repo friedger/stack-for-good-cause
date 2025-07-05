@@ -1,12 +1,34 @@
 
-import { UserStats } from "@/services/stackingService";
+import { useState, useEffect } from "react";
+import { stackingStatsService, type StackingStats } from "@/services/stackingStatsService";
 import CtaSection from "@/components/shared/CtaSection";
 
-interface ImpactSummaryProps {
-  userStats: UserStats;
-}
+const ImpactSummary = () => {
+  const [stackingStats, setStackingStats] = useState<StackingStats>({
+    currentlyStacked: 0,
+    totalEarned: 0,
+    totalDonated: 0,
+    activeStacks: 0,
+    supportedProjects: 0,
+    apr: 8.5
+  });
 
-const ImpactSummary = ({ userStats }: ImpactSummaryProps) => {
+  useEffect(() => {
+    const updateStats = () => {
+      setStackingStats(stackingStatsService.getCurrentStats());
+    };
+
+    updateStats();
+    // Update stats every 5 seconds to reflect changes
+    const interval = setInterval(updateStats, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const donationPercentage = stackingStats.totalEarned > 0 
+    ? ((stackingStats.totalDonated / stackingStats.totalEarned) * 100).toFixed(0)
+    : "0";
+
   return (
     <div className="mt-6 sm:mt-8">
       <CtaSection
@@ -16,9 +38,9 @@ const ImpactSummary = ({ userStats }: ImpactSummaryProps) => {
         buttonHref="/stacking"
         gradient="from-pink-500/10 to-orange-500/10 border-pink-500/20"
         stats={[
-          { value: "8.5%", label: "Average APY Earned", color: "text-green-400" },
-          { value: "30%", label: "Of Earnings Donated", color: "text-pink-400" },
-          { value: userStats.supportedProjects.toString(), label: "Projects Supported", color: "text-orange-400" }
+          { value: `${stackingStats.apr}%`, label: "Average APY Earned", color: "text-green-400" },
+          { value: `${donationPercentage}%`, label: "Of Earnings Donated", color: "text-pink-400" },
+          { value: stackingStats.supportedProjects.toString(), label: "Projects Supported", color: "text-orange-400" }
         ]}
       />
     </div>

@@ -11,19 +11,11 @@ import FastPoolName from "@/components/shared/FastPoolName";
 import Header from "@/components/Header";
 
 const Dashboard = () => {
-  const [userStats, setUserStats] = useState<UserStats>({
-    totalStacked: 0,
-    totalEarned: 0,
-    totalDonated: 0,
-    activeStacks: 0,
-    supportedProjects: 0
-  });
   const [stackingHistory, setStackingHistory] = useState<StackingData[]>([]);
   const [supportedProjects, setSupportedProjects] = useState<SupportedProject[]>([]);
 
   useEffect(() => {
     // Load data from services
-    setUserStats(stackingService.getUserStats());
     setStackingHistory(stackingService.getStackingHistory());
     setSupportedProjects(stackingService.getSupportedProjects());
   }, []);
@@ -38,14 +30,14 @@ const Dashboard = () => {
             Your Dashboard
           </h1>
 
-          <StatsOverview userStats={userStats} />
+          <StatsOverview />
 
           <div className="grid lg:grid-cols-2 gap-8">
             <StackingActivity stackingHistory={stackingHistory} />
-            <SupportedProjectsList supportedProjects={supportedProjects} userStats={userStats} />
+            <SupportedProjectsList supportedProjects={supportedProjects} />
           </div>
 
-          <ImpactSummary userStats={userStats} />
+          <ImpactSummary />
         </div>
       </div>
     </div>

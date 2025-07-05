@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { SecondaryButton } from "@/components/ui/secondary-button";
 import { Wallet, Menu, X, User, LogOut } from "lucide-react";
@@ -13,7 +13,8 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import Logo from "./Logo";
-import { disconnect, isConnected } from "@stacks/connect";
+import { walletService, WalletInfo } from "@/services/walletService";
+import { useToast } from "@/hooks/use-toast";
 
 interface HeaderProps {
   showCreateProject?: boolean;
@@ -22,22 +23,57 @@ interface HeaderProps {
 
 const Header = ({ showCreateProject, onCreateProject }: HeaderProps) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [walletInfo, setWalletInfo] = useState<WalletInfo | null>(null);
+  const { toast } = useToast();
 
-  // Mock user data - in a real app this would come from auth context
-  const user = {
-    stacksAddress: "SP2H8PY27SEZ03MWRK5XABF2CVZDE6HQMGHCCRX9P",
-    nostrAddress: "npub1xyz...abc123",
-    profileImage: null, // Would come from Nostr profile
-    name: "Stacker"
+  useEffect(() => {
+    // Check wallet connection status on component mount
+    const checkWalletConnection = () => {
+      const info = walletService.getWalletInfo();
+      setWalletInfo(info);
+    };
+
+    checkWalletConnection();
+    // Check periodically for wallet connection changes
+    const interval = setInterval(checkWalletConnection, 1000);
+    
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleConnectWallet = async () => {
+    const info = await walletService.connectWallet();
+    if (info) {
+      setWalletInfo(info);
+      toast({
+        title: "Wallet Connected",
+        description: `Connected to ${info.stxAddress.slice(0, 8)}...${info.stxAddress.slice(-4)}`,
+      });
+    } else {
+      toast({
+        title: "Connection Failed",
+        description: "Failed to connect wallet. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleLogout = () => {
-    disconnect();
+    walletService.disconnectWallet();
+    setWalletInfo(null);
+    toast({
+      title: "Wallet Disconnected",
+      description: "Your wallet has been disconnected.",
+    });
   };
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
+
+  const isConnected = walletInfo?.isConnected || false;
+  const shortAddress = walletInfo?.stxAddress 
+    ? `${walletInfo.stxAddress.slice(0, 6)}...${walletInfo.stxAddress.slice(-4)}`
+    : '';
 
   return (
     <nav className="container mx-auto px-4 sm:px-6 py-4">
@@ -46,7 +82,6 @@ const Header = ({ showCreateProject, onCreateProject }: HeaderProps) => {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center space-x-6">
-
           <Link to="/stacking" className="text-white hover:text-orange-400 transition-colors">
             Stacking
           </Link>
@@ -63,12 +98,12 @@ const Header = ({ showCreateProject, onCreateProject }: HeaderProps) => {
             </SecondaryButton>
           )}
 
-          {isConnected() ?
+          {isConnected ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="h-10 w-10 rounded-full p-0">
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src={user.profileImage || undefined} />
+                    <AvatarImage src={undefined} />
                     <AvatarFallback className="bg-orange-500 text-white">
                       <User className="h-4 w-4" />
                     </AvatarFallback>
@@ -77,20 +112,22 @@ const Header = ({ showCreateProject, onCreateProject }: HeaderProps) => {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-80 bg-gray-900 border-gray-700 text-white">
                 <div className="p-4 space-y-2">
-                  <div className="text-sm font-medium">{user.name}</div>
+                  <div className="text-sm font-medium">Connected Wallet</div>
                   <div className="text-xs text-gray-400">
                     <div className="mb-1">
                       <span className="font-medium">Stacks:</span>
                       <div className="font-mono text-xs break-all">
-                        {user.stacksAddress}
+                        {walletInfo?.stxAddress}
                       </div>
                     </div>
-                    <div>
-                      <span className="font-medium">Nostr:</span>
-                      <div className="font-mono text-xs">
-                        {user.nostrAddress}
+                    {walletInfo?.btcAddress && (
+                      <div>
+                        <span className="font-medium">Bitcoin:</span>
+                        <div className="font-mono text-xs break-all">
+                          {walletInfo.btcAddress}
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 </div>
                 <DropdownMenuSeparator className="bg-gray-700" />
@@ -99,15 +136,16 @@ const Header = ({ showCreateProject, onCreateProject }: HeaderProps) => {
                   className="text-red-400 hover:text-red-300 hover:bg-red-500/10 cursor-pointer"
                 >
                   <LogOut className="h-4 w-4 mr-2" />
-                  Logout
+                  Disconnect
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            : <SecondaryButton>
+          ) : (
+            <SecondaryButton onClick={handleConnectWallet}>
               <Wallet className="h-4 w-4 mr-2" />
               <span className="hidden lg:inline">Connect Wallet</span>
             </SecondaryButton>
-          }
+          )}
         </div>
 
         {/* Mobile Menu Button */}
@@ -125,7 +163,6 @@ const Header = ({ showCreateProject, onCreateProject }: HeaderProps) => {
       {isMobileMenuOpen && (
         <div className="md:hidden mt-4 pb-4 border-t border-gray-700">
           <div className="flex flex-col space-y-4 pt-4">
-
             <Link
               to="/stacking"
               className="text-white hover:text-orange-400 transition-colors px-2 py-1"
@@ -160,32 +197,34 @@ const Header = ({ showCreateProject, onCreateProject }: HeaderProps) => {
               </SecondaryButton>
             )}
 
-            {isConnected() ?
+            {isConnected ? (
               <div className="border-t border-gray-700 pt-4 mt-4">
                 <div className="flex items-center space-x-3 mb-3">
                   <Avatar className="h-10 w-10">
-                    <AvatarImage src={user.profileImage || undefined} />
+                    <AvatarImage src={undefined} />
                     <AvatarFallback className="bg-orange-500 text-white">
                       <User className="h-5 w-5" />
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium text-white">{user.name}</div>
+                    <div className="text-sm font-medium text-white">{shortAddress}</div>
                   </div>
                 </div>
                 <div className="text-xs text-gray-400 space-y-2 mb-4">
                   <div>
                     <span className="font-medium">Stacks:</span>
                     <div className="font-mono text-xs break-all">
-                      {user.stacksAddress}
+                      {walletInfo?.stxAddress}
                     </div>
                   </div>
-                  <div>
-                    <span className="font-medium">Nostr:</span>
-                    <div className="font-mono text-xs">
-                      {user.nostrAddress}
+                  {walletInfo?.btcAddress && (
+                    <div>
+                      <span className="font-medium">Bitcoin:</span>
+                      <div className="font-mono text-xs break-all">
+                        {walletInfo.btcAddress}
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
                 <Button
                   onClick={handleLogout}
@@ -193,15 +232,15 @@ const Header = ({ showCreateProject, onCreateProject }: HeaderProps) => {
                   className="text-red-400 border-red-400 hover:bg-red-500/10 w-fit"
                 >
                   <LogOut className="h-4 w-4 mr-2" />
-                  Logout
+                  Disconnect
                 </Button>
               </div>
-              :
-              <SecondaryButton className="w-fit">
+            ) : (
+              <SecondaryButton onClick={handleConnectWallet} className="w-fit">
                 <Wallet className="h-4 w-4 mr-2" />
                 Connect Wallet
               </SecondaryButton>
-            }
+            )}
           </div>
         </div>
       )}
