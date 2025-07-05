@@ -1,54 +1,29 @@
 
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { ArrowLeft, TrendingUp, Heart, Wallet, Calendar } from "lucide-react";
 import { Link } from "react-router-dom";
+import { stackingService, type UserStats, type StackingData, type SupportedProject } from "@/services/stackingService";
 
 const Dashboard = () => {
-  const userStats = {
-    totalStacked: 5000,
-    totalEarned: 425.50,
-    totalDonated: 127.65,
-    activeStacks: 2,
-    supportedProjects: 3
-  };
+  const [userStats, setUserStats] = useState<UserStats>({
+    totalStacked: 0,
+    totalEarned: 0,
+    totalDonated: 0,
+    activeStacks: 0,
+    supportedProjects: 0
+  });
+  const [stackingHistory, setStackingHistory] = useState<StackingData[]>([]);
+  const [supportedProjects, setSupportedProjects] = useState<SupportedProject[]>([]);
 
-  const stackingHistory = [
-    {
-      id: "1",
-      amount: 3000,
-      project: "Clean Water Initiative",
-      donationPercentage: 15,
-      startDate: "2024-01-10",
-      status: "active",
-      earned: 255.30,
-      donated: 76.59
-    },
-    {
-      id: "2",
-      amount: 2000,
-      project: "Education for All",
-      donationPercentage: 10,
-      startDate: "2024-01-05",
-      status: "active",
-      earned: 170.20,
-      donated: 51.06
-    }
-  ];
-
-  const supportedProjects = [
-    {
-      name: "Clean Water Initiative",
-      totalDonated: 76.59,
-      lastDonation: "2024-01-15"
-    },
-    {
-      name: "Education for All",
-      totalDonated: 51.06,
-      lastDonation: "2024-01-15"
-    }
-  ];
+  useEffect(() => {
+    // Load data from services
+    setUserStats(stackingService.getUserStats());
+    setStackingHistory(stackingService.getStackingHistory());
+    setSupportedProjects(stackingService.getSupportedProjects());
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
@@ -225,7 +200,7 @@ const Dashboard = () => {
                   <div className="text-gray-300">Of Earnings Donated</div>
                 </div>
                 <div>
-                  <div className="text-3xl font-bold text-orange-400 mb-2">2</div>
+                  <div className="text-3xl font-bold text-orange-400 mb-2">{userStats.supportedProjects}</div>
                   <div className="text-gray-300">Projects Supported</div>
                 </div>
               </div>

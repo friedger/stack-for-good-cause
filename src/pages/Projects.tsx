@@ -13,59 +13,10 @@ import { PrimaryButton } from "@/components/ui/primary-button";
 import { SecondaryButton } from "@/components/ui/secondary-button";
 import { ImageUpload } from "@/components/ui/image-upload";
 import Logo from "@/components/Logo";
+import { projectService, type CreateProjectData } from "@/services/projectService";
 
 const Projects = () => {
-  const [projects, setProjects] = useState([
-    {
-      id: "1",
-      name: "Clean Water Initiative",
-      description: "Bringing clean water to communities in developing regions through sustainable infrastructure projects.",
-      category: "Environment",
-      totalRaised: 2450.75,
-      backers: 23,
-      status: "approved",
-      creator: "WaterForAll",
-      image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=250&fit=crop",
-      slug: "clean-water-initiative"
-    },
-    {
-      id: "2",
-      name: "Education for All",
-      description: "Supporting education in underserved areas by funding schools, books, and teacher training programs.",
-      category: "Education",
-      totalRaised: 1825.30,
-      backers: 18,
-      status: "approved",
-      creator: "EduGlobal",
-      image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400&h=250&fit=crop",
-      slug: "education-for-all"
-    },
-    {
-      id: "3",
-      name: "Renewable Energy Hub",
-      description: "Funding solar panel installations and wind energy projects in rural communities.",
-      category: "Energy",
-      totalRaised: 3200.45,
-      backers: 31,
-      status: "approved",
-      creator: "GreenFuture",
-      image: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=250&fit=crop",
-      slug: "renewable-energy-hub"
-    },
-    {
-      id: "4",
-      name: "Tech Skills Training",
-      description: "Providing coding bootcamps and digital literacy programs for unemployed youth.",
-      category: "Technology",
-      totalRaised: 0,
-      backers: 0,
-      status: "pending",
-      creator: "CodeBridge",
-      image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=250&fit=crop",
-      slug: "tech-skills-training"
-    }
-  ]);
-
+  const [projects, setProjects] = useState(projectService.getAllProjects());
   const [newProject, setNewProject] = useState({
     name: "",
     description: "",
@@ -86,19 +37,15 @@ const Projects = () => {
       return;
     }
 
-    const project = {
-      id: Date.now().toString(),
+    const createData: CreateProjectData = {
       name: newProject.name,
       description: newProject.description,
       category: newProject.category,
-      totalRaised: 0,
-      backers: 0,
-      status: "pending" as const,
-      creator: "You",
-      image: newProject.image ? URL.createObjectURL(newProject.image) : "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=250&fit=crop"
+      image: newProject.image
     };
 
-    setProjects([...projects, project]);
+    const createdProject = projectService.createProject(createData);
+    setProjects(projectService.getAllProjects());
     setNewProject({ name: "", description: "", category: "", image: null });
     setIsDialogOpen(false);
 
