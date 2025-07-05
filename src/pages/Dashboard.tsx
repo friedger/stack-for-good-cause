@@ -17,7 +17,8 @@ const Dashboard = () => {
     totalStacked: 0,
     totalEarned: 0,
     totalDonated: 0,
-    activeStacks: 0
+    activeStacks: 0,
+    supportedProjects: 0
   });
 
   useEffect(() => {
