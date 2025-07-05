@@ -62,11 +62,11 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "approved":
-        return <Badge className="bg-green-500/20 text-green-400 border-green-500/30">Approved</Badge>;
+        return <Badge className="bg-green-500/80 text-gray-600 border-green-500/30">Approved</Badge>;
       case "pending":
-        return <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">Pending Review</Badge>;
+        return <Badge className="bg-yellow-500/80 text-gray-600 border-yellow-500/30">Pending Review</Badge>;
       default:
-        return <Badge className="bg-gray-500/20 text-gray-400 border-gray-500/30">Unknown</Badge>;
+        return <Badge className="bg-gray-500/80 text-gray-200 border-gray-500/30">Unknown</Badge>;
     }
   };
 
@@ -125,8 +125,8 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
           </Link>
 
           {project.status === "approved" && (
-            <SupportButton 
-              className="w-full" 
+            <SupportButton
+              className="w-full"
               size="sm"
               onClick={handleSupportToggle}
             >

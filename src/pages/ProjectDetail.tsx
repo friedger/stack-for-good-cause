@@ -9,6 +9,7 @@ import ProjectUpdates from "@/components/project-detail/ProjectUpdates";
 import RecentBackers from "@/components/project-detail/RecentBackers";
 import ProjectStats from "@/components/project-detail/ProjectStats";
 import { projectService, type Project } from "@/services/projectService";
+import Header from "@/components/Header";
 
 const ProjectDetail = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -64,23 +65,7 @@ const ProjectDetail = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
-      {/* Navigation */}
-      <nav className="container mx-auto px-6 py-4">
-        <div className="flex items-center justify-between">
-          <Logo />
-          <div className="flex items-center space-x-6">
-            <Link to="/app" className="text-white hover:text-orange-400 transition-colors">
-              App
-            </Link>
-            <Link to="/projects" className="text-white hover:text-orange-400 transition-colors">
-              Projects
-            </Link>
-            <Link to="/dashboard" className="text-white hover:text-orange-400 transition-colors">
-              Dashboard
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <Header />
 
       <div className="container mx-auto px-6 py-12">
         <div className="max-w-6xl mx-auto">
