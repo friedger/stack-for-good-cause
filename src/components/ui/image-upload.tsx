@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Upload, X, Image as ImageIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { SecondaryButton } from './secondary-button';
 
 interface ImageUploadProps {
   onImageSelect: (file: File | null) => void;
@@ -42,7 +43,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onImageSelect, currentImage, 
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    
+
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       handleFile(e.dataTransfer.files[0]);
     }
@@ -118,19 +119,17 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onImageSelect, currentImage, 
               <p className="text-sm">Drop an image here, or click to select</p>
               <p className="text-xs text-gray-500 mt-1">You can also paste an image from your clipboard</p>
             </div>
-            <Button
+            <SecondaryButton
               type="button"
-              variant="outline"
               size="sm"
               onClick={() => fileInputRef.current?.click()}
-              className="text-gray-300 border-gray-600 hover:bg-gray-700"
             >
               <Upload className="h-4 w-4 mr-2" />
               Choose File
-            </Button>
+            </SecondaryButton>
           </div>
         )}
-        
+
         <Input
           ref={fileInputRef}
           type="file"

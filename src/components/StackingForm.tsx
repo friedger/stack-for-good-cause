@@ -12,6 +12,7 @@ import { Project, projectService } from "@/services/projectService";
 import { nostrService } from "@/services/nostrService";
 import RewardTypeSelector from "./stacking/RewardTypeSelector";
 import ProjectSelectionModal from "./stacking/ProjectSelectionModal";
+import { SecondaryButton } from "./ui/secondary-button";
 
 type StackingState = "not-stacking" | "stacking" | "stacking-revoked" | "revoked-not-stacking";
 
@@ -68,10 +69,10 @@ const StackingForm = ({
     }
 
     const rewardText = rewardType === "sbtc" ? "sBTC" : "STX";
-    const donationText = enableDonation 
-      ? ` with ${donationPercentage[0]}% donated to ${selectedProjects.length} project${selectedProjects.length !== 1 ? 's' : ''}` 
+    const donationText = enableDonation
+      ? ` with ${donationPercentage[0]}% donated to ${selectedProjects.length} project${selectedProjects.length !== 1 ? 's' : ''}`
       : "";
-    
+
     // Share impact on Nostr if enabled and donating to projects
     if (sharePublicly && enableDonation && selectedProjects.length > 0) {
       try {
@@ -184,7 +185,7 @@ const StackingForm = ({
 
               <div>
                 <Label className="text-white mb-2 block">Selected Projects ({selectedProjects.length}/5)</Label>
-                
+
                 {selectedProjects.length > 0 && (
                   <div className="space-y-2 mb-3">
                     {selectedProjects.map((project) => (
@@ -219,15 +220,14 @@ const StackingForm = ({
                   </div>
                 )}
 
-                <Button
-                  variant="outline"
+                <SecondaryButton
                   onClick={() => setShowProjectModal(true)}
-                  className="w-full bg-white/5 border-white/20 text-white hover:bg-white/10"
+                  className="w-full"
                   disabled={selectedProjects.length >= 5 || isStacking}
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   {selectedProjects.length === 0 ? 'Select Projects' : 'Add More Projects'}
-                </Button>
+                </SecondaryButton>
               </div>
 
               <div className="flex items-center justify-between">
@@ -247,8 +247,8 @@ const StackingForm = ({
                     <Heart className="h-8 w-8 text-purple-400" />
                   </div>
                   <div>
-                    <h3 className="text-white font-semibold mb-2">Keep All Your Rewards</h3>
-                    <p className="text-gray-300 text-sm mb-4">
+                    <h3 className="text-gray-700 font-semibold mb-2">Keep All Your Rewards</h3>
+                    <p className="text-gray-600 text-sm mb-4">
                       You've chosen to keep 100% of your stacking rewards. You can always change this later!
                     </p>
                     <div className="flex items-center justify-center space-x-2 text-sm text-purple-400">
@@ -263,7 +263,7 @@ const StackingForm = ({
         </div>
 
         {!isStacking ? (
-          <Button 
+          <Button
             onClick={handleStack}
             className="w-full bg-orange-500 hover:bg-orange-600"
             size="lg"
@@ -271,7 +271,7 @@ const StackingForm = ({
             Start Stacking
           </Button>
         ) : (
-          <Button 
+          <Button
             onClick={handleStopStacking}
             className="w-full bg-red-500 hover:bg-red-600"
             size="lg"

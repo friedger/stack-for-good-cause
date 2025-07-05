@@ -13,7 +13,7 @@ const SupportButton = React.forwardRef<HTMLButtonElement, SupportButtonProps>(
       <Button
         ref={ref}
         className={cn(
-          "bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white border-0 font-medium transition-all duration-200 shadow-lg hover:shadow-xl",
+          "bg-pink-500 hover:bg-pink-600 text-white border-0 font-medium transition-all duration-200 shadow-lg hover:shadow-xl",
           className
         )}
         {...props}

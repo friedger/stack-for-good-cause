@@ -6,30 +6,13 @@ import { PrimaryButton } from "@/components/ui/primary-button";
 import { SecondaryButton } from "@/components/ui/secondary-button";
 import Logo from "@/components/Logo";
 import CtaSection from "@/components/shared/CtaSection";
+import Header from "@/components/Header";
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
       {/* Navigation */}
-      <nav className="container mx-auto px-6 py-4">
-        <div className="flex items-center justify-between">
-          <Logo />
-          <div className="flex items-center space-x-6">
-            <Link to="/stacking" className="text-white hover:text-orange-400 transition-colors">
-              Stacking
-            </Link>
-            <Link to="/projects" className="text-white hover:text-orange-400 transition-colors">
-              Projects
-            </Link>
-            <Link to="/dashboard" className="text-white hover:text-orange-400 transition-colors">
-              Dashboard
-            </Link>
-            <PrimaryButton asChild>
-              <Link to="/stacking">Get Started</Link>
-            </PrimaryButton>
-          </div>
-        </div>
-      </nav>
+      <Header />
 
       {/* Hero Section */}
       <section className="container mx-auto px-6 py-20 text-center">
@@ -72,7 +55,7 @@ const Index = () => {
             <CardContent>
               <p className="text-gray-300">
                 Choose to receive your stacking rewards in STX or sBTC. Fast Pool technology
-                with no lock-up periods and daily distributions.
+                with transparency and minimized trust.
               </p>
             </CardContent>
           </Card>
@@ -85,7 +68,7 @@ const Index = () => {
             <CardContent>
               <p className="text-gray-300">
                 Decide if and how much you want to donate to meaningful projects.
-                Your stacking, your choice, your impact.
+                Your yield, your choice, your impact.
               </p>
             </CardContent>
           </Card>
@@ -138,7 +121,7 @@ const Index = () => {
             </CardHeader>
             <CardContent>
               <p className="text-gray-300">
-                Share your contributions on social media with beautiful impact cards.
+                Share your contributions on Nostr.
                 Inspire your network and grow the movement of crypto for good.
               </p>
             </CardContent>
@@ -169,9 +152,9 @@ const Index = () => {
         <CtaSection
           title="Ready to Stack Your Way?"
           description="Join Fast Pool today and experience stacking on your terms. Choose your rewards, decide your impact, and be part of a community doing good together."
-          buttonText="Launch Fast Pool"
+          buttonText="Start Stacking"
           buttonHref="/stacking"
-          buttonIcon={<Zap className="ml-2 h-5 w-5" />}
+          buttonIcon={<ArrowRight className="ml-2 h-5 w-5" />}
         />
       </section>
 

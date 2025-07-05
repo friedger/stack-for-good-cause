@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, Check, X, Users, TrendingUp, Heart, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import FastPoolName from "@/components/shared/FastPoolName";
 
 const Admin = () => {
   const [pendingProjects, setPendingProjects] = useState([
@@ -87,7 +88,7 @@ const Admin = () => {
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center text-white hover:text-orange-400 transition-colors">
             <ArrowLeft className="h-5 w-5 mr-2" />
-            <span className="text-2xl font-bold">Stack<span className="text-orange-400">Give</span></span>
+            <FastPoolName />
           </Link>
           <div className="flex items-center space-x-6">
             <Badge className="bg-red-500/20 text-red-400 border-red-500/30">
@@ -103,7 +104,7 @@ const Admin = () => {
           <h1 className="text-4xl font-bold text-white mb-8 text-center">
             Admin Dashboard
           </h1>
-          
+
           {/* Stats Overview */}
           <div className="grid md:grid-cols-4 gap-6 mb-8">
             <Card className="bg-white/10 backdrop-blur-sm border-white/20">
@@ -113,7 +114,7 @@ const Admin = () => {
                 <div className="text-gray-300 text-sm">Total STX Raised</div>
               </CardContent>
             </Card>
-            
+
             <Card className="bg-white/10 backdrop-blur-sm border-white/20">
               <CardContent className="p-6 text-center">
                 <Users className="h-8 w-8 text-blue-400 mx-auto mb-2" />
@@ -121,7 +122,7 @@ const Admin = () => {
                 <div className="text-gray-300 text-sm">Total Backers</div>
               </CardContent>
             </Card>
-            
+
             <Card className="bg-white/10 backdrop-blur-sm border-white/20">
               <CardContent className="p-6 text-center">
                 <Heart className="h-8 w-8 text-pink-400 mx-auto mb-2" />
@@ -129,7 +130,7 @@ const Admin = () => {
                 <div className="text-gray-300 text-sm">Active Projects</div>
               </CardContent>
             </Card>
-            
+
             <Card className="bg-white/10 backdrop-blur-sm border-white/20">
               <CardContent className="p-6 text-center">
                 <Shield className="h-8 w-8 text-orange-400 mx-auto mb-2" />
@@ -148,7 +149,7 @@ const Admin = () => {
                 Approved Projects ({approvedProjects.length})
               </TabsTrigger>
             </TabsList>
-            
+
             <TabsContent value="pending" className="mt-6">
               <div className="space-y-6">
                 {pendingProjects.map((project) => (
@@ -170,11 +171,11 @@ const Admin = () => {
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <p className="text-gray-300">{project.description}</p>
-                      
+
                       <div className="text-sm text-gray-400">
                         <strong>Contact:</strong> {project.email}
                       </div>
-                      
+
                       <div className="flex space-x-3">
                         <Button
                           onClick={() => handleApproveProject(project.id)}
@@ -195,7 +196,7 @@ const Admin = () => {
                     </CardContent>
                   </Card>
                 ))}
-                
+
                 {pendingProjects.length === 0 && (
                   <Card className="bg-white/10 backdrop-blur-sm border-white/20">
                     <CardContent className="py-16 text-center">
@@ -207,7 +208,7 @@ const Admin = () => {
                 )}
               </div>
             </TabsContent>
-            
+
             <TabsContent value="approved" className="mt-6">
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {approvedProjects.map((project) => (

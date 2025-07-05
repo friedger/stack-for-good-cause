@@ -26,7 +26,7 @@ const StatDisplay = ({ stat }: { stat: StatItem }) => (
     <div className={`text-2xl sm:text-3xl font-bold ${stat.color} mb-2`}>
       {stat.value}
     </div>
-    <div className="text-gray-300 text-sm sm:text-base">
+    <div className="text-gray-600 text-sm sm:text-base">
       {stat.label}
     </div>
   </div>
@@ -40,29 +40,29 @@ const StatsGrid = ({ stats }: { stats: StatItem[] }) => (
   </div>
 );
 
-const CtaSection = ({ 
-  title, 
-  description, 
-  buttonText, 
-  buttonHref, 
+const CtaSection = ({
+  title,
+  description,
+  buttonText,
+  buttonHref,
   buttonIcon,
   gradient = DEFAULT_GRADIENT,
-  stats 
+  stats
 }: CtaSectionProps) => {
   return (
     <Card className={`bg-gradient-to-r ${gradient} backdrop-blur-sm`}>
       <CardContent className="py-12 sm:py-16 px-4 sm:px-6">
         <div className="text-center">
-          <h3 className="text-2xl sm:text-3xl font-bold text-white mb-4">
+          <h3 className="text-2xl sm:text-3xl font-bold text-gray-700 mb-4">
             {title}
           </h3>
-          
-          <p className="text-gray-100 mb-6 sm:mb-8 max-w-2xl mx-auto font-medium text-sm sm:text-base">
+
+          <p className="text-gray-600 mb-6 sm:mb-8 max-w-2xl mx-auto font-medium text-sm sm:text-base">
             {description}
           </p>
-          
+
           {stats && <StatsGrid stats={stats} />}
-          
+
           <PrimaryButton asChild size="lg" className="text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6">
             <a href={buttonHref}>
               {buttonText} {buttonIcon}

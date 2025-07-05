@@ -46,11 +46,12 @@ const Header = ({ showCreateProject, onCreateProject }: HeaderProps) => {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center space-x-6">
-          <Link to="/projects" className="text-white hover:text-orange-400 transition-colors">
-            Projects
-          </Link>
+
           <Link to="/stacking" className="text-white hover:text-orange-400 transition-colors">
             Stacking
+          </Link>
+          <Link to="/projects" className="text-white hover:text-orange-400 transition-colors">
+            Projects
           </Link>
           <Link to="/dashboard" className="text-white hover:text-orange-400 transition-colors">
             Dashboard
@@ -124,19 +125,20 @@ const Header = ({ showCreateProject, onCreateProject }: HeaderProps) => {
       {isMobileMenuOpen && (
         <div className="md:hidden mt-4 pb-4 border-t border-gray-700">
           <div className="flex flex-col space-y-4 pt-4">
-            <Link
-              to="/projects"
-              className="text-white hover:text-orange-400 transition-colors px-2 py-1"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Projects
-            </Link>
+
             <Link
               to="/stacking"
               className="text-white hover:text-orange-400 transition-colors px-2 py-1"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Stacking
+            </Link>
+            <Link
+              to="/projects"
+              className="text-white hover:text-orange-400 transition-colors px-2 py-1"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Projects
             </Link>
             <Link
               to="/dashboard"

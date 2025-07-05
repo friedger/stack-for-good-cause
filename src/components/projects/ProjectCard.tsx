@@ -6,6 +6,7 @@ import { SecondaryButton } from "@/components/ui/secondary-button";
 import { DollarSign, Users, Eye, Heart, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Project } from "@/services/projectService";
+import { SupportButton } from "../ui/support-button";
 
 interface ProjectCardProps {
   project: Project;
@@ -43,7 +44,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
       </CardHeader>
       <CardContent className="space-y-4 flex-grow flex flex-col">
         <p className="text-gray-300 text-sm flex-grow">{project.description}</p>
-        
+
         <div className="space-y-3">
           <div className="flex justify-between items-center text-sm">
             <span className="text-gray-400 flex items-center">
@@ -54,7 +55,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
               {project.totalRaised.toFixed(2)} STX
             </span>
           </div>
-          
+
           <div className="flex justify-between items-center text-sm">
             <span className="text-gray-400 flex items-center">
               <Users className="h-4 w-4 mr-1" />
@@ -62,7 +63,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
             </span>
             <span className="text-blue-400 font-semibold">{project.backers}</span>
           </div>
-          
+
           <div className="flex justify-between items-center text-sm">
             <span className="text-gray-400">Creator</span>
             <span className="text-orange-400 font-semibold">{project.creator}</span>
@@ -78,10 +79,10 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
           </Link>
 
           {project.status === "approved" && (
-            <PrimaryButton className="w-full bg-pink-500 hover:bg-pink-600" size="sm">
+            <SupportButton className="w-full" size="sm">
               <Heart className="h-4 w-4 mr-2" />
               Support This Project
-            </PrimaryButton>
+            </SupportButton>
           )}
 
           {project.status === "pending" && (
