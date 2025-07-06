@@ -24,7 +24,7 @@ const ProjectContributionCard = ({
   const isFastPool = project.name === "Fast Pool";
 
   return (
-    <Card className={`bg-white/5 backdrop-blur-sm border-white/10 hover:bg-white/10 transition-all duration-200 ${isFastPool ? 'ring-1 ring-orange-500/30' : ''}`}>
+    <Card className={`bg-white/5 backdrop-blur-sm border-white/10 transition-all duration-200 ${isFastPool ? 'ring-1 ring-orange-500/30' : ''}`}>
       <CardContent className="p-3">
         <div className="flex items-start justify-between gap-2">
           <div className="flex items-start gap-2 flex-1 min-w-0">

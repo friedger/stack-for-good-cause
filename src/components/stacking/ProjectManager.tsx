@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Project } from "@/services/projectService";
@@ -45,17 +44,16 @@ const ProjectManager = ({
     if (!stxAmount || !contributionPercentage) return { percentage: 0, amount: "0" };
     
     const estimatedYield = parseFloat(stxAmount) * 0.085;
-    const totalContribution = (estimatedYield * contributionPercentage) / 100;
+    const fastPoolPercentage = 4.7;
     
     if (project.name === "Fast Pool") {
-      const fastPoolPercentage = 4.7;
       const fastPoolAmount = (estimatedYield * fastPoolPercentage) / 100;
       return { percentage: fastPoolPercentage, amount: fastPoolAmount.toFixed(4) };
     }
     
     // Other projects share the remaining percentage equally
     const otherProjects = selectedProjects.filter(p => p.name !== "Fast Pool");
-    const remainingPercentage = contributionPercentage - 4.7;
+    const remainingPercentage = contributionPercentage - fastPoolPercentage;
     const percentagePerProject = otherProjects.length > 0 ? remainingPercentage / otherProjects.length : 0;
     const amountPerProject = (estimatedYield * percentagePerProject) / 100;
     

@@ -54,6 +54,8 @@ const RewardsBreakdown = ({
           sharePublicly={sharePublicly}
           onSharePubliclyChange={setSharePublicly}
           disabled={isStacking}
+          stxAmount={stxAmount}
+          rewardType={rewardType}
         />
       </CardContent>
     </Card>

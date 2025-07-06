@@ -16,6 +16,8 @@ interface DonationSettingsProps {
   sharePublicly: boolean;
   onSharePubliclyChange: (share: boolean) => void;
   disabled?: boolean;
+  stxAmount?: string;
+  rewardType?: string;
 }
 
 const DonationSettings = ({
@@ -27,7 +29,9 @@ const DonationSettings = ({
   onSelectedProjectsChange,
   sharePublicly,
   onSharePubliclyChange,
-  disabled
+  disabled,
+  stxAmount,
+  rewardType
 }: DonationSettingsProps) => {
   return (
     <div className="space-y-6">
@@ -50,6 +54,9 @@ const DonationSettings = ({
               selectedProjects={selectedProjects}
               onSelectedProjectsChange={onSelectedProjectsChange}
               disabled={disabled}
+              stxAmount={stxAmount}
+              contributionPercentage={donationPercentage[0]}
+              rewardType={rewardType}
             />
           </>
         ) : (
