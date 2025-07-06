@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -105,10 +106,10 @@ const ProjectManager = ({
       )}
 
       <ProjectSelectionModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        open={isModalOpen}
+        onOpenChange={setIsModalOpen}
         selectedProjects={selectedProjects}
-        onProjectsSelected={handleProjectsSelected}
+        onProjectsChange={handleProjectsSelected}
       />
     </div>
   );

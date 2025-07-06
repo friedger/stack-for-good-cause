@@ -29,6 +29,7 @@ class ProjectService {
       backers: 0,
       status: "pending",
       creator: "You",
+      stxAddress: "SP1HJBQZK2FKSC9W8JZX6VXNW3KDF2GDG5GR6XQG1", // Default STX address for new projects
       image: projectData.image
         ? URL.createObjectURL(projectData.image)
         : "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=250&fit=crop",

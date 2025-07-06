@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import StackingForm from "@/components/StackingForm";
 import RewardsBreakdown from "@/components/RewardsBreakdown";
 import StatsDisplay from "@/components/StatsDisplay";
+import ProjectCard from "@/components/projects/ProjectCard";
 import { Project } from "@/services/projectService";
 
 const Stacking = () => {
