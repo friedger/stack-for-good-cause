@@ -1,11 +1,12 @@
 
 import { useState } from "react";
-import { Heart } from "lucide-react";
+import { Heart, Plus } from "lucide-react";
 import Header from "@/components/Header";
 import ProjectCard from "@/components/projects/ProjectCard";
 import CreateProjectDialog from "@/components/projects/CreateProjectDialog";
 import { projectService } from "@/services/projectService";
 import { PrimaryButton } from "@/components/ui/primary-button";
+import { Card, CardContent } from "@/components/ui/card";
 
 const Projects = () => {
   const [projects, setProjects] = useState(projectService.getAllProjects());
@@ -32,6 +33,30 @@ const Projects = () => {
             {projects.map((project) => (
               <ProjectCard key={project.id} project={project} />
             ))}
+            
+            {/* Empty Project Card */}
+            <Card 
+              className="bg-white/5 backdrop-blur-sm border-white/20 hover:bg-white/10 transition-all duration-300 cursor-pointer border-dashed"
+              onClick={handleOpenCreateDialog}
+            >
+              <CardContent className="p-6 h-full flex flex-col items-center justify-center text-center space-y-4 min-h-[400px]">
+                <div className="w-16 h-16 rounded-full bg-gradient-to-r from-blue-600/20 to-indigo-700/20 flex items-center justify-center">
+                  <Plus className="h-8 w-8 text-blue-400" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-white mb-2">
+                    Suggest a New Project
+                  </h3>
+                  <p className="text-gray-400 mb-4">
+                    Have an idea for a project that could make a difference? Share it with the community!
+                  </p>
+                  <PrimaryButton size="sm">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Create Project
+                  </PrimaryButton>
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
           {projects.length === 0 && (
@@ -54,7 +79,7 @@ const Projects = () => {
         onOpenChange={setIsCreateDialogOpen}
         onProjectCreated={handleProjectCreated}
       />
-    </ >
+    </>
   );
 };
 
