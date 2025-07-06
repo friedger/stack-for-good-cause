@@ -1,15 +1,13 @@
 
-import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
-import { SecondaryButton } from "@/components/ui/secondary-button";
-import Logo from "@/components/Logo";
 import ProjectHeader from "@/components/project-detail/ProjectHeader";
+import ProjectStats from "@/components/project-detail/ProjectStats";
 import ProjectUpdates from "@/components/project-detail/ProjectUpdates";
 import RecentBackers from "@/components/project-detail/RecentBackers";
-import ProjectStats from "@/components/project-detail/ProjectStats";
+import { SecondaryButton } from "@/components/ui/secondary-button";
 import { projectService, type Project } from "@/services/projectService";
-import Header from "@/components/Header";
+import { ArrowLeft } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 
 const ProjectDetail = () => {
   const { slug } = useParams<{ slug: string }>();

@@ -7,22 +7,35 @@ import { SecondaryButton } from "../ui/secondary-button";
 interface StackingActionsProps {
   isStacking: boolean;
   isProcessing: boolean;
+  onAllowFastPool: () => void;
   onStartStacking: () => void;
   onStopStacking: () => void;
+  conditionsAccepted?: boolean;
 }
 
-const StackingActions = ({ isStacking, isProcessing, onStartStacking, onStopStacking }: StackingActionsProps) => {
+const StackingActions = ({ isStacking, isProcessing, onAllowFastPool, onStartStacking, onStopStacking, conditionsAccepted = true }: StackingActionsProps) => {
   return (
     <>
       {!isStacking ? (
-        <PrimaryButton
-          onClick={onStartStacking}
-          className="w-full"
-          size="lg"
-          disabled={isProcessing}
-        >
-          {isProcessing ? "Processing..." : "Start Stacking"}
-        </PrimaryButton>
+        <>
+          <PrimaryButton
+            onClick={onAllowFastPool}
+            className="w-full"
+            size="lg"
+            disabled={isProcessing || !conditionsAccepted}
+          >
+            {isProcessing ? "Processing..." : "Allow Fast Pool"}
+          </PrimaryButton>
+
+          <PrimaryButton
+            onClick={onStartStacking}
+            className="w-full"
+            size="lg"
+            disabled={isProcessing || !conditionsAccepted}
+          >
+            {isProcessing ? "Processing..." : "Start Stacking"}
+          </PrimaryButton>
+        </>
       ) : (
         <SecondaryButton
           onClick={onStopStacking}

@@ -11,7 +11,7 @@ interface DonationToggleProps {
 const DonationToggle = ({ enableDonation, onEnableDonationChange, disabled }: DonationToggleProps) => {
   return (
     <div className="flex items-center justify-between">
-      <Label className="text-foreground">Donate to Projects</Label>
+      <Label className="text-foreground">Contribute to Projects</Label>
       <Switch
         checked={enableDonation}
         onCheckedChange={onEnableDonationChange}

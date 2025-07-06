@@ -4,6 +4,7 @@ import { Project } from "@/services/projectService";
 import { Plus, Users } from "lucide-react";
 import ProjectSelectionModal from "./ProjectSelectionModal";
 import ProjectContributionCard from "./ProjectContributionCard";
+import { cartService } from "@/services/cartService";
 
 interface ProjectManagerProps {
   selectedProjects: Project[];
@@ -14,13 +15,13 @@ interface ProjectManagerProps {
   rewardType?: string;
 }
 
-const ProjectManager = ({ 
-  selectedProjects, 
-  onSelectedProjectsChange, 
+const ProjectManager = ({
+  selectedProjects,
+  onSelectedProjectsChange,
   disabled,
   stxAmount,
   contributionPercentage,
-  rewardType 
+  rewardType
 }: ProjectManagerProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -29,12 +30,41 @@ const ProjectManager = ({
     if (fastPoolProject && fastPoolProject.id === projectId) {
       return; // Don't allow removing Fast Pool
     }
-    
+
+    // Remove from cart service (localStorage)
+    cartService.removeProject(projectId);
+
+    // Update local state
     const updatedProjects = selectedProjects.filter(p => p.id !== projectId);
     onSelectedProjectsChange(updatedProjects);
   };
 
   const handleProjectsSelected = (projects: Project[]) => {
+    // Sync with cart service - add new projects and remove deselected ones
+    const currentProjectIds = selectedProjects.map(p => p.id);
+    const newProjectIds = projects.map(p => p.id);
+
+    // Remove projects that were deselected (excluding Fast Pool)
+    currentProjectIds.forEach(projectId => {
+      const project = selectedProjects.find(p => p.id === projectId);
+      if (project && project.name !== "Fast Pool" && !newProjectIds.includes(projectId)) {
+        cartService.removeProject(projectId);
+      }
+    });
+
+    // Add newly selected projects (excluding Fast Pool)
+    projects.forEach(project => {
+      if (project.name !== "Fast Pool" && !currentProjectIds.includes(project.id)) {
+        cartService.addProject({
+          id: project.id,
+          name: project.name,
+          description: project.description,
+          image: project.image,
+          totalRaised: project.totalRaised
+        });
+      }
+    });
+
     onSelectedProjectsChange(projects);
     setIsModalOpen(false);
   };
@@ -42,21 +72,21 @@ const ProjectManager = ({
   // Calculate contribution amounts for each project
   const getProjectContribution = (project: Project) => {
     if (!stxAmount || !contributionPercentage) return { percentage: 0, amount: "0" };
-    
+
     const estimatedYield = parseFloat(stxAmount) * 0.085;
     const fastPoolPercentage = 4.7;
-    
+
     if (project.name === "Fast Pool") {
       const fastPoolAmount = (estimatedYield * fastPoolPercentage) / 100;
       return { percentage: fastPoolPercentage, amount: fastPoolAmount.toFixed(4) };
     }
-    
+
     // Other projects share the remaining percentage equally
     const otherProjects = selectedProjects.filter(p => p.name !== "Fast Pool");
     const remainingPercentage = contributionPercentage - fastPoolPercentage;
     const percentagePerProject = otherProjects.length > 0 ? remainingPercentage / otherProjects.length : 0;
     const amountPerProject = (estimatedYield * percentagePerProject) / 100;
-    
+
     return { percentage: percentagePerProject, amount: amountPerProject.toFixed(4) };
   };
 
@@ -65,7 +95,7 @@ const ProjectManager = ({
       <div className="flex items-center justify-between">
         <h3 className="text-white font-medium flex items-center">
           <Users className="h-4 w-4 mr-2" />
-          Selected Projects ({selectedProjects.length})
+          Projects ({selectedProjects.length})
         </h3>
         <Button
           onClick={() => setIsModalOpen(true)}

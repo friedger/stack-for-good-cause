@@ -2,7 +2,7 @@ import { useToast } from "@/hooks/use-toast";
 import { nostrService } from "@/services/nostrService";
 import { Project } from "@/services/projectService";
 import { stackingStatsService } from "@/services/stackingStatsService";
-import { walletService } from "@/services/walletService";
+import { userRejectedRequest, walletService } from "@/services/walletService";
 import { useState } from "react";
 
 type StackingState =
@@ -16,6 +16,32 @@ export const useStackingLogic = () => {
   const [stackingState, setStackingState] =
     useState<StackingState>("not-stacking");
   const [isProcessingTx, setIsProcessingTx] = useState(false);
+
+  const allowFastPool = async () => {
+    if (!walletService.isWalletConnected()) {
+      toast({
+        title: "Wallet Not Connected",
+        description: "Please connect your wallet first.",
+        variant: "destructive",
+      });
+      return;
+    }
+    setIsProcessingTx(true);
+
+    try {
+      await walletService.allowPox4ContractCaller();
+    } catch (error) {
+      if (!userRejectedRequest(error)) {
+        toast({
+          title: "Error",
+          description: "An error occurred while allowing fast pool.",
+          variant: "destructive",
+        });
+      }
+    } finally {
+      setIsProcessingTx(false);
+    }
+  };
 
   const handleStacking = async (
     stxAmount: string,
@@ -54,13 +80,14 @@ export const useStackingLogic = () => {
     }
 
     setIsProcessingTx(true);
-
-    const projectsForDonation = selectedProjects.map((project) => ({
-      addr: project.stxAddress,
-      part: Math.floor((donationPercentage[0] / 100) * 1000), // Convert percentage to promille
-    }));
+    const projectsForDonation = enableDonation
+      ? selectedProjects.map((project) => ({
+          addr: project.stxAddress,
+          part: Math.floor((donationPercentage[0] / 100) * 1000), // Convert percentage to promille
+        }))
+      : [];
     try {
-      const stxAmountNumber = parseFloat(stxAmount);
+      const stxAmountNumber = Math.floor(parseFloat(stxAmount) * 1e6);
       const txId = await walletService.delegateStx(
         stxAmountNumber,
         rewardType,
@@ -129,11 +156,13 @@ export const useStackingLogic = () => {
         });
       }
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "An error occurred while processing the transaction.",
-        variant: "destructive",
-      });
+      if (!userRejectedRequest(error)) {
+        toast({
+          title: "Error",
+          description: "An error occurred while processing the transaction.",
+          variant: "destructive",
+        });
+      }
     } finally {
       setIsProcessingTx(false);
     }
@@ -175,11 +204,13 @@ export const useStackingLogic = () => {
         });
       }
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "An error occurred while revoking stacking.",
-        variant: "destructive",
-      });
+      if (!userRejectedRequest(error)) {
+        toast({
+          title: "Error",
+          description: "An error occurred while revoking stacking.",
+          variant: "destructive",
+        });
+      }
     } finally {
       setIsProcessingTx(false);
     }
@@ -205,6 +236,7 @@ export const useStackingLogic = () => {
     stackingState,
     isProcessingTx,
     isStacking,
+    allowFastPool,
     handleStacking,
     handleStopStacking,
     getStatusMessage,

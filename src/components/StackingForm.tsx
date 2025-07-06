@@ -3,9 +3,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useStackingLogic } from "@/hooks/useStackingLogic";
 import { Project } from "@/services/projectService";
 import { TrendingUp } from "lucide-react";
+import { useState } from "react";
 import RewardTypeSelector from "./stacking/RewardTypeSelector";
 import StackingActions from "./stacking/StackingActions";
 import StackingAmountInput from "./stacking/StackingAmountInput";
+import StackingConditions from "./stacking/StackingConditions";
+import { walletService } from "@/services/walletService";
 
 interface StackingFormProps {
   stxAmount: string;
@@ -29,15 +32,22 @@ const StackingForm = ({
   selectedProjects,
   sharePublicly,
 }: StackingFormProps) => {
+  const [conditionsAccepted, setConditionsAccepted] = useState(false);
+
   const {
     isProcessingTx,
     isStacking,
+    allowFastPool,
     handleStacking,
     handleStopStacking,
     getStatusMessage,
   } = useStackingLogic();
 
   const onStartStacking = () => {
+    if (!conditionsAccepted) {
+      return; // Don't proceed if conditions not accepted
+    }
+
     handleStacking(
       stxAmount,
       rewardType,
@@ -56,9 +66,9 @@ const StackingForm = ({
             <TrendingUp className="h-6 w-6 mr-2 text-blue-400" />
             Configure Your Stacking
           </div>
-          <div className="text-sm font-normal text-gray-300">
+          {/* <div className="text-sm font-normal text-gray-300">
             {getStatusMessage()}
-          </div>
+          </div> */}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -66,15 +76,24 @@ const StackingForm = ({
           value={stxAmount}
           onChange={setStxAmount}
           disabled={isStacking}
+          rewardType={rewardType}
         />
 
         <RewardTypeSelector value={rewardType} onChange={setRewardType} disabled={isStacking} />
 
+        <StackingConditions
+          accepted={conditionsAccepted}
+          onAcceptedChange={setConditionsAccepted}
+          disabled={isStacking}
+        />
+
         <StackingActions
           isStacking={isStacking}
           isProcessing={isProcessingTx}
+          onAllowFastPool={allowFastPool}
           onStartStacking={onStartStacking}
           onStopStacking={handleStopStacking}
+          conditionsAccepted={conditionsAccepted}
         />
       </CardContent>
     </Card>

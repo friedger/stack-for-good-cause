@@ -6,6 +6,7 @@ import {
   isConnected,
   request,
 } from "@stacks/connect";
+import { TransactionResult } from "@stacks/connect/dist/types/methods";
 import {
   listCV,
   principalCV,
@@ -64,57 +65,56 @@ class WalletService {
     };
   }
 
+  async allowPox4ContractCaller() {
+    const response = await request("stx_callContract", {
+      contract: "SP000000000000000000002Q6VF78.pox-4",
+      functionName: "allow-contract-caller",
+      functionArgs: [principalCV(poolAddress)],
+    });
+    console.log("Stacking transaction broadcast:", response.txid);
+    return response.txid;
+  }
+
   async delegateStx(
     amount: number,
     rewardCurrency: "stx" | "sbtc",
     projects: { addr: string; part: number }[] = []
   ): Promise<string | null> {
-    console.log("Delegating STX:", projects);
-    try {
-      const response = await request("stx_callContract", {
-        contract: poolAddress,
-        functionName: "delegate-stx",
-        functionArgs: [
-          uintCV(amount),
-          bufferCV(
-            hexToBytes(
-              serializeCV(
-                tupleCV({
-                  v: uintCV(1), // version 1
-                  c: stringAsciiCV(rewardCurrency), // payout requested in "stx" or "sbtc"
-                  p: listCV(projects.map((p) => principalCV(p.addr))), // list of prinicpals receiving a share of rewards
-                  r: listCV(projects.map((p) => uintCV(p.part))), // list of promille for each participant
-                })
-              )
+    const response = await request("stx_callContract", {
+      contract: poolAddress,
+      functionName: "delegate-stx",
+      functionArgs: [
+        uintCV(amount),
+        bufferCV(
+          hexToBytes(
+            serializeCV(
+              tupleCV({
+                v: uintCV(1), // version 1
+                c: stringAsciiCV(rewardCurrency), // currency - payout requested in "stx" or "sbtc"
+                p: listCV(projects.map((p) => principalCV(p.addr))), // list of prinicpals receiving a share of rewards
+                r: listCV(projects.map((p) => uintCV(p.part))), // ratio - list of promille for each participant
+              })
             )
-          ),
-        ],
-      });
+          )
+        ),
+      ],
+    });
 
-      console.log("Stacking transaction broadcast:", response.txid);
-      return response.txid;
-    } catch (error) {
-      console.error("Failed to broadcast stacking transaction:", error);
-      return null;
-    }
+    console.log("Stacking transaction broadcast:", response);
+    return response.txid;
   }
 
   async revokeStacking(): Promise<string | null> {
-    try {
-      // This would typically involve calling a contract function to revoke delegation
-      // For now, we'll simulate with a simple transfer back
-      const response = await request("stx_callContract", {
-        contract: "SP000000000000000000002Q6VF78.pox-4",
-        functionName: "revoke-delegate-stx",
-        functionArgs: [],
-      });
+    // This would typically involve calling a contract function to revoke delegation
+    // For now, we'll simulate with a simple transfer back
+    const response = await request("stx_callContract", {
+      contract: "SP000000000000000000002Q6VF78.pox-4",
+      functionName: "revoke-delegate-stx",
+      functionArgs: [],
+    });
 
-      console.log("Revoke stacking transaction broadcast:", response.txid);
-      return response.txid;
-    } catch (error) {
-      console.error("Failed to broadcast revoke transaction:", error);
-      return null;
-    }
+    console.log("Revoke stacking transaction broadcast:", response.txid);
+    return response.txid;
   }
 
   isWalletConnected(): boolean {
@@ -123,3 +123,26 @@ class WalletService {
 }
 
 export const walletService = new WalletService();
+
+export function userRejectedRequest(error: any): boolean {
+  // Check for common user rejection error codes/messages
+  if (!error) return false;
+  if (typeof error === "object") {
+    if (
+      error.code === 4001 || // User rejected request
+      error.message?.toLowerCase().includes("user rejected") ||
+      error.message?.toLowerCase().includes("user denied")
+    ) {
+      return true;
+    }
+  }
+  if (typeof error === "string") {
+    if (
+      error.toLowerCase().includes("user rejected") ||
+      error.toLowerCase().includes("user denied")
+    ) {
+      return true;
+    }
+  }
+  return false;
+}

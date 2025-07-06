@@ -19,19 +19,11 @@ export const mockProjects: Project[] = [
     updates: [
       {
         id: "1",
-        title: "First Well Completed!",
+        title: "Reward distribution to projects!",
         content:
-          "We're excited to announce that our first well has been completed in Rural Village A. The community now has access to clean water for the first time in decades!",
-        date: "2024-01-15",
+          "With Fast Pool v2, we have enabled different ways to distribute rewards. Users can now choose to contribute to a list of curated projects and communities.",
+        date: "2025-07-06",
         nostrEventId: "nostr_1704902400000_abc123def",
-      },
-      {
-        id: "2",
-        title: "Community Training Program Launched",
-        content:
-          "We've started training local community members on well maintenance and water conservation practices to ensure long-term sustainability.",
-        date: "2024-01-10",
-        nostrEventId: "nostr_1704470400000_xyz789ghi",
       },
     ],
     backersList: [
@@ -69,7 +61,7 @@ export const mockProjects: Project[] = [
     category: "Infrastructure",
     totalRaised: 1825.3,
     backers: 18,
-    status: "approved",
+    status: "pending",
     creator: "polimartlabs",
     stxAddress: "",
     image:
@@ -78,10 +70,10 @@ export const mockProjects: Project[] = [
     updates: [
       {
         id: "1",
-        title: "New School Building Progress",
+        title: "Private Beta",
         content:
-          "Construction of our third school building is 60% complete. We're on track to open by the end of next month!",
-        date: "2024-01-12",
+          "Smart Wallets are now in private beta! We are onboarding users and will soon open up for public testing.",
+        date: "2025-07-06",
       },
     ],
     backersList: [
@@ -113,10 +105,10 @@ export const mockProjects: Project[] = [
     updates: [
       {
         id: "1",
-        title: "Solar Panel Installation Complete",
+        title: "V2 in development",
         content:
-          "We've successfully installed 50 solar panels across 10 homes in the community. Families are now enjoying clean, renewable energy!",
-        date: "2024-01-18",
+          "The team is hard at work on Zero Authority DAO V2, which will introduce new features and improvements based on community feedback.",
+        date: "2025-07-06",
       },
     ],
     backersList: [
@@ -153,21 +145,13 @@ export const mockProjects: Project[] = [
     category: "Content",
     totalRaised: 3200.45,
     backers: 31,
-    status: "approved",
+    status: "pending",
     creator: "PeaceLoveMusicG and Haddy",
     stxAddress: "",
     image:
       "https://images.unsplash.com/photo-1573932847907-1d82dd790e83?w=400&h=250&fit=crop",
     slug: "deorganized-media",
-    updates: [
-      {
-        id: "1",
-        title: "Solar Panel Installation Complete",
-        content:
-          "We've successfully installed 50 solar panels across 10 homes in the community. Families are now enjoying clean, renewable energy!",
-        date: "2024-01-18",
-      },
-    ],
+    updates: [],
     backersList: [
       {
         id: "1",

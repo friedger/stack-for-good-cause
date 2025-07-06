@@ -26,7 +26,8 @@ const ProjectContributionCard = ({
   return (
     <Card className={`bg-white/5 backdrop-blur-sm border-white/10 transition-all duration-200 ${isFastPool ? 'ring-1 ring-orange-500/30' : ''}`}>
       <CardContent className="p-3">
-        <div className="flex items-start justify-between gap-2">
+        <div className="flex items-start gap-3">
+          {/* Left section: Image and project info */}
           <div className="flex items-start gap-2 flex-1 min-w-0">
             <img
               src={project.image}
@@ -43,17 +44,18 @@ const ProjectContributionCard = ({
               <Badge variant="outline" className="text-xs text-gray-300 border-gray-500 mb-2">
                 {project.category}
               </Badge>
-              
+
+              {/* Contribution data on mobile - below project info */}
               {contributionPercentage !== undefined && estimatedContribution && (
-                <div className="space-y-1">
-                  <div className="flex justify-between items-center text-xs">
-                    <span className="text-gray-400">Contribution</span>
+                <div className="lg:hidden space-y-1">
+                  <div className="text-xs">
+                    <span className="text-gray-400">Contribution: </span>
                     <span className="text-orange-400 font-medium">
                       {contributionPercentage.toFixed(1)}%
                     </span>
                   </div>
-                  <div className="flex justify-between items-center text-xs">
-                    <span className="text-gray-400">Est. Amount</span>
+                  <div className="text-xs">
+                    <span className="text-gray-400">Est. Amount: </span>
                     <span className="text-orange-400 font-medium">
                       {estimatedContribution} {rewardType?.toUpperCase() || 'STX'}
                     </span>
@@ -62,16 +64,40 @@ const ProjectContributionCard = ({
               )}
             </div>
           </div>
-          
-          {showRemoveButton && !isFastPool && onRemove && (
-            <button
-              onClick={onRemove}
-              className="text-gray-400 hover:text-red-400 transition-colors p-1 rounded"
-              title="Remove project"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          )}
+
+          {/* Right section: Contribution data (desktop) and remove button */}
+          <div className="flex items-center gap-3">
+            {/* Contribution data on desktop - fixed width for alignment */}
+            {contributionPercentage !== undefined && estimatedContribution && (
+              <div className="hidden lg:block text-right min-w-[100px]">
+                <div className="text-xs">
+                  <span className="text-gray-400">Contribution: </span>
+                  <span className="text-orange-400 font-medium">
+                    {contributionPercentage.toFixed(1)}%
+                  </span>
+                </div>
+                <div className="text-xs">
+                  <span className="text-gray-400">Est. Amount: </span>
+                  <span className="text-orange-400 font-medium">
+                    {estimatedContribution} {rewardType?.toUpperCase() || 'STX'}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* Remove button - fixed width placeholder */}
+            <div className="w-6 h-6 flex items-center justify-center">
+              {showRemoveButton && !isFastPool && onRemove && (
+                <button
+                  onClick={onRemove}
+                  className="text-gray-400 hover:text-red-400 transition-colors p-1 rounded"
+                  title="Remove project"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+          </div>
         </div>
       </CardContent>
     </Card>

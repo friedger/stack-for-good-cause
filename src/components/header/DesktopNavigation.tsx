@@ -46,15 +46,9 @@ const DesktopNavigation = ({
       <Link to="/projects" className="text-white hover:text-orange-400 transition-colors">
         Projects
       </Link>
-      <Link to="/dashboard" className="text-white hover:text-orange-400 transition-colors">
+      {/* <Link to="/dashboard" className="text-white hover:text-orange-400 transition-colors">
         Dashboard
-      </Link>
-
-      {showCreateProject && onCreateProject && (
-        <SecondaryButton onClick={onCreateProject}>
-          Create Project
-        </SecondaryButton>
-      )}
+      </Link> */}
 
       {isConnected && walletInfo ? (
         <WalletDropdown walletInfo={walletInfo} onLogout={onLogout} />

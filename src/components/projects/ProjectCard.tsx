@@ -72,20 +72,7 @@ const ProjectCard = ({ project, contributionPercentage, estimatedContribution, r
     }
   };
 
-  const getStatusBadge = (status: string) => {
-    if (isFastPool) {
-      return <Badge className="bg-orange-500/80 text-white border-orange-500/30">Required</Badge>;
-    }
-    
-    switch (status) {
-      case "approved":
-        return <Badge className="bg-green-500/80 text-gray-600 border-green-500/30">Approved</Badge>;
-      case "pending":
-        return <Badge className="bg-yellow-500/80 text-gray-600 border-yellow-500/30">Pending Review</Badge>;
-      default:
-        return <Badge className="bg-gray-500/80 text-gray-200 border-gray-500/30">Unknown</Badge>;
-    }
-  };
+
 
   return (
     <Card className={`bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/15 transition-all duration-300 flex flex-col ${isFastPool ? 'ring-2 ring-orange-500/50' : ''}`}>
@@ -96,7 +83,7 @@ const ProjectCard = ({ project, contributionPercentage, estimatedContribution, r
           className="w-full h-48 object-cover rounded-t-lg"
         />
         <div className="absolute top-3 right-3">
-          {getStatusBadge(project.status)}
+          {getStatusBadge(project)}
         </div>
         {isFastPool && (
           <div className="absolute top-3 left-3">
@@ -142,7 +129,7 @@ const ProjectCard = ({ project, contributionPercentage, estimatedContribution, r
                 <span className="text-gray-400">Your Contribution %</span>
                 <span className="text-orange-400 font-semibold">{contributionPercentage.toFixed(1)}%</span>
               </div>
-              
+
               <div className="flex justify-between items-center text-sm">
                 <span className="text-gray-400">Est. Contribution</span>
                 <span className="text-orange-400 font-semibold">
@@ -205,3 +192,18 @@ const ProjectCard = ({ project, contributionPercentage, estimatedContribution, r
 };
 
 export default ProjectCard;
+
+export const getStatusBadge = (project: Project) => {
+  if (project.id === "1") {
+    return <Badge className="bg-orange-500/80 text-white border-orange-500/30">Required</Badge>;
+  }
+
+  switch (project.status) {
+    case "approved":
+      return <Badge className="bg-green-500/80 text-gray-600 border-green-500/30">Approved</Badge>;
+    case "pending":
+      return <Badge className="bg-yellow-500/80 text-gray-600 border-yellow-500/30">Pending Review</Badge>;
+    default:
+      return <Badge className="bg-gray-500/80 text-gray-200 border-gray-500/30">Unknown</Badge>;
+  }
+};

@@ -110,7 +110,8 @@ const CreateProjectDialog = ({ onProjectCreated, open, onOpenChange }: CreatePro
               onImageSelect={(file) => setNewProject({ ...newProject, image: file })}
             />
           </div>
-          <PrimaryButton onClick={handleCreateProject} className="w-full py-3">
+          <PrimaryButton
+            onClick={handleCreateProject} className="w-full py-3">
             Submit for Approval
           </PrimaryButton>
         </div>

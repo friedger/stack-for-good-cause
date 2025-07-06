@@ -34,7 +34,7 @@ const Logo = ({ size = "md", showText = true, className = "" }: LogoProps) => {
         <div
           className="absolute inset-0 w-full h-full"
           style={{
-            background: 'linear-gradient(45deg, #fb923c, #f97316)',
+            background: 'white',
             mask: 'url(/lovable-uploads/edfad3b9-edd8-4928-a9d4-7a01d9605d4b.png) no-repeat center/contain',
             WebkitMask: 'url(/lovable-uploads/edfad3b9-edd8-4928-a9d4-7a01d9605d4b.png) no-repeat center/contain'
           }}

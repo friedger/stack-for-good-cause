@@ -47,9 +47,10 @@ const Stacking = () => {
           />
         </div>
 
-        <div className="mt-8 sm:mt-12">
+        {false && <div className="mt-8 sm:mt-12">
           <StatsDisplay rewardType={rewardType} />
         </div>
+        }
       </div>
     </div>
   );

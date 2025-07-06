@@ -6,6 +6,8 @@ import { SecondaryButton } from "@/components/ui/secondary-button";
 import { ArrowRight, Heart, Share2, Shield, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 
+const statsEnabled = false; // enabled when backend is ready
+
 const Index = () => {
   return (
     <>
@@ -126,22 +128,24 @@ const Index = () => {
       </section >
 
       {/* Stats Section */}
-      < section className="container mx-auto px-6 py-20" >
-        <div className="grid md:grid-cols-3 gap-8 text-center">
-          <div>
-            <div className="text-4xl font-bold text-purple-400 mb-2">$2.5M+</div>
-            <div className="text-gray-200 font-medium">Total Value Stacked</div>
+      {statsEnabled &&
+        < section className="container mx-auto px-6 py-20" >
+          <div className="grid md:grid-cols-3 gap-8 text-center">
+            <div>
+              <div className="text-4xl font-bold text-purple-400 mb-2">$2.5M+</div>
+              <div className="text-gray-200 font-medium">Total Value Stacked</div>
+            </div>
+            <div>
+              <div className="text-4xl font-bold text-pink-400 mb-2">$125K+</div>
+              <div className="text-gray-200 font-medium">Community Donations</div>
+            </div>
+            <div>
+              <div className="text-4xl font-bold text-green-400 mb-2">150+</div>
+              <div className="text-gray-200 font-medium">Active Community Members</div>
+            </div>
           </div>
-          <div>
-            <div className="text-4xl font-bold text-pink-400 mb-2">$125K+</div>
-            <div className="text-gray-200 font-medium">Community Donations</div>
-          </div>
-          <div>
-            <div className="text-4xl font-bold text-green-400 mb-2">150+</div>
-            <div className="text-gray-200 font-medium">Active Community Members</div>
-          </div>
-        </div>
-      </section >
+        </section >
+      }
 
       {/* CTA Section */}
       < section className="container mx-auto px-6 py-20 text-center" >

@@ -39,6 +39,7 @@
     "@radix-ui/react-toggle": "^1.1.0",
     "@radix-ui/react-toggle-group": "^1.1.0",
     "@radix-ui/react-tooltip": "^1.1.4",
+    "@stacks/blockchain-api-client": "^8.11.2",
     "@stacks/common": "^7.0.2",
     "@stacks/connect": "^8.1.9",
     "@stacks/transactions": "^7.1.0",

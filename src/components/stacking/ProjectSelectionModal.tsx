@@ -1,11 +1,10 @@
 
-import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Check, X } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Project, projectService } from "@/services/projectService";
+import { Check } from "lucide-react";
+import { useEffect, useState } from "react";
 import { PrimaryButton } from "../ui/primary-button";
 import { SecondaryButton } from "../ui/secondary-button";
 
@@ -84,10 +83,10 @@ const ProjectSelectionModal = ({
               <Card
                 key={project.id}
                 className={`cursor-pointer transition-all ${isSelected
-                    ? "bg-orange-500/20 border-orange-500"
-                    : canSelect
-                      ? "bg-white/5 border-white/20 hover:bg-white/10"
-                      : "bg-gray-800/50 border-gray-600 opacity-50 cursor-not-allowed"
+                  ? "bg-orange-500/20 border-orange-500"
+                  : canSelect
+                    ? "bg-white/5 border-white/20 hover:bg-white/10"
+                    : "bg-gray-800/50 border-gray-600 opacity-50 cursor-not-allowed"
                   }`}
                 onClick={() => canSelect && toggleProject(project)}
               >
@@ -116,9 +115,9 @@ const ProjectSelectionModal = ({
                     <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
                       {project.status}
                     </Badge>
-                    <span className="text-gray-400">
+                    {/* <span className="text-gray-400">
                       {project.totalRaised.toLocaleString()} STX raised
-                    </span>
+                    </span> */}
                   </div>
                 </CardContent>
               </Card>

@@ -52,7 +52,7 @@ const WalletDropdown = ({ walletInfo, onLogout }: WalletDropdownProps) => {
         <DropdownMenuSeparator className="bg-gray-700" />
         <DropdownMenuItem
           onClick={onLogout}
-          className="text-red-400 hover:text-red-300 hover:bg-red-500/10 cursor-pointer"
+          className="text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 cursor-pointer"
         >
           <LogOut className="h-4 w-4 mr-2" />
           Disconnect

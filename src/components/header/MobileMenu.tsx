@@ -27,7 +27,7 @@ const MobileMenu = ({
   onClose
 }: MobileMenuProps) => {
   const isConnected = walletInfo?.isConnected || false;
-  const shortAddress = walletInfo?.stxAddress 
+  const shortAddress = walletInfo?.stxAddress
     ? `${walletInfo.stxAddress.slice(0, 6)}...${walletInfo.stxAddress.slice(-4)}`
     : '';
   const { projectCount, isStacking, showNotification } = useStackingNotification();
@@ -64,25 +64,13 @@ const MobileMenu = ({
         >
           Projects
         </Link>
-        <Link
+        {/* <Link
           to="/dashboard"
           className="text-white hover:text-orange-400 transition-colors px-2 py-1"
           onClick={onClose}
         >
           Dashboard
-        </Link>
-
-        {showCreateProject && onCreateProject && (
-          <SecondaryButton
-            onClick={() => {
-              onCreateProject();
-              onClose();
-            }}
-            className="w-fit"
-          >
-            Create Project
-          </SecondaryButton>
-        )}
+        </Link> */}
 
         {isConnected ? (
           <div className="border-t border-gray-700 pt-4 mt-4">
@@ -116,7 +104,7 @@ const MobileMenu = ({
             <Button
               onClick={onLogout}
               variant="outline"
-              className="text-red-400 border-red-400 hover:bg-red-500/10 w-fit"
+              className="text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 cursor-pointer"
             >
               <LogOut className="h-4 w-4 mr-2" />
               Disconnect

@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useProjectInitialization } from "@/hooks/useProjectInitialization";
 import { useStackingLogic } from "@/hooks/useStackingLogic";
 import { Project } from "@/services/projectCore";
-import { TrendingUp } from "lucide-react";
+import { Heart, TrendingUp } from "lucide-react";
 import DonationSettings from "./stacking/DonationSettings";
 
 interface RewardsBreakdownProps {
@@ -39,7 +39,7 @@ const RewardsBreakdown = ({
     <Card className="bg-white/10 backdrop-blur-sm border-white/20">
       <CardHeader>
         <CardTitle className="text-white flex items-center">
-          <TrendingUp className="h-6 w-6 mr-2 text-orange-400" />
+          <Heart className="h-6 w-6 mr-2 text-orange-400" />
           Configure Contributions
         </CardTitle>
       </CardHeader>

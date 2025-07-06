@@ -20,7 +20,7 @@ const RewardTypeSelector = ({ value, onChange, disabled = false }: RewardTypeSel
     {
       id: "sbtc",
       name: "sBTC",
-      description: "Synthetic Bitcoin",
+      description: "Wrapped Bitcoin on Stacks",
       icon: <img src="/img/sbtc.png" className="h-8 w-8 rounded-sm" />,
       color: "from-gray-500 to-gray-600"
     }
