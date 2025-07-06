@@ -1,3 +1,4 @@
+
 import { useToast } from "@/hooks/use-toast";
 import { nostrService } from "@/services/nostrService";
 import { Project } from "@/services/projectService";
@@ -16,6 +17,7 @@ export const useStackingLogic = () => {
   const [stackingState, setStackingState] =
     useState<StackingState>("not-stacking");
   const [isProcessingTx, setIsProcessingTx] = useState(false);
+  const [showVerificationModal, setShowVerificationModal] = useState(false);
 
   const allowFastPool = async () => {
     if (!walletService.isWalletConnected()) {
@@ -147,6 +149,9 @@ export const useStackingLogic = () => {
         }
 
         setStackingState("stacking");
+        
+        // Open the verification modal after successful stacking
+        setShowVerificationModal(true);
       } else {
         toast({
           title: "Transaction Failed",
@@ -236,6 +241,8 @@ export const useStackingLogic = () => {
     stackingState,
     isProcessingTx,
     isStacking,
+    showVerificationModal,
+    setShowVerificationModal,
     allowFastPool,
     handleStacking,
     handleStopStacking,

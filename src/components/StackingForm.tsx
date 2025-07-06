@@ -8,6 +8,7 @@ import RewardTypeSelector from "./stacking/RewardTypeSelector";
 import StackingActions from "./stacking/StackingActions";
 import StackingAmountInput from "./stacking/StackingAmountInput";
 import StackingConditions from "./stacking/StackingConditions";
+import UserDataVerificationModal from "./stacking/UserDataVerificationModal";
 
 interface StackingFormProps {
   stxAmount: string;
@@ -16,7 +17,6 @@ interface StackingFormProps {
   setRewardType: (value: "stx" | "sbtc") => void;
   enableDonation: boolean;
   donationPercentage: number[];
-
   selectedProjects: Project[];
   sharePublicly: boolean;
 }
@@ -36,6 +36,8 @@ const StackingForm = ({
   const {
     isProcessingTx,
     isStacking,
+    showVerificationModal,
+    setShowVerificationModal,
     allowFastPool,
     handleStacking,
     handleStopStacking,
@@ -57,44 +59,48 @@ const StackingForm = ({
   };
 
   return (
-    <Card className="bg-card/50 backdrop-blur-sm border-border">
-      <CardHeader>
-        <CardTitle className="text-white flex items-center justify-between">
-          <div className="flex items-center">
-            <TrendingUp className="h-6 w-6 mr-2 text-blue-400" />
-            Configure Your Stacking
-          </div>
-          {/* <div className="text-sm font-normal text-gray-300">
-            {getStatusMessage()}
-          </div> */}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        <StackingAmountInput
-          value={stxAmount}
-          onChange={setStxAmount}
-          disabled={isStacking}
-          rewardType={rewardType}
-        />
+    <>
+      <Card className="bg-card/50 backdrop-blur-sm border-border">
+        <CardHeader>
+          <CardTitle className="text-white flex items-center justify-between">
+            <div className="flex items-center">
+              <TrendingUp className="h-6 w-6 mr-2 text-blue-400" />
+              Configure Your Stacking
+            </div>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <StackingAmountInput
+            value={stxAmount}
+            onChange={setStxAmount}
+            disabled={isStacking}
+            rewardType={rewardType}
+          />
 
-        <RewardTypeSelector value={rewardType} onChange={setRewardType} disabled={isStacking} />
+          <RewardTypeSelector value={rewardType} onChange={setRewardType} disabled={isStacking} />
 
-        <StackingConditions
-          accepted={conditionsAccepted}
-          onAcceptedChange={setConditionsAccepted}
-          disabled={isStacking}
-        />
+          <StackingConditions
+            accepted={conditionsAccepted}
+            onAcceptedChange={setConditionsAccepted}
+            disabled={isStacking}
+          />
 
-        <StackingActions
-          isStacking={isStacking}
-          isProcessing={isProcessingTx}
-          onAllowFastPool={allowFastPool}
-          onStartStacking={onStartStacking}
-          onStopStacking={handleStopStacking}
-          conditionsAccepted={conditionsAccepted}
-        />
-      </CardContent>
-    </Card>
+          <StackingActions
+            isStacking={isStacking}
+            isProcessing={isProcessingTx}
+            onAllowFastPool={allowFastPool}
+            onStartStacking={onStartStacking}
+            onStopStacking={handleStopStacking}
+            conditionsAccepted={conditionsAccepted}
+          />
+        </CardContent>
+      </Card>
+
+      <UserDataVerificationModal
+        open={showVerificationModal}
+        onOpenChange={setShowVerificationModal}
+      />
+    </>
   );
 };
 
