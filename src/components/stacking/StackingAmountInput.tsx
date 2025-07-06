@@ -7,7 +7,6 @@ import { useStackingService } from "@/hooks/useStackingService";
 import { ustxToLocalString } from "@/lib/format";
 import { priceService } from "@/services/priceService";
 import { walletService } from "@/services/walletService";
-import { getLocalStorage, isConnected } from "@stacks/connect";
 import { Wallet } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -21,8 +20,7 @@ interface StackingAmountInputProps {
 const StackingAmountInput = ({ value, onChange, disabled, rewardType }: StackingAmountInputProps) => {
   const [btcPrice, setBtcPrice] = useState<number>(0);
   const { estimatedApy } = useStackingService();
-  const userAddress = isConnected() ? getLocalStorage().addresses.stx[0].address || "" : "";
-  const { loading, stxBalance } = useAccountBalance(userAddress);
+  const { loading, stxBalance } = useAccountBalance();
 
   useEffect(() => {
     onChange(stxBalance.toString());
@@ -32,7 +30,7 @@ const StackingAmountInput = ({ value, onChange, disabled, rewardType }: Stacking
   useEffect(() => {
     const loadBtcPrice = async () => {
       try {
-        const priceData = await priceService.getBitcoinPrice();
+        const priceData = await priceService.getBtcStxPrice();
         setBtcPrice(priceData.price);
       } catch (error) {
         console.error('Failed to load Bitcoin price:', error);
@@ -64,7 +62,7 @@ const StackingAmountInput = ({ value, onChange, disabled, rewardType }: Stacking
     if (rewardType === "sbtc" && btcPrice > 0) {
       console.log("Calculating sBTC rewards with baseRewards:", baseRewards, "and btcPrice:", btcPrice);
       // For sBTC, multiply by Bitcoin price
-      const sbtcRewards = baseRewards / btcPrice;
+      const sbtcRewards = baseRewards * btcPrice / 1e6;
       return {
         amount: sbtcRewards.toLocaleString("en-US", {
           style: "decimal",
@@ -90,7 +88,7 @@ const StackingAmountInput = ({ value, onChange, disabled, rewardType }: Stacking
         <Label htmlFor="stx-amount" className="text-white flex items-center">
           Stacking Amount
         </Label>
-        {walletService.isWalletConnected() && (
+        {stxBalance || loading ? (
           <div className="flex items-center text-sm text-gray-400">
             <Wallet className="h-4 w-4 mr-1" />
             <span className="hidden sm:inline">
@@ -98,7 +96,12 @@ const StackingAmountInput = ({ value, onChange, disabled, rewardType }: Stacking
             </span>
             {loading ? "Loading..." : `${ustxToLocalString(stxBalance)} STX`}
           </div>
-        )}
+        ) :
+          <div className="flex items-center text-sm text-blue-400"
+            onClick={() => walletService.connectWallet()}>
+            <Wallet className="h-4 w-4 mr-1" />
+            Connect Wallet
+          </div>}
       </div>
 
       <div className="space-y-3">
@@ -109,7 +112,7 @@ const StackingAmountInput = ({ value, onChange, disabled, rewardType }: Stacking
             placeholder="Enter STX amount"
             value={value}
             onChange={(e) => handleInputChange(e.target.value)}
-            className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+            className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 disabled:cursor-default"
             disabled={disabled || loading || stxBalance === 0}
             min="40"
           />

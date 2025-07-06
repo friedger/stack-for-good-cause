@@ -1,5 +1,7 @@
+import { walletService } from "@/services/walletService";
 import { createClient, OperationResponse } from "@stacks/blockchain-api-client";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { isConnected } from "@stacks/connect";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export type AccountBalance =
   OperationResponse["/extended/v1/address/{principal}/balances"];
@@ -10,10 +12,20 @@ interface CacheEntry<T> {
   expiresAt: number;
 }
 
-export const useAccountBalance = (address?: string) => {
+export const useAccountBalance = () => {
   const [balance, setBalance] = useState<AccountBalance | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [walletInfo, setWalletInfo] = useState(walletService.getWalletInfo());
+
+  useEffect(() => {
+    const checkWalletConnection = () => {
+      const info = walletService.getWalletInfo();
+      setWalletInfo(info);
+    };
+
+    checkWalletConnection();
+  }, [isConnected()]);
 
   // Lazy API client creation
   const apiClientRef = useRef<any>(null);
@@ -102,27 +114,28 @@ export const useAccountBalance = (address?: string) => {
 
   // Auto-fetch when address changes
   useEffect(() => {
-    if (address) {
-      fetchBalance(address);
+    if (walletInfo?.stxAddress) {
+      fetchBalance(walletInfo?.stxAddress);
     } else {
       setBalance(null);
       setError(null);
       setLoading(false);
     }
-  }, [address, fetchBalance]);
+  }, [walletInfo?.stxAddress, fetchBalance]);
 
   const refetch = useCallback(() => {
-    if (address) {
-      return fetchBalance(address, true);
+    if (walletInfo?.stxAddress) {
+      return fetchBalance(walletInfo?.stxAddress, true);
     }
     return Promise.resolve(null);
-  }, [address, fetchBalance]);
+  }, [walletInfo?.stxAddress, fetchBalance]);
 
   return {
     balance,
     loading,
     error,
     refetch,
+    stxAddress: walletInfo?.stxAddress,
     // Helper to get STX balance as number
     stxBalance: balance ? parseFloat(balance.stx.balance) / 1e6 : 0,
     lockedStx: balance ? parseFloat(balance.stx.locked) / 1e6 : 0,

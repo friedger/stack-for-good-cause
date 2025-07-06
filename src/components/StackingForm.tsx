@@ -8,7 +8,6 @@ import RewardTypeSelector from "./stacking/RewardTypeSelector";
 import StackingActions from "./stacking/StackingActions";
 import StackingAmountInput from "./stacking/StackingAmountInput";
 import StackingConditions from "./stacking/StackingConditions";
-import { walletService } from "@/services/walletService";
 
 interface StackingFormProps {
   stxAmount: string;
@@ -40,7 +39,6 @@ const StackingForm = ({
     allowFastPool,
     handleStacking,
     handleStopStacking,
-    getStatusMessage,
   } = useStackingLogic();
 
   const onStartStacking = () => {
