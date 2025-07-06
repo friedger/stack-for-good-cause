@@ -1,3 +1,6 @@
+
+import { supabase } from "@/integrations/supabase/client";
+
 export interface PriceData {
   symbol: string;
   baseSymbol: string;
@@ -26,7 +29,8 @@ class PriceService {
     symbol: "STX" | "BTC",
     baseSymbol: "USD" | "STX"
   ): Promise<PriceData> {
-    const cached = this.priceCache.get(symbol);
+    const cacheKey = `${symbol}_${baseSymbol}`;
+    const cached = this.priceCache.get(cacheKey);
     const now = Date.now();
 
     // Return cached data if it's still fresh
@@ -38,12 +42,47 @@ class PriceService {
     }
 
     try {
-      // In a real app, you would fetch from an actual API
-      // For now, we'll simulate with mock data
+      // Fetch real prices from CoinGecko via Edge Function
+      const { data, error } = await supabase.functions.invoke('fetch-prices', {
+        body: { symbols: ['BTC', 'STX'] }
+      });
+
+      if (error) {
+        throw new Error(`Edge function error: ${error.message}`);
+      }
+
+      console.log('Price data received:', data);
+
+      let priceData: PriceData;
+
+      if (symbol === 'BTC' && baseSymbol === 'STX') {
+        // Use the calculated BTC/STX price
+        priceData = data.BTC_STX;
+      } else {
+        // Use direct USD prices
+        const coinData = data[symbol];
+        if (!coinData) {
+          throw new Error(`Price data not available for ${symbol}`);
+        }
+        priceData = coinData;
+      }
+
+      this.priceCache.set(cacheKey, priceData);
+      return priceData;
+
+    } catch (error) {
+      console.error(`Failed to fetch real price for ${symbol}:`, error);
+
+      // Return cached data even if stale, or fallback to mock data
+      if (cached) {
+        return cached;
+      }
+
+      // Fallback mock data as last resort
       const mockPrices = {
         BTC: {
           USD: { price: 43250.5, change24h: 2.34 },
-          STX: { price: 600, change24h: 23 },
+          STX: { price: 15000, change24h: 1.5 },
         },
         STX: {
           USD: { price: 2.85, change24h: -1.23 },
@@ -51,35 +90,13 @@ class PriceService {
         },
       };
 
-      const mockData =
-        mockPrices[symbol as keyof typeof mockPrices][baseSymbol];
-      if (!mockData) {
-        throw new Error(`Price data not available for ${symbol}`);
-      }
-
-      const priceData: PriceData = {
+      const mockData = mockPrices[symbol as keyof typeof mockPrices][baseSymbol];
+      
+      return {
         symbol,
         baseSymbol,
         price: mockData.price,
         change24h: mockData.change24h,
-        lastUpdated: new Date().toISOString(),
-      };
-
-      this.priceCache.set(symbol, priceData);
-      return priceData;
-    } catch (error) {
-      console.error(`Failed to fetch price for ${symbol}:`, error);
-
-      // Return cached data even if stale, or default values
-      if (cached) {
-        return cached;
-      }
-
-      return {
-        symbol,
-        baseSymbol,
-        price: 0,
-        change24h: 0,
         lastUpdated: new Date().toISOString(),
       };
     }
