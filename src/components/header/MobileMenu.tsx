@@ -6,6 +6,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { User, LogOut, Wallet } from "lucide-react";
 import { WalletInfo } from "@/services/walletService";
 import { useStackingNotification } from "@/hooks/useStackingNotification";
+import { truncAddress, truncAddress, truncAddress } from "@/lib/format";
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -26,7 +27,7 @@ const MobileMenu = ({
 }: MobileMenuProps) => {
   const isConnected = walletInfo?.isConnected || false;
   const shortAddress = walletInfo?.stxAddress
-    ? `${walletInfo.stxAddress.slice(0, 6)}...${walletInfo.stxAddress.slice(-4)}`
+    ? truncAddress(walletInfo.stxAddress)
     : '';
   const { projectCount, isStacking, showNotification } = useStackingNotification();
 

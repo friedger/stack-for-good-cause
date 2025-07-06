@@ -8,6 +8,7 @@ import MobileMenu from "./header/MobileMenu";
 import { walletService, WalletInfo } from "@/services/walletService";
 import { useToast } from "@/hooks/use-toast";
 import { isConnected } from "@stacks/connect";
+import { truncAddress } from "@/lib/format";
 
 interface HeaderProps {
   showCreateProject?: boolean;
@@ -36,7 +37,7 @@ const Header = ({ showCreateProject, onCreateProject }: HeaderProps) => {
       setWalletInfo(info);
       toast({
         title: "Wallet Connected",
-        description: `Connected to ${info.stxAddress.slice(0, 8)}...${info.stxAddress.slice(-4)}`,
+        description: `Connected to ${truncAddress(info.stxAddress)}`,
       });
     } else {
       toast({

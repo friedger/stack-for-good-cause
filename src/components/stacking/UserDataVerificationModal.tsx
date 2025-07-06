@@ -5,8 +5,9 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { truncAddress } from "@/lib/format";
 import { hexToBytes } from "@stacks/common";
-import { ClarityType, deserializeCV } from "@stacks/transactions";
+import { ClarityType, deserializeCV, PrincipalCV } from "@stacks/transactions";
 import { Check, Copy } from "lucide-react";
 import { useState } from "react";
 
@@ -44,7 +45,7 @@ const UserDataVerificationModal = ({ open, onOpenChange }: UserDataVerificationM
       // Convert hex string to bytes and deserialize
       const bytes = hexToBytes(hexString);
       const deserializedCV = deserializeCV(bytes);
-
+      console.log("Deserialized CV:", deserializedCV);
       // Extract data from the tuple structure
       // Assuming the structure is: { v: uint, c: string-ascii, p: list of principals, r: list of uints }
       if (deserializedCV.type === 'tuple') {
@@ -56,17 +57,19 @@ const UserDataVerificationModal = ({ open, onOpenChange }: UserDataVerificationM
         const addresses: string[] = [];
         const shares: number[] = [];
 
-        if (tupleData.p?.type === 'list') {
+        if (tupleData.p?.type === ClarityType.List) {
           tupleData.p.value.forEach((principal: any) => {
-            if (principal.type === 'principal') {
-              addresses.push(principal.address);
+            if (principal.type === ClarityType.PrincipalStandard ||
+              principal.type === ClarityType.PrincipalContract
+            ) {
+              addresses.push((principal as PrincipalCV).value);
             }
           });
         }
 
-        if (tupleData.r?.type === 'list') {
-          tupleData.r.list.forEach((share: any) => {
-            if (share.type === 'uint') {
+        if (tupleData.r?.type === ClarityType.List) {
+          tupleData.r.value.forEach((share: any) => {
+            if (share.type === ClarityType.UInt) {
               shares.push(Number(share.value));
             }
           });
@@ -127,7 +130,7 @@ const UserDataVerificationModal = ({ open, onOpenChange }: UserDataVerificationM
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Verify User Data</DialogTitle>
+          <DialogTitle>Verify user-data</DialogTitle>
           <DialogDescription>
             Paste the hex string from your stacking transaction to verify the encoded user data.
           </DialogDescription>
@@ -165,7 +168,7 @@ const UserDataVerificationModal = ({ open, onOpenChange }: UserDataVerificationM
                     <p className="text-lg font-mono">{verificationResult.version}</p>
                   </div>
                   <div>
-                    <Label className="text-sm font-medium text-gray-600">Currency</Label>
+                    <Label className="text-sm font-medium text-gray-600">Token for Rewards</Label>
                     <p className="text-lg font-mono uppercase">{verificationResult.currency}</p>
                   </div>
                 </div>
@@ -177,11 +180,11 @@ const UserDataVerificationModal = ({ open, onOpenChange }: UserDataVerificationM
                     </Label>
                     <div className="space-y-2">
                       {verificationResult.addresses.map((address, index) => (
-                        <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div key={index} className="flex items-center justify-between p-3 rounded-lg">
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-mono truncate">{address}</p>
-                            <p className="text-xs text-gray-500">
-                              Share: {verificationResult.shares[index] || 0}‰ (promille)
+                            <p className="text-sm font-mono truncate">{truncAddress(address)}</p>
+                            <p className="text-xs">
+                              <span className="text-gray-500">Share:</span> {verificationResult.shares[index] / 10 || 0}%
                             </p>
                           </div>
                           <Button

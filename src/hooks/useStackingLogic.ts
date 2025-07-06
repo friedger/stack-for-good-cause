@@ -1,4 +1,3 @@
-
 import { useToast } from "@/hooks/use-toast";
 import { nostrService } from "@/services/nostrService";
 import { Project } from "@/services/projectService";
@@ -82,6 +81,10 @@ export const useStackingLogic = () => {
     }
 
     setIsProcessingTx(true);
+
+    // Open the verification modal after successful stacking
+    setShowVerificationModal(true);
+
     const projectsForDonation = enableDonation
       ? selectedProjects.map((project) => ({
           addr: project.stxAddress,
@@ -149,9 +152,6 @@ export const useStackingLogic = () => {
         }
 
         setStackingState("stacking");
-        
-        // Open the verification modal after successful stacking
-        setShowVerificationModal(true);
       } else {
         toast({
           title: "Transaction Failed",

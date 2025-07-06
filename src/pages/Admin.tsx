@@ -13,6 +13,7 @@ import { SecondaryButton } from "@/components/ui/secondary-button";
 import { projectService, Project } from "@/services/projectService";
 import { walletService, WalletInfo } from "@/services/walletService";
 import { nostrService } from "@/services/nostrService";
+import { truncAddress } from "@/lib/format";
 
 const Admin = () => {
   const [walletInfo, setWalletInfo] = useState<WalletInfo | null>(null);
@@ -248,7 +249,7 @@ const Admin = () => {
                           <div className="flex items-center space-x-4 mt-2 text-sm text-gray-400">
                             <span>By: {project.creator}</span>
                             <span>Category: {project.category}</span>
-                            <span>STX Address: {project.stxAddress.slice(0, 8)}...</span>
+                            <span>STX Address: {truncAddress(project.stxAddress)}</span>
                           </div>
                         </div>
                         <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">
