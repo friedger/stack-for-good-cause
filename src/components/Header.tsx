@@ -7,6 +7,7 @@ import DesktopNavigation from "./header/DesktopNavigation";
 import MobileMenu from "./header/MobileMenu";
 import { walletService, WalletInfo } from "@/services/walletService";
 import { useToast } from "@/hooks/use-toast";
+import { isConnected } from "@stacks/connect";
 
 interface HeaderProps {
   showCreateProject?: boolean;
@@ -26,11 +27,8 @@ const Header = ({ showCreateProject, onCreateProject }: HeaderProps) => {
     };
 
     checkWalletConnection();
-    // Check periodically for wallet connection changes
-    const interval = setInterval(checkWalletConnection, 1000);
-    
-    return () => clearInterval(interval);
-  }, []);
+
+  }, [isConnected()]);
 
   const handleConnectWallet = async () => {
     const info = await walletService.connectWallet();

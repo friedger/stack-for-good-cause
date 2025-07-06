@@ -24,7 +24,7 @@ const Admin = () => {
     // Check wallet connection on component mount
     const wallet = walletService.getWalletInfo();
     setWalletInfo(wallet);
-    
+
     // Load projects
     const projects = projectService.getAllProjects();
     setAllProjects(projects);
@@ -46,7 +46,7 @@ const Admin = () => {
     try {
       // Update project status
       const updatedProject = projectService.updateProject(project.id, { status: "approved" });
-      
+
       if (updatedProject) {
         // Create Nostr approval event (kind 4550)
         await nostrService.publishUpdate({
@@ -68,7 +68,7 @@ const Admin = () => {
         });
 
         // Update local state
-        setAllProjects(prev => prev.map(p => 
+        setAllProjects(prev => prev.map(p =>
           p.id === project.id ? { ...p, status: "approved" as const } : p
         ));
 
@@ -186,25 +186,6 @@ const Admin = () => {
 
   return (
     <>
-      {/* Navigation */}
-      <nav className="container mx-auto px-6 py-4">
-        <div className="flex items-center justify-between">
-          <Link to="/" className="flex items-center text-white hover:text-orange-400 transition-colors">
-            <ArrowLeft className="h-5 w-5 mr-2" />
-            <FastPoolName />
-          </Link>
-          <div className="flex items-center space-x-6">
-            <Badge className="bg-red-500/20 text-red-400 border-red-500/30">
-              <Shield className="h-3 w-3 mr-1" />
-              Admin Panel
-            </Badge>
-            <div className="text-sm text-gray-400">
-              Connected: {walletInfo.stxAddress.slice(0, 6)}...{walletInfo.stxAddress.slice(-4)}
-            </div>
-          </div>
-        </div>
-      </nav>
-
       <div className="container mx-auto px-6 py-12">
         <div className="max-w-6xl mx-auto">
           <h1 className="text-4xl font-bold text-white mb-8 text-center">

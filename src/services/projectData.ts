@@ -101,7 +101,7 @@ export const mockProjects: Project[] = [
     description: "A platform created by creators for creators.",
     fullDescription:
       "Our vision is to create a trustless, permissionless gig marketplace for Web3 creators and builders to succeed.",
-    category: "funding",
+    category: "Funding",
     totalRaised: 3200.45,
     backers: 31,
     status: "approved",
@@ -143,5 +143,40 @@ export const mockProjects: Project[] = [
     image:
       "https://images.unsplash.com/photo-1526841803814-753ac32aa9e2?w=400&h=250&fit=crop",
     slug: "tx-info",
+  },
+  {
+    id: "5",
+    name: "DeOrganized Media",
+    description: "Your Hub for Bitcoin Insights and Creative Live Shows.",
+    fullDescription:
+      "Whether you're here for the latest Bitcoin and Web3 developments or to create and host your own live shows, DeOrganized Media is your platform for discovery, innovation, and engagement.",
+    category: "Content",
+    totalRaised: 3200.45,
+    backers: 31,
+    status: "approved",
+    creator: "PeaceLoveMusicG and Haddy",
+    stxAddress: "",
+    image:
+      "https://images.unsplash.com/photo-1573932847907-1d82dd790e83?w=400&h=250&fit=crop",
+    slug: "deorganized-media",
+    updates: [
+      {
+        id: "1",
+        title: "Solar Panel Installation Complete",
+        content:
+          "We've successfully installed 50 solar panels across 10 homes in the community. Families are now enjoying clean, renewable energy!",
+        date: "2024-01-18",
+      },
+    ],
+    backersList: [
+      {
+        id: "1",
+        name: "Grace Lee",
+        amount: 1000,
+        date: "2024-01-20",
+        message: "The future is renewable!",
+      },
+      { id: "2", name: "Henry Brown", amount: 500, date: "2024-01-19" },
+    ],
   },
 ];
