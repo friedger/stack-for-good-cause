@@ -19,8 +19,6 @@ interface MobileMenuProps {
 
 const MobileMenu = ({
   isOpen,
-  showCreateProject,
-  onCreateProject,
   walletInfo,
   onConnectWallet,
   onLogout,

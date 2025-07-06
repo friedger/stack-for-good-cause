@@ -7,7 +7,7 @@ import { useStackingService } from "@/hooks/useStackingService";
 import { ustxToLocalString } from "@/lib/format";
 import { priceService } from "@/services/priceService";
 import { walletService } from "@/services/walletService";
-import { getLocalStorage } from "@stacks/connect";
+import { getLocalStorage, isConnected } from "@stacks/connect";
 import { Wallet } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -21,7 +21,7 @@ interface StackingAmountInputProps {
 const StackingAmountInput = ({ value, onChange, disabled, rewardType }: StackingAmountInputProps) => {
   const [btcPrice, setBtcPrice] = useState<number>(0);
   const { estimatedApy } = useStackingService();
-  const userAddress = getLocalStorage().addresses.stx[0].address || "";
+  const userAddress = isConnected() ? getLocalStorage().addresses.stx[0].address || "" : "";
   const { loading, stxBalance } = useAccountBalance(userAddress);
 
   useEffect(() => {
@@ -102,16 +102,17 @@ const StackingAmountInput = ({ value, onChange, disabled, rewardType }: Stacking
       </div>
 
       <div className="space-y-3">
-        <div className="flex space-x-2">            <Input
-          id="stx-amount"
-          type="number"
-          placeholder="Enter STX amount"
-          value={value}
-          onChange={(e) => handleInputChange(e.target.value)}
-          className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
-          disabled={disabled || loading || stxBalance === 0}
-          min="40"
-        />
+        <div className="flex space-x-2">
+          <Input
+            id="stx-amount"
+            type="number"
+            placeholder="Enter STX amount"
+            value={value}
+            onChange={(e) => handleInputChange(e.target.value)}
+            className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+            disabled={disabled || loading || stxBalance === 0}
+            min="40"
+          />
           {stxBalance > 0 && (<Button
             type="button"
             variant="outline"

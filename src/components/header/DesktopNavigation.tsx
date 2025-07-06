@@ -16,8 +16,6 @@ interface DesktopNavigationProps {
 }
 
 const DesktopNavigation = ({
-  showCreateProject,
-  onCreateProject,
   walletInfo,
   onConnectWallet,
   onLogout
