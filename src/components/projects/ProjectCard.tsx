@@ -13,9 +13,12 @@ import { useToast } from "@/hooks/use-toast";
 
 interface ProjectCardProps {
   project: Project;
+  contributionPercentage?: number;
+  estimatedContribution?: string;
+  rewardType?: string;
 }
 
-const ProjectCard = ({ project }: ProjectCardProps) => {
+const ProjectCard = ({ project, contributionPercentage, estimatedContribution, rewardType }: ProjectCardProps) => {
   const [isInCart, setIsInCart] = useState(false);
   const { toast } = useToast();
   const isFastPool = project.name === "Fast Pool";
@@ -131,6 +134,23 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
             </span>
             <span className="text-blue-400 font-semibold">{project.backers}</span>
           </div>
+
+          {/* Show contribution percentage and amount if provided */}
+          {contributionPercentage !== undefined && estimatedContribution && (
+            <>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-gray-400">Your Contribution %</span>
+                <span className="text-orange-400 font-semibold">{contributionPercentage.toFixed(1)}%</span>
+              </div>
+              
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-gray-400">Est. Contribution</span>
+                <span className="text-orange-400 font-semibold">
+                  {estimatedContribution} {rewardType?.toUpperCase() || 'STX'}
+                </span>
+              </div>
+            </>
+          )}
 
           <div className="flex justify-between items-center text-sm">
             <span className="text-gray-400">Creator</span>

@@ -15,7 +15,7 @@ const DonationPercentageSlider = ({
 }: DonationPercentageSliderProps) => {
   return (
     <div>
-      <Label className="text-white">Donation Percentage: {donationPercentage[0]}%</Label>
+      <Label className="text-white">Contribution Percentage: {donationPercentage[0]}%</Label>
       <Slider
         value={donationPercentage}
         onValueChange={onDonationPercentageChange}

@@ -1,164 +1,114 @@
-
 import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { SecondaryButton } from "@/components/ui/secondary-button";
-import { Plus, X, ShoppingCart, Lock } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { Project } from "@/services/projectService";
-import { cartService } from "@/services/cartService";
-import { projectService } from "@/services/projectService";
+import { Plus, X, Users } from "lucide-react";
 import ProjectSelectionModal from "./ProjectSelectionModal";
-import { useToast } from "@/hooks/use-toast";
+import ProjectCard from "../projects/ProjectCard";
 
 interface ProjectManagerProps {
   selectedProjects: Project[];
   onSelectedProjectsChange: (projects: Project[]) => void;
   disabled?: boolean;
+  stxAmount?: string;
+  contributionPercentage?: number;
+  rewardType?: string;
 }
 
-const ProjectManager = ({ selectedProjects, onSelectedProjectsChange, disabled }: ProjectManagerProps) => {
-  const [showProjectModal, setShowProjectModal] = useState(false);
-  const { toast } = useToast();
-  const cartCount = cartService.getCartCount();
+const ProjectManager = ({ 
+  selectedProjects, 
+  onSelectedProjectsChange, 
+  disabled,
+  stxAmount,
+  contributionPercentage,
+  rewardType 
+}: ProjectManagerProps) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const removeProject = (projectId: string) => {
-    // Don't allow removal of Fast Pool
-    const projectToRemove = selectedProjects.find(p => p.id === projectId);
-    if (projectToRemove?.name === "Fast Pool") {
-      toast({
-        title: "Cannot Remove Fast Pool",
-        description: "Fast Pool is required for stacking and cannot be removed.",
-        variant: "destructive",
-      });
-      return;
+    const fastPoolProject = selectedProjects.find(p => p.name === "Fast Pool");
+    if (fastPoolProject && fastPoolProject.id === projectId) {
+      return; // Don't allow removing Fast Pool
     }
-
-    onSelectedProjectsChange(selectedProjects.filter(p => p.id !== projectId));
-    // Also remove from cart
-    cartService.removeProject(projectId);
+    
+    const updatedProjects = selectedProjects.filter(p => p.id !== projectId);
+    onSelectedProjectsChange(updatedProjects);
   };
 
-  const loadFromCart = () => {
-    const cartProjects = cartService.getCartProjects();
-    if (cartProjects.length > 0) {
-      const fastPoolProject = projectService.getAllProjects().find(p => p.name === "Fast Pool");
-      const projectsFromCart = cartProjects
-        .filter(cartProject => cartProject.name !== "Fast Pool") // Exclude Fast Pool from cart items
-        .map(cartProject => {
-          const fullProject = projectService.getAllProjects().find(p => p.id === cartProject.id);
-          return fullProject || {
-            id: cartProject.id,
-            name: cartProject.name,
-            description: cartProject.description,
-            image: cartProject.image,
-            totalRaised: cartProject.totalRaised,
-            category: "Unknown",
-            backers: 0,
-            status: "approved" as const,
-            creator: "Unknown",
-            slug: cartProject.id
-          };
-        });
-      
-      // Always include Fast Pool as first project
-      const allProjects = fastPoolProject ? [fastPoolProject, ...projectsFromCart] : projectsFromCart;
-      onSelectedProjectsChange(allProjects);
-      
-      toast({
-        title: "Projects Loaded",
-        description: `Loaded ${cartProjects.length} project${cartProjects.length !== 1 ? 's' : ''} from your support cart.`,
-      });
-    } else {
-      toast({
-        title: "Cart is Empty",
-        description: "Visit the Projects page to add projects to your support cart.",
-      });
+  const handleProjectsSelected = (projects: Project[]) => {
+    onSelectedProjectsChange(projects);
+    setIsModalOpen(false);
+  };
+
+  // Calculate contribution amounts for each project
+  const getProjectContribution = (project: Project) => {
+    if (!stxAmount || !contributionPercentage) return { percentage: 0, amount: "0" };
+    
+    const estimatedYield = parseFloat(stxAmount) * 0.085;
+    const totalContribution = (estimatedYield * contributionPercentage) / 100;
+    
+    if (project.name === "Fast Pool") {
+      const fastPoolPercentage = 4.7;
+      const fastPoolAmount = (estimatedYield * fastPoolPercentage) / 100;
+      return { percentage: fastPoolPercentage, amount: fastPoolAmount.toFixed(4) };
     }
+    
+    // Other projects share the remaining percentage equally
+    const otherProjects = selectedProjects.filter(p => p.name !== "Fast Pool");
+    const remainingPercentage = contributionPercentage - 4.7;
+    const percentagePerProject = otherProjects.length > 0 ? remainingPercentage / otherProjects.length : 0;
+    const amountPerProject = (estimatedYield * percentagePerProject) / 100;
+    
+    return { percentage: percentagePerProject, amount: amountPerProject.toFixed(4) };
   };
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-2">
-        <Label className="text-white">Selected Projects ({selectedProjects.length}/5)</Label>
-        {cartCount > 0 && selectedProjects.filter(p => p.name !== "Fast Pool").length === 0 && (
-          <SecondaryButton
-            onClick={loadFromCart}
-            size="sm"
-            disabled={disabled}
-          >
-            <ShoppingCart className="h-4 w-4 mr-2" />
-            Load Cart ({cartCount})
-          </SecondaryButton>
-        )}
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-white font-medium flex items-center">
+          <Users className="h-4 w-4 mr-2" />
+          Selected Projects ({selectedProjects.length})
+        </h3>
+        <Button
+          onClick={() => setIsModalOpen(true)}
+          size="sm"
+          className="bg-blue-600 hover:bg-blue-700"
+          disabled={disabled}
+        >
+          <Plus className="h-4 w-4 mr-1" />
+          Add Projects
+        </Button>
       </div>
 
-      {selectedProjects.length > 0 && (
-        <div className="space-y-2 mb-3">
+      {selectedProjects.length === 0 ? (
+        <div className="text-center py-8 text-gray-400">
+          <Users className="h-12 w-12 mx-auto mb-3 opacity-50" />
+          <p>No projects selected</p>
+          <p className="text-sm">Add projects to support with your contributions</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-4">
           {selectedProjects.map((project) => {
-            const isFastPool = project.name === "Fast Pool";
+            const contribution = getProjectContribution(project);
             return (
-              <div
+              <ProjectCard
                 key={project.id}
-                className={`flex items-center justify-between rounded-lg p-3 border ${
-                  isFastPool 
-                    ? "bg-orange-500/10 border-orange-500/30" 
-                    : "bg-white/5 border-white/10"
-                }`}
-              >
-                <div className="flex items-center space-x-3">
-                  {project.image && (
-                    <img
-                      src={project.image}
-                      alt={project.name}
-                      className="w-10 h-10 rounded object-cover"
-                    />
-                  )}
-                  <div>
-                    <div className="flex items-center space-x-2">
-                      <p className="text-white font-medium">{project.name}</p>
-                      {isFastPool && (
-                        <div className="flex items-center space-x-1">
-                          <Lock className="h-3 w-3 text-orange-400" />
-                          <span className="text-xs text-orange-400">Required</span>
-                        </div>
-                      )}
-                    </div>
-                    <p className="text-gray-400 text-sm">
-                      {isFastPool ? "4.7% fixed" : `${project.totalRaised.toLocaleString()} STX raised`}
-                    </p>
-                  </div>
-                </div>
-                {!isFastPool && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => removeProject(project.id)}
-                    className="text-gray-400 hover:text-red-400"
-                    disabled={disabled}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                )}
-              </div>
+                project={project}
+                contributionPercentage={contribution.percentage}
+                estimatedContribution={contribution.amount}
+                rewardType={rewardType}
+              />
             );
           })}
         </div>
       )}
 
-      <SecondaryButton
-        onClick={() => setShowProjectModal(true)}
-        className="w-full"
-        disabled={selectedProjects.length >= 5 || disabled}
-      >
-        <Plus className="h-4 w-4 mr-2" />
-        {selectedProjects.filter(p => p.name !== "Fast Pool").length === 0 ? 'Select Projects' : 'Add More Projects'}
-      </SecondaryButton>
-
       <ProjectSelectionModal
-        open={showProjectModal}
-        onOpenChange={setShowProjectModal}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
         selectedProjects={selectedProjects}
-        onProjectsChange={onSelectedProjectsChange}
+        onProjectsSelected={handleProjectsSelected}
       />
     </div>
   );

@@ -5,7 +5,6 @@ import DonationToggle from "./DonationToggle";
 import DonationPercentageSlider from "./DonationPercentageSlider";
 import PublicSharingToggle from "./PublicSharingToggle";
 import DonationInactiveMessage from "./DonationInactiveMessage";
-import RewardDistribution from "./RewardDistribution";
 
 interface DonationSettingsProps {
   enableDonation: boolean;
@@ -52,26 +51,11 @@ const DonationSettings = ({
               onSelectedProjectsChange={onSelectedProjectsChange}
               disabled={disabled}
             />
-
-            {/* <PublicSharingToggle
-              sharePublicly={sharePublicly}
-              onSharePubliclyChange={onSharePubliclyChange}
-              disabled={disabled}
-            /> */}
           </>
         ) : (
           <DonationInactiveMessage />
         )}
       </div>
-
-      {/* Show reward distribution when donation is enabled and projects are selected */}
-      {enableDonation && selectedProjects.length > 0 && (
-        <RewardDistribution
-          selectedProjects={selectedProjects}
-          donationPercentage={donationPercentage[0]}
-          enableDonation={enableDonation}
-        />
-      )}
     </div>
   );
 };
