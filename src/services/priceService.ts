@@ -43,7 +43,7 @@ class PriceService {
       const mockPrices = {
         BTC: {
           USD: { price: 43250.5, change24h: 2.34 },
-          STX: { price: 100, change24h: 23 },
+          STX: { price: 600, change24h: 23 },
         },
         STX: {
           USD: { price: 2.85, change24h: -1.23 },
