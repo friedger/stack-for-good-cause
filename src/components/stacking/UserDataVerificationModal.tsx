@@ -1,13 +1,14 @@
 
-import { useState } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { deserializeCV, hexToBytes } from "@stacks/transactions";
 import { useToast } from "@/hooks/use-toast";
-import { Copy, Check } from "lucide-react";
+import { hexToBytes } from "@stacks/common";
+import { ClarityType, deserializeCV } from "@stacks/transactions";
+import { Check, Copy } from "lucide-react";
+import { useState } from "react";
 
 interface UserDataVerificationModalProps {
   open: boolean;
@@ -43,26 +44,26 @@ const UserDataVerificationModal = ({ open, onOpenChange }: UserDataVerificationM
       // Convert hex string to bytes and deserialize
       const bytes = hexToBytes(hexString);
       const deserializedCV = deserializeCV(bytes);
-      
+
       // Extract data from the tuple structure
       // Assuming the structure is: { v: uint, c: string-ascii, p: list of principals, r: list of uints }
       if (deserializedCV.type === 'tuple') {
-        const tupleData = deserializedCV.data;
-        
-        const version = tupleData.v?.type === 'uint' ? Number(tupleData.v.value) : 0;
-        const currency = tupleData.c?.type === 'string-ascii' ? tupleData.c.data : '';
-        
+        const tupleData = deserializedCV.value;
+
+        const version = tupleData.v?.type === ClarityType.UInt ? Number(tupleData.v.value) : 0;
+        const currency = tupleData.c?.type === ClarityType.StringASCII ? tupleData.c.value : '';
+
         const addresses: string[] = [];
         const shares: number[] = [];
-        
+
         if (tupleData.p?.type === 'list') {
-          tupleData.p.list.forEach((principal: any) => {
+          tupleData.p.value.forEach((principal: any) => {
             if (principal.type === 'principal') {
               addresses.push(principal.address);
             }
           });
         }
-        
+
         if (tupleData.r?.type === 'list') {
           tupleData.r.list.forEach((share: any) => {
             if (share.type === 'uint') {
@@ -70,14 +71,14 @@ const UserDataVerificationModal = ({ open, onOpenChange }: UserDataVerificationM
             }
           });
         }
-        
+
         setVerificationResult({
           version,
           currency,
           addresses,
           shares,
         });
-        
+
         toast({
           title: "Verification Successful",
           description: "User data has been successfully decoded and verified.",
@@ -144,8 +145,8 @@ const UserDataVerificationModal = ({ open, onOpenChange }: UserDataVerificationM
             />
           </div>
 
-          <Button 
-            onClick={handleVerify} 
+          <Button
+            onClick={handleVerify}
             disabled={isVerifying || !hexString.trim()}
             className="w-full"
           >
