@@ -1,12 +1,10 @@
 
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Project } from "@/services/projectService";
-import { Plus, X, Users } from "lucide-react";
+import { Plus, Users } from "lucide-react";
 import ProjectSelectionModal from "./ProjectSelectionModal";
-import ProjectCard from "../projects/ProjectCard";
+import ProjectContributionCard from "./ProjectContributionCard";
 
 interface ProjectManagerProps {
   selectedProjects: Project[];
@@ -89,16 +87,18 @@ const ProjectManager = ({
           <p className="text-sm">Add projects to support with your contributions</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4">
+        <div className="grid grid-cols-1 gap-3">
           {selectedProjects.map((project) => {
             const contribution = getProjectContribution(project);
             return (
-              <ProjectCard
+              <ProjectContributionCard
                 key={project.id}
                 project={project}
                 contributionPercentage={contribution.percentage}
                 estimatedContribution={contribution.amount}
                 rewardType={rewardType}
+                onRemove={() => removeProject(project.id)}
+                showRemoveButton={true}
               />
             );
           })}
