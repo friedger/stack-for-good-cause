@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { PrimaryButton } from "@/components/ui/primary-button";
 import { SecondaryButton } from "@/components/ui/secondary-button";
-import { Heart, Share2, Check, Lock } from "lucide-react";
+import { Heart, Share2, Check, Lock, Clock } from "lucide-react";
 import { Project } from "@/services/projectService";
 import { cartService } from "@/services/cartService";
 import { useToast } from "@/hooks/use-toast";
@@ -103,12 +103,12 @@ const ProjectHeader = ({ project }: ProjectHeaderProps) => {
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <div className="text-center p-4 bg-white/10 rounded-lg">
+          {/* <div className="text-center p-4 bg-white/10 rounded-lg">
             <div className="text-2xl font-bold text-green-400 mb-1">
               {project.totalRaised.toFixed(2)} STX
             </div>
             <div className="text-gray-300 text-sm">Total Raised</div>
-          </div>
+          </div> */}
           <div className="text-center p-4 bg-white/10 rounded-lg">
             <div className="text-2xl font-bold text-blue-400 mb-1">
               {project.backers}
@@ -118,27 +118,30 @@ const ProjectHeader = ({ project }: ProjectHeaderProps) => {
         </div>
 
         <div className="flex gap-4">
-          <PrimaryButton 
+          <PrimaryButton
             className={`flex-1 ${isFastPool ? 'bg-orange-500 hover:bg-orange-600 opacity-75 cursor-not-allowed' : 'bg-pink-500 hover:bg-pink-600'}`}
             onClick={handleSupportToggle}
-            disabled={isFastPool && isInCart}
+            disabled={isFastPool || project.status === "pending"}
           >
-            {isFastPool ? (
-              <>
-                <Lock className="h-4 w-4 mr-2" />
-                Required Project
-              </>
-            ) : isInCart ? (
-              <>
-                <Check className="h-4 w-4 mr-2" />
-                Remove Support
-              </>
-            ) : (
-              <>
-                <Heart className="h-4 w-4 mr-2" />
-                Support This Project
-              </>
-            )}
+            {project.status === "pending" ?
+              <><Clock className="h-4 w-4 mr-2" />
+                Awaiting Admin Approval
+              </> : isFastPool ? (
+                <>
+                  <Lock className="h-4 w-4 mr-2" />
+                  Required Project
+                </>
+              ) : isInCart ? (
+                <>
+                  <Check className="h-4 w-4 mr-2" />
+                  Remove Support
+                </>
+              ) : (
+                <>
+                  <Heart className="h-4 w-4 mr-2" />
+                  Support This Project
+                </>
+              )}
           </PrimaryButton>
           <SecondaryButton>
             <Share2 className="h-4 w-4 mr-2" />
