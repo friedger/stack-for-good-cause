@@ -125,9 +125,7 @@ export const useStackingLogic = () => {
               description: `Transaction broadcast: ${txId.slice(
                 0,
                 8
-              )}...${txId.slice(
-                -4
-              )}. Rewards in ${rewardText}${donationText}. Impact shared on Nostr!`,
+              )}...${txId.slice(-4)}. Rewards in ${rewardText}${donationText}.`,
             });
           } catch (error) {
             toast({

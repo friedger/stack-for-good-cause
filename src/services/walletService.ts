@@ -15,6 +15,7 @@ import {
   tupleCV,
   uintCV,
   bufferCV,
+  noneCV,
 } from "@stacks/transactions";
 
 export interface WalletInfo {
@@ -69,7 +70,7 @@ class WalletService {
     const response = await request("stx_callContract", {
       contract: "SP000000000000000000002Q6VF78.pox-4",
       functionName: "allow-contract-caller",
-      functionArgs: [principalCV(poolAddress)],
+      functionArgs: [principalCV(poolAddress), noneCV()],
     });
     console.log("Stacking transaction broadcast:", response.txid);
     return response.txid;
