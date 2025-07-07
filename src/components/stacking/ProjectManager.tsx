@@ -70,24 +70,15 @@ const ProjectManager = ({
   };
 
   // Calculate contribution amounts for each project
-  const getProjectContribution = (project: Project) => {
-    if (!stxAmount || !contributionPercentage) return { percentage: 0, amount: "0" };
+  const getProjectContribution = () => {
+    if (!stxAmount || !contributionPercentage) return { shareInPromille: 0, amount: "0" };
 
-    const estimatedYield = parseFloat(stxAmount) * 0.085;
-    const fastPoolPercentage = 4.7;
+    const estimatedYield = parseFloat(stxAmount) * 0.095; // TODO use yield service
 
-    if (project.name === "Fast Pool") {
-      const fastPoolAmount = (estimatedYield * fastPoolPercentage) / 100;
-      return { percentage: fastPoolPercentage, amount: fastPoolAmount.toFixed(4) };
-    }
+    const promillePerProject = selectedProjects.length > 0 ? Math.floor(contributionPercentage * 10 / selectedProjects.length) : 0;
+    const amountPerProject = (estimatedYield * promillePerProject) / 1000;
 
-    // Other projects share the remaining percentage equally
-    const otherProjects = selectedProjects.filter(p => p.name !== "Fast Pool");
-    const remainingPercentage = contributionPercentage - fastPoolPercentage;
-    const percentagePerProject = otherProjects.length > 0 ? remainingPercentage / otherProjects.length : 0;
-    const amountPerProject = (estimatedYield * percentagePerProject) / 100;
-
-    return { percentage: percentagePerProject, amount: amountPerProject.toFixed(4) };
+    return { shareInPromille: promillePerProject, amount: amountPerProject.toFixed(4) };
   };
 
   return (
@@ -117,12 +108,12 @@ const ProjectManager = ({
       ) : (
         <div className="grid grid-cols-1 gap-3">
           {selectedProjects.map((project) => {
-            const contribution = getProjectContribution(project);
+            const contribution = getProjectContribution();
             return (
               <ProjectContributionCard
                 key={project.id}
                 project={project}
-                contributionPercentage={contribution.percentage}
+                shareInPromille={contribution.shareInPromille}
                 estimatedContribution={contribution.amount}
                 rewardType={rewardType}
                 onRemove={() => removeProject(project.id)}

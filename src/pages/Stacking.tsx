@@ -10,7 +10,7 @@ const Stacking = () => {
   const [stxAmount, setStxAmount] = useState("");
   const [rewardType, setRewardType] = useState<"stx" | "sbtc">("stx");
   const [enableDonation, setEnableDonation] = useState(true);
-  const [donationPercentage, setDonationPercentage] = useState([10]);
+  const [donationPercentage, setDonationPercentage] = useState([4]);
   const [selectedProjects, setSelectedProjects] = useState<Project[]>([]);
   const [sharePublicly, setSharePublicly] = useState(true);
 

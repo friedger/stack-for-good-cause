@@ -1,10 +1,9 @@
-
 import { nostrService } from "./nostrService";
 import { Project, CreateProjectData } from "./projectCore";
-import { mockProjects } from "./projectData";
+import { curatedProjects } from "./projectData";
 
 class ProjectService {
-  private projects: Project[] = [...mockProjects];
+  private projects: Project[] = [...curatedProjects];
 
   getAllProjects(): Project[] {
     return [...this.projects];

@@ -20,13 +20,13 @@ const DonationPercentageSlider = ({
         value={donationPercentage}
         onValueChange={onDonationPercentageChange}
         max={100}
-        min={4.7}
+        min={0}
         step={0.1}
         className="mt-2"
         disabled={disabled}
       />
       <div className="flex justify-between text-sm text-gray-400 mt-1">
-        <span>4.7% (Fast Pool Required)</span>
+        <span>0%</span>
         <span>100% </span>
       </div>
     </div>

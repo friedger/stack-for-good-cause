@@ -81,10 +81,13 @@ export const useStackingLogic = () => {
 
     setIsProcessingTx(true);
 
+    const partPerProject = Math.floor(
+      (donationPercentage[0] * 100) / selectedProjects.length
+    );
     const projectsForDonation = enableDonation
       ? selectedProjects.map((project) => ({
           addr: project.stxAddress,
-          part: Math.floor((donationPercentage[0] / 100) * 1000), // Convert percentage to promille
+          part: partPerProject,
         }))
       : [];
     try {

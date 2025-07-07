@@ -40,7 +40,7 @@ const RewardsBreakdown = ({
       <CardHeader>
         <CardTitle className="text-white flex items-center">
           <Heart className="h-6 w-6 mr-2 text-orange-400" />
-          Configure Contributions
+          Configure Your Contributions
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -51,8 +51,6 @@ const RewardsBreakdown = ({
           onDonationPercentageChange={setDonationPercentage}
           selectedProjects={selectedProjects}
           onSelectedProjectsChange={setSelectedProjects}
-          sharePublicly={sharePublicly}
-          onSharePubliclyChange={setSharePublicly}
           disabled={isStacking}
           stxAmount={stxAmount}
           rewardType={rewardType}

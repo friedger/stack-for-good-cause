@@ -6,7 +6,7 @@ import { Project } from "@/services/projectService";
 
 interface ProjectContributionCardProps {
   project: Project;
-  contributionPercentage?: number;
+  shareInPromille?: number;
   estimatedContribution?: string;
   rewardType?: string;
   onRemove?: () => void;
@@ -15,14 +15,14 @@ interface ProjectContributionCardProps {
 
 const ProjectContributionCard = ({
   project,
-  contributionPercentage,
+  shareInPromille,
   estimatedContribution,
   rewardType,
   onRemove,
   showRemoveButton = true
 }: ProjectContributionCardProps) => {
-  const isFastPool = project.name === "Fast Pool";
-
+  const isFastPool = project.id === "1";
+  const shareInPercent = shareInPromille ? (shareInPromille / 10).toFixed(1) : undefined; // Convert promille to percent
   return (
     <Card className={`bg-white/5 backdrop-blur-sm border-white/10 transition-all duration-200 ${isFastPool ? 'ring-1 ring-orange-500/30' : ''}`}>
       <CardContent className="p-3">
@@ -46,20 +46,20 @@ const ProjectContributionCard = ({
               </Badge>
 
               {/* Contribution data on mobile - below project info */}
-              {contributionPercentage !== undefined && estimatedContribution && (
+              {shareInPercent !== undefined && estimatedContribution && (
                 <div className="lg:hidden space-y-1">
                   <div className="text-xs">
                     <span className="text-gray-400">Contribution: </span>
                     <span className="text-orange-400 font-medium">
-                      {contributionPercentage.toFixed(1)}%
+                      {shareInPercent}%
                     </span>
                   </div>
-                  <div className="text-xs">
+                  {/* <div className="text-xs">
                     <span className="text-gray-400">Est. Amount: </span>
                     <span className="text-orange-400 font-medium">
                       {estimatedContribution} {rewardType?.toUpperCase() || 'STX'}
                     </span>
-                  </div>
+                  </div> */}
                 </div>
               )}
             </div>
@@ -68,20 +68,20 @@ const ProjectContributionCard = ({
           {/* Right section: Contribution data (desktop) and remove button */}
           <div className="flex items-center gap-3">
             {/* Contribution data on desktop - fixed width for alignment */}
-            {contributionPercentage !== undefined && estimatedContribution && (
+            {shareInPercent !== undefined && estimatedContribution && (
               <div className="hidden lg:block text-right min-w-[100px]">
                 <div className="text-xs">
                   <span className="text-gray-400">Contribution: </span>
                   <span className="text-orange-400 font-medium">
-                    {contributionPercentage.toFixed(1)}%
+                    {shareInPercent}%
                   </span>
                 </div>
-                <div className="text-xs">
+                {/* <div className="text-xs">
                   <span className="text-gray-400">Est. Amount: </span>
                   <span className="text-orange-400 font-medium">
                     {estimatedContribution} {rewardType?.toUpperCase() || 'STX'}
                   </span>
-                </div>
+                </div> */}
               </div>
             )}
 

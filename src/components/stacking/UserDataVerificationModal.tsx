@@ -184,7 +184,7 @@ const UserDataVerificationModal = ({ open, onOpenChange }: UserDataVerificationM
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-mono truncate">{truncAddress(address)}</p>
                             <p className="text-xs">
-                              <span className="text-gray-500">Share:</span> {verificationResult.shares[index] / 10 || 0}%
+                              <span className="text-gray-500">Share:</span> {verificationResult.shares[index] || 0} ‰
                             </p>
                           </div>
                           <Button
