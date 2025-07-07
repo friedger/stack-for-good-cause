@@ -4,14 +4,14 @@ import Header from "@/components/Header";
 import StackingForm from "@/components/StackingForm";
 import RewardsBreakdown from "@/components/RewardsBreakdown";
 import StatsDisplay from "@/components/StatsDisplay";
-import { Project } from "@/services/projectService";
+import { Project, projectService } from "@/services/projectService";
 
 const Stacking = () => {
   const [stxAmount, setStxAmount] = useState("");
   const [rewardType, setRewardType] = useState<"stx" | "sbtc">("stx");
   const [enableDonation, setEnableDonation] = useState(true);
   const [donationPercentage, setDonationPercentage] = useState([4]);
-  const [selectedProjects, setSelectedProjects] = useState<Project[]>([]);
+  const [selectedProjects, setSelectedProjects] = useState<Project[]>([projectService.getProjectBySlug("zero-authority-dao")]);
   const [sharePublicly, setSharePublicly] = useState(true);
 
   return (
