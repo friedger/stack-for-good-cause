@@ -82,7 +82,7 @@ export const useStackingLogic = () => {
     setIsProcessingTx(true);
 
     const partPerProject = Math.floor(
-      (donationPercentage[0] * 100) / selectedProjects.length
+      (donationPercentage[0] * 10) / selectedProjects.length
     );
     const projectsForDonation = enableDonation
       ? selectedProjects.map((project) => ({
