@@ -16,7 +16,6 @@ export const useStackingLogic = () => {
   const [stackingState, setStackingState] =
     useState<StackingState>("not-stacking");
   const [isProcessingTx, setIsProcessingTx] = useState(false);
-  const [showVerificationModal, setShowVerificationModal] = useState(false);
 
   const allowFastPool = async () => {
     if (!walletService.isWalletConnected()) {
@@ -81,9 +80,6 @@ export const useStackingLogic = () => {
     }
 
     setIsProcessingTx(true);
-
-    // Open the verification modal after successful stacking
-    setShowVerificationModal(true);
 
     const projectsForDonation = enableDonation
       ? selectedProjects.map((project) => ({
@@ -241,8 +237,6 @@ export const useStackingLogic = () => {
     stackingState,
     isProcessingTx,
     isStacking,
-    showVerificationModal,
-    setShowVerificationModal,
     allowFastPool,
     handleStacking,
     handleStopStacking,

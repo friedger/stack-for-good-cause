@@ -1,12 +1,12 @@
 
-import { Link } from "react-router-dom";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { SecondaryButton } from "@/components/ui/secondary-button";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { User, LogOut, Wallet } from "lucide-react";
-import { WalletInfo } from "@/services/walletService";
 import { useStackingNotification } from "@/hooks/useStackingNotification";
-import { truncAddress, truncAddress, truncAddress } from "@/lib/format";
+import { truncAddress } from "@/lib/format";
+import { WalletInfo } from "@/services/walletService";
+import { LogOut, User, Wallet } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface MobileMenuProps {
   isOpen: boolean;

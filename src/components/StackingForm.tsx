@@ -32,12 +32,11 @@ const StackingForm = ({
   sharePublicly,
 }: StackingFormProps) => {
   const [conditionsAccepted, setConditionsAccepted] = useState(false);
+  const [showVerificationModal, setShowVerificationModal] = useState(false);
 
   const {
     isProcessingTx,
     isStacking,
-    showVerificationModal,
-    setShowVerificationModal,
     allowFastPool,
     handleStacking,
     handleStopStacking,
@@ -92,6 +91,7 @@ const StackingForm = ({
             onStartStacking={onStartStacking}
             onStopStacking={handleStopStacking}
             conditionsAccepted={conditionsAccepted}
+            setShowVerificationModal={setShowVerificationModal}
           />
         </CardContent>
       </Card>

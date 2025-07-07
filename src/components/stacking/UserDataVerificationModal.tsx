@@ -48,7 +48,7 @@ const UserDataVerificationModal = ({ open, onOpenChange }: UserDataVerificationM
       console.log("Deserialized CV:", deserializedCV);
       // Extract data from the tuple structure
       // Assuming the structure is: { v: uint, c: string-ascii, p: list of principals, r: list of uints }
-      if (deserializedCV.type === 'tuple') {
+      if (deserializedCV.type === ClarityType.Tuple) {
         const tupleData = deserializedCV.value;
 
         const version = tupleData.v?.type === ClarityType.UInt ? Number(tupleData.v.value) : 0;

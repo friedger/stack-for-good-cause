@@ -1,4 +1,4 @@
-export const ustx = (amount: number): string => {
+export const ustxToLocalString = (amount: number): string => {
   return amount.toLocaleString("en-US", {
     style: "decimal",
     minimumFractionDigits: 2,
