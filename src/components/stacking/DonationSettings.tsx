@@ -1,11 +1,10 @@
 
+import { configService } from "@/services/configService";
 import { Project } from "@/services/projectService";
 import DonationInactiveMessage from "./DonationInactiveMessage";
 import DonationPercentageSlider from "./DonationPercentageSlider";
 import DonationToggle from "./DonationToggle";
 import ProjectManager from "./ProjectManager";
-import { config } from "process";
-import { configService } from "@/services/configService";
 import ProjectManagerSingleProject from "./ProjectManagerSingleProject";
 
 interface DonationSettingsProps {
