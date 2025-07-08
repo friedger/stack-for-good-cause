@@ -5,6 +5,7 @@ import { SecondaryButton } from "@/components/ui/secondary-button";
 import { useStackingNotification } from "@/hooks/useStackingNotification";
 import { truncAddress } from "@/lib/format";
 import { WalletInfo } from "@/services/walletService";
+import { configService } from "@/services/configService";
 import { LogOut, User, Wallet } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -30,6 +31,7 @@ const MobileMenu = ({
     ? truncAddress(walletInfo.stxAddress)
     : '';
   const { projectCount, isStacking, showNotification } = useStackingNotification();
+  const showProjectsInHeader = configService.shouldShowProjectsInHeader();
 
   if (!isOpen) return null;
 
@@ -56,13 +58,15 @@ const MobileMenu = ({
             </div>
           )}
         </div>
-        <Link
-          to="/projects"
-          className="text-white hover:text-orange-400 transition-colors px-2 py-1"
-          onClick={onClose}
-        >
-          Projects
-        </Link>
+        {showProjectsInHeader && (
+          <Link
+            to="/projects"
+            className="text-white hover:text-orange-400 transition-colors px-2 py-1"
+            onClick={onClose}
+          >
+            Projects
+          </Link>
+        )}
         {/* <Link
           to="/dashboard"
           className="text-white hover:text-orange-400 transition-colors px-2 py-1"

@@ -3,12 +3,15 @@ import CtaSection from "@/components/shared/CtaSection";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PrimaryButton } from "@/components/ui/primary-button";
 import { SecondaryButton } from "@/components/ui/secondary-button";
+import { configService } from "@/services/configService";
 import { ArrowRight, Heart, Share2, Shield, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const statsEnabled = false; // enabled when backend is ready
 
 const Index = () => {
+  const showProjectsInHeader = configService.shouldShowProjectsInHeader();
+
   return (
     <>
 
@@ -32,9 +35,11 @@ const Index = () => {
                 Start Stacking <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </PrimaryButton>
-            <SecondaryButton asChild size="lg" className="text-lg px-8 py-6">
-              <Link to="/projects">Explore Impact</Link>
-            </SecondaryButton>
+            {showProjectsInHeader && (
+              <SecondaryButton asChild size="lg" className="text-lg px-8 py-6">
+                <Link to="/projects">Explore Impact</Link>
+              </SecondaryButton>
+            )}
           </div>
         </div>
       </section >

@@ -1,5 +1,6 @@
 
 import { Link } from "react-router-dom";
+import { configService } from "@/services/configService";
 
 interface LogoProps {
   size?: "sm" | "md" | "lg";
@@ -19,6 +20,9 @@ const Logo = ({ size = "md", showText = true, className = "" }: LogoProps) => {
     md: "text-2xl",
     lg: "text-4xl"
   };
+
+  const logoTitle = configService.getLogoTitle();
+  const logoSubtitle = configService.getLogoSubtitle();
 
   return (
     <Link to="/" className={`flex items-center text-white hover:text-blue-700/80 transition-colors ${className}`}>
@@ -42,7 +46,7 @@ const Logo = ({ size = "md", showText = true, className = "" }: LogoProps) => {
       </div>
       {showText && (
         <span className={`${textSizeClasses[size]} font-bold`}>
-          Zero<span className="text-blue-700/80">Authority</span>
+          {logoTitle}<span className="text-blue-700/80">{logoSubtitle}</span>
         </span>
       )}
     </Link>

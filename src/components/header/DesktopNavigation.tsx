@@ -5,6 +5,7 @@ import { SecondaryButton } from "@/components/ui/secondary-button";
 import { Wallet } from "lucide-react";
 import { WalletInfo } from "@/services/walletService";
 import { useStackingNotification } from "@/hooks/useStackingNotification";
+import { configService } from "@/services/configService";
 import WalletDropdown from "./WalletDropdown";
 
 interface DesktopNavigationProps {
@@ -22,6 +23,7 @@ const DesktopNavigation = ({
 }: DesktopNavigationProps) => {
   const isConnected = walletInfo?.isConnected || false;
   const { projectCount, isStacking, showNotification } = useStackingNotification();
+  const showProjectsInHeader = configService.shouldShowProjectsInHeader();
 
   return (
     <div className="hidden md:flex items-center space-x-6">
@@ -41,9 +43,11 @@ const DesktopNavigation = ({
           </div>
         )}
       </div>
-      <Link to="/projects" className="text-white hover:text-orange-400 transition-colors">
-        Projects
-      </Link>
+      {showProjectsInHeader && (
+        <Link to="/projects" className="text-white hover:text-orange-400 transition-colors">
+          Projects
+        </Link>
+      )}
       {/* <Link to="/dashboard" className="text-white hover:text-orange-400 transition-colors">
         Dashboard
       </Link> */}
