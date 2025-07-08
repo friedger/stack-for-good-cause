@@ -4,8 +4,10 @@ import ProjectStats from "@/components/project-detail/ProjectStats";
 import ProjectUpdates from "@/components/project-detail/ProjectUpdates";
 import RecentBackers from "@/components/project-detail/RecentBackers";
 import { SecondaryButton } from "@/components/ui/secondary-button";
+import { configService } from "@/services/configService";
 import { projectService, type Project } from "@/services/projectService";
 import { ArrowLeft } from "lucide-react";
+import { config } from "process";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
@@ -67,11 +69,17 @@ const ProjectDetail = () => {
     <div className="container mx-auto px-6 py-12">
       <div className="max-w-6xl mx-auto">
         {/* Back Button */}
-        <Link to="/projects" className="inline-flex items-center text-white hover:text-purple-400 transition-colors mb-8">
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Projects
-        </Link>
-
+        {configService.getMultiProjectsAllowed() ?
+          <Link to="/projects" className="inline-flex items-center text-white hover:text-purple-400 transition-colors mb-8">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Projects
+          </Link>
+          :
+          <Link to="/stacking" className="inline-flex items-center text-white hover:text-purple-400 transition-colors mb-8">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Stacking
+          </Link>
+        }
         <ProjectHeader project={project} />
 
         {/* Project Content */}

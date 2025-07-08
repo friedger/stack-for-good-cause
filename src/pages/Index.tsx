@@ -10,8 +10,8 @@ import { Link } from "react-router-dom";
 const statsEnabled = false; // enabled when backend is ready
 
 const Index = () => {
-  const showProjectsInHeader = configService.shouldShowProjectsInHeader();
-
+  const multiProjectsAllowed = configService.getMultiProjectsAllowed();
+  const subHeading = configService.getSubHeading()
   return (
     <>
 
@@ -19,15 +19,14 @@ const Index = () => {
       < section className="container mx-auto px-6 py-20 text-center" >
         <div className="max-w-4xl mx-auto">
           <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
-            Stack Your Way,
+            Stack with Purpose,
             <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
-              Earn Your Rewards
+              Shared Impact
             </span>
           </h1>
           <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-            Experience fast, flexible stacking with choice over your rewards. Earn in STX or sBTC,
-            choose your impact, and join a community making a difference together.
+            {subHeading}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <PrimaryButton asChild size="lg" className="text-lg px-8 py-6">
@@ -35,7 +34,7 @@ const Index = () => {
                 Start Stacking <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </PrimaryButton>
-            {showProjectsInHeader && (
+            {multiProjectsAllowed && (
               <SecondaryButton asChild size="lg" className="text-lg px-8 py-6">
                 <Link to="/projects">Explore Impact</Link>
               </SecondaryButton>

@@ -31,7 +31,7 @@ const MobileMenu = ({
     ? truncAddress(walletInfo.stxAddress)
     : '';
   const { projectCount, isStacking, showNotification } = useStackingNotification();
-  const showProjectsInHeader = configService.shouldShowProjectsInHeader();
+  const multiProjectsAllowed = configService.getMultiProjectsAllowed();
 
   if (!isOpen) return null;
 
@@ -58,7 +58,7 @@ const MobileMenu = ({
             </div>
           )}
         </div>
-        {showProjectsInHeader && (
+        {multiProjectsAllowed && (
           <Link
             to="/projects"
             className="text-white hover:text-orange-400 transition-colors px-2 py-1"

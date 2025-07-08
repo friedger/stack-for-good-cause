@@ -5,6 +5,7 @@ import { useStackingLogic } from "@/hooks/useStackingLogic";
 import { Project } from "@/services/projectCore";
 import { Heart, TrendingUp } from "lucide-react";
 import DonationSettings from "./stacking/DonationSettings";
+import { configService } from "@/services/configService";
 
 interface RewardsBreakdownProps {
   stxAmount: string;
@@ -40,7 +41,7 @@ const RewardsBreakdown = ({
       <CardHeader>
         <CardTitle className="text-white flex items-center">
           <Heart className="h-6 w-6 mr-2 text-orange-400" />
-          Configure Your Contributions
+          {configService.getMultiProjectsAllowed() ? "Configure Your Contributions" : "Your Contribution"}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">

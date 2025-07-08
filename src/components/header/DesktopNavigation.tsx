@@ -23,7 +23,7 @@ const DesktopNavigation = ({
 }: DesktopNavigationProps) => {
   const isConnected = walletInfo?.isConnected || false;
   const { projectCount, isStacking, showNotification } = useStackingNotification();
-  const showProjectsInHeader = configService.shouldShowProjectsInHeader();
+  const multiProjectsAllowed = configService.getMultiProjectsAllowed();
 
   return (
     <div className="hidden md:flex items-center space-x-6">
@@ -43,7 +43,7 @@ const DesktopNavigation = ({
           </div>
         )}
       </div>
-      {showProjectsInHeader && (
+      {multiProjectsAllowed && (
         <Link to="/projects" className="text-white hover:text-orange-400 transition-colors">
           Projects
         </Link>

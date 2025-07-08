@@ -7,6 +7,7 @@ import { Heart, Share2, Check, Lock, Clock } from "lucide-react";
 import { Project } from "@/services/projectService";
 import { cartService } from "@/services/cartService";
 import { useToast } from "@/hooks/use-toast";
+import { configService } from "@/services/configService";
 
 interface ProjectHeaderProps {
   project: Project;
@@ -118,31 +119,33 @@ const ProjectHeader = ({ project }: ProjectHeaderProps) => {
         </div>
 
         <div className="flex gap-4">
-          <PrimaryButton
-            className={`flex-1 ${isFastPool ? 'bg-orange-500 hover:bg-orange-600 opacity-75 cursor-not-allowed' : 'bg-pink-500 hover:bg-pink-600'}`}
-            onClick={handleSupportToggle}
-            disabled={isFastPool || project.status === "pending"}
-          >
-            {project.status === "pending" ?
-              <><Clock className="h-4 w-4 mr-2" />
-                Awaiting Admin Approval
-              </> : isFastPool ? (
-                <>
-                  <Lock className="h-4 w-4 mr-2" />
-                  Required Project
-                </>
-              ) : isInCart ? (
-                <>
-                  <Check className="h-4 w-4 mr-2" />
-                  Remove Support
-                </>
-              ) : (
-                <>
-                  <Heart className="h-4 w-4 mr-2" />
-                  Support This Project
-                </>
-              )}
-          </PrimaryButton>
+          {configService.getMultiProjectsAllowed() &&
+            <PrimaryButton
+              className={`flex-1 ${isFastPool ? 'bg-orange-500 hover:bg-orange-600 opacity-75 cursor-not-allowed' : 'bg-pink-500 hover:bg-pink-600'}`}
+              onClick={handleSupportToggle}
+              disabled={isFastPool || project.status === "pending"}
+            >
+              {project.status === "pending" ?
+                <><Clock className="h-4 w-4 mr-2" />
+                  Awaiting Admin Approval
+                </> : isFastPool ? (
+                  <>
+                    <Lock className="h-4 w-4 mr-2" />
+                    Required Project
+                  </>
+                ) : isInCart ? (
+                  <>
+                    <Check className="h-4 w-4 mr-2" />
+                    Remove Support
+                  </>
+                ) : (
+                  <>
+                    <Heart className="h-4 w-4 mr-2" />
+                    Support This Project
+                  </>
+                )}
+            </PrimaryButton>
+          }
           <SecondaryButton>
             <Share2 className="h-4 w-4 mr-2" />
             Share

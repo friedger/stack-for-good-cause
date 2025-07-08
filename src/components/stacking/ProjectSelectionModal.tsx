@@ -7,6 +7,7 @@ import { Check } from "lucide-react";
 import { useEffect, useState } from "react";
 import { PrimaryButton } from "../ui/primary-button";
 import { SecondaryButton } from "../ui/secondary-button";
+import ProjectCardMedium from "../shared/ProjectCardMedium";
 
 interface ProjectSelectionModalProps {
   open: boolean;
@@ -76,51 +77,15 @@ const ProjectSelectionModal = ({
 
         <div className="grid md:grid-cols-2 gap-4 py-4">
           {availableProjects.map((project) => {
-            const isSelected = tempSelected.find(p => p.id === project.id);
+            const isSelected = Boolean(tempSelected.find(p => p.id === project.id));
             const canSelect = selectedCountExcludingFastPool < 4 || isSelected;
 
             return (
-              <Card
-                key={project.id}
-                className={`cursor-pointer transition-all ${isSelected
-                  ? "bg-orange-500/20 border-orange-500"
-                  : canSelect
-                    ? "bg-white/5 border-white/20 hover:bg-white/10"
-                    : "bg-gray-800/50 border-gray-600 opacity-50 cursor-not-allowed"
-                  }`}
-                onClick={() => canSelect && toggleProject(project)}
-              >
-                <CardContent className="p-4">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex-1">
-                      <h3 className="text-white font-semibold mb-1">{project.name}</h3>
-                      <p className="text-gray-400 text-sm line-clamp-2">{project.description}</p>
-                    </div>
-                    {isSelected && (
-                      <Check className="h-5 w-5 text-orange-400 ml-2 flex-shrink-0" />
-                    )}
-                  </div>
-
-                  {project.image && (
-                    <div className="mb-3">
-                      <img
-                        src={project.image}
-                        alt={project.name}
-                        className="w-full h-24 object-cover rounded"
-                      />
-                    </div>
-                  )}
-
-                  <div className="flex items-center justify-between text-sm">
-                    <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
-                      {project.status}
-                    </Badge>
-                    {/* <span className="text-gray-400">
-                      {project.totalRaised.toLocaleString()} STX raised
-                    </span> */}
-                  </div>
-                </CardContent>
-              </Card>
+              <ProjectCardMedium key={project.id}
+                project={project}
+                isSelected={isSelected}
+                canSelect={canSelect}
+              />
             );
           })}
         </div>

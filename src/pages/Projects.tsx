@@ -1,12 +1,11 @@
 
-import { useState } from "react";
-import { Heart, Plus, Timer } from "lucide-react";
-import Header from "@/components/Header";
-import ProjectCard from "@/components/projects/ProjectCard";
 import CreateProjectDialog from "@/components/projects/CreateProjectDialog";
-import { projectService } from "@/services/projectService";
-import { PrimaryButton } from "@/components/ui/primary-button";
+import ProjectCard from "@/components/projects/ProjectCard";
 import { Card, CardContent } from "@/components/ui/card";
+import { PrimaryButton } from "@/components/ui/primary-button";
+import { projectService } from "@/services/projectService";
+import { Heart, Plus } from "lucide-react";
+import { useState } from "react";
 
 const onboardingOpen = true;
 

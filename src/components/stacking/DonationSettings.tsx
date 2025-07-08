@@ -4,6 +4,9 @@ import DonationInactiveMessage from "./DonationInactiveMessage";
 import DonationPercentageSlider from "./DonationPercentageSlider";
 import DonationToggle from "./DonationToggle";
 import ProjectManager from "./ProjectManager";
+import { config } from "process";
+import { configService } from "@/services/configService";
+import ProjectManagerSingleProject from "./ProjectManagerSingleProject";
 
 interface DonationSettingsProps {
   enableDonation: boolean;
@@ -36,26 +39,38 @@ const DonationSettings = ({
           onEnableDonationChange={onEnableDonationChange}
           disabled={disabled}
         />
-        <div className="text-sm text-gray-400">
+        {/* <div className="text-sm text-gray-400">
           Fast Pool fees are currently ~4.7%. The contribution is based on the rewards you receive.
-        </div>
+        </div> */}
 
         {enableDonation ? (
           <>
+            <div className="text-sm text-green-400">
+              Fast Pool adds 4% on top of your contribution during cycle #114 and #115.
+            </div>
             <DonationPercentageSlider
               donationPercentage={donationPercentage}
               onDonationPercentageChange={onDonationPercentageChange}
               disabled={disabled}
             />
 
-            <ProjectManager
-              selectedProjects={selectedProjects}
-              onSelectedProjectsChange={onSelectedProjectsChange}
-              disabled={disabled}
-              stxAmount={stxAmount}
-              contributionPercentage={donationPercentage[0]}
-              rewardType={rewardType}
-            />
+            {configService.getMultiProjectsAllowed() ?
+              <ProjectManager
+                selectedProjects={selectedProjects}
+                onSelectedProjectsChange={onSelectedProjectsChange}
+                disabled={disabled}
+                stxAmount={stxAmount}
+                contributionPercentage={donationPercentage[0]}
+                rewardType={rewardType}
+              />
+              : <ProjectManagerSingleProject
+                selectedProjects={selectedProjects}
+                onSelectedProjectsChange={onSelectedProjectsChange}
+                disabled={disabled}
+                stxAmount={stxAmount}
+                contributionPercentage={donationPercentage[0]}
+                rewardType={rewardType} />
+            }
           </>
         ) : (
           <DonationInactiveMessage />

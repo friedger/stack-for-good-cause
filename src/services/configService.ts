@@ -1,10 +1,11 @@
+import { projectService } from "./projectService";
 
 interface WhiteLabelConfig {
   logoTitle: string;
   logoSubtitle: string;
   defaultProjectSlug: string;
   defaultContributionPercentage: number;
-  showProjectsInHeader: boolean;
+  multiProjectsAllowed: boolean;
 }
 
 class ConfigService {
@@ -14,9 +15,12 @@ class ConfigService {
     this.config = {
       logoTitle: import.meta.env.VITE_LOGO_TITLE || "Zero",
       logoSubtitle: import.meta.env.VITE_LOGO_SUBTITLE || "Authority",
-      defaultProjectSlug: import.meta.env.VITE_DEFAULT_PROJECT_SLUG || "zero-authority-dao",
-      defaultContributionPercentage: Number(import.meta.env.VITE_DEFAULT_CONTRIBUTION_PERCENTAGE) || 4,
-      showProjectsInHeader: import.meta.env.VITE_SHOW_PROJECTS_IN_HEADER !== "false",
+      defaultProjectSlug:
+        import.meta.env.VITE_DEFAULT_PROJECT_SLUG || "zero-authority-dao",
+      defaultContributionPercentage:
+        Number(import.meta.env.VITE_DEFAULT_CONTRIBUTION_PERCENTAGE) || 4,
+      multiProjectsAllowed:
+        import.meta.env.VITE_MULTI_PROJECTS_ALLOWED !== "false",
     };
   }
 
@@ -40,8 +44,22 @@ class ConfigService {
     return this.config.defaultContributionPercentage;
   }
 
-  shouldShowProjectsInHeader(): boolean {
-    return this.config.showProjectsInHeader;
+  getMultiProjectsAllowed(): boolean {
+    return this.config.multiProjectsAllowed;
+  }
+
+  getSubHeading(): string {
+    return (
+      import.meta.env.VITE_SUB_HEADING ||
+      "Experience fast, flexible stacking with choice over your rewards. Earn in STX or sBTC, choose your impact, and join a community making a difference together."
+    );
+  }
+
+  getDefaultProjectName(): string {
+    return (
+      projectService.getProjectBySlug(this.config.defaultProjectSlug).name ||
+      "Fast Pool"
+    );
   }
 }
 
