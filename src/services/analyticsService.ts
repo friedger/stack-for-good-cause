@@ -1,5 +1,3 @@
-import { supabase } from "../integrations/supabase/client";
-
 export interface Member {
   timestamp: string;
   blockheight: number;
@@ -24,6 +22,9 @@ export interface CycleData {
   btcRewards: number;
   fastPoolV1: number;
   fastPoolV2: number;
+  stackedInPool: number;
+  payout: number;
+  activeMembers: number;
   totalStacked: string;
   rewardsUsd: number;
   blockRewardsUsd: number;
@@ -31,6 +32,11 @@ export interface CycleData {
   cycleYield: number;
   apy: number;
   threshold: number;
+}
+
+export interface Metadata {
+  totalMembers: number;
+  totalCycles: number;
 }
 
 export interface RewardData {
@@ -53,6 +59,7 @@ export interface UserData {
 
 export interface AnalyticsData {
   cycleData: CycleData[];
+  metaData: { totalMembers: number; totalCycles: number };
   userData: UserData;
   rewardData: RewardData[];
   lastUpdated: string;
@@ -75,14 +82,14 @@ class AnalyticsService {
     try {
       console.log(`Fetching fresh data from ${filename}...`);
       const response = await fetch(`/data/${filename}`);
-      
+
       if (!response.ok) {
         throw new Error(`Failed to fetch ${filename}: ${response.statusText}`);
       }
 
       const data = await response.json();
       this.cache.set(cacheKey, { data, timestamp: now });
-      
+
       console.log(`Data updated from ${filename}`);
       return data;
     } catch (error) {
@@ -94,43 +101,51 @@ class AnalyticsService {
 
   async fetchAnalyticsData(): Promise<AnalyticsData> {
     const [overview, cycles, rewards, users] = await Promise.all([
-      this.fetchJsonData('overview.json'),
-      this.fetchJsonData('cycles.json'),
-      this.fetchJsonData('rewards.json'),
-      this.fetchJsonData('users.json')
+      this.fetchJsonData("overview.json"),
+      this.fetchJsonData("cycles.json"),
+      this.fetchJsonData("rewards.json"),
+      this.fetchJsonData("users.json"),
     ]);
 
     return {
       cycleData: cycles.cycles || [],
+      metaData: cycles.metaData || {},
       userData: users.summary || this.getFallbackData().userData,
       rewardData: rewards.recentDistributions || [],
-      lastUpdated: overview.lastUpdated || new Date().toISOString()
+      lastUpdated: overview.lastUpdated || new Date().toISOString(),
     };
   }
 
   async fetchCycleData(): Promise<CycleData[]> {
-    const data = await this.fetchJsonData('cycles.json');
+    const data = await this.fetchJsonData("cycles.json");
     return data.cycles || [];
   }
 
+  async fetchMetadata(): Promise<Metadata | null> {
+    const data = await this.fetchJsonData("cycles.json");
+    return data.meta as Metadata;
+  }
+
   async fetchRewardData(): Promise<RewardData[]> {
-    const data = await this.fetchJsonData('rewards.json');
+    const data = await this.fetchJsonData("rewards.json");
     return data.recentDistributions || [];
   }
 
   async fetchUserData(): Promise<UserData> {
-    const data = await this.fetchJsonData('users.json');
-    return data.summary || {
-      totalUsers: 0,
-      activeUsers: 0,
-      totalStacked: 0,
-      averageStacked: 0,
-      mostActiveUsers: [],
-    };
+    const data = await this.fetchJsonData("users.json");
+    return (
+      data.summary || {
+        totalUsers: 0,
+        activeUsers: 0,
+        totalStacked: 0,
+        averageStacked: 0,
+        mostActiveUsers: [],
+      }
+    );
   }
 
   async fetchOverviewData(): Promise<any> {
-    return this.fetchJsonData('overview.json');
+    return this.fetchJsonData("overview.json");
   }
 
   private getFallbackData(): AnalyticsData {
@@ -149,6 +164,9 @@ class AnalyticsService {
           btcRewards: 0,
           fastPoolV1: 0,
           fastPoolV2: 0,
+          stacked: 0,
+          payout: 0,
+          activeMembers: 0,
           totalStacked: "125000000000000",
           rewardsUsd: 2500000,
           blockRewardsUsd: 0,
@@ -158,6 +176,7 @@ class AnalyticsService {
           threshold: 0,
         },
       ],
+      metaData: { totalMembers: 1250, totalCycles: 85 },
       userData: {
         totalUsers: 1250,
         activeUsers: 1250,
@@ -172,16 +191,22 @@ class AnalyticsService {
 
   private getFallbackDataForFile(filename: string): any {
     const fallbacks: Record<string, any> = {
-      'overview.json': {
+      "overview.json": {
         summary: { totalStacked: 0, totalRewards: 0, activeStackers: 0 },
         recentCycles: [],
-        trends: { stackedGrowth: 0, stackersGrowth: 0, rewardsGrowth: 0 }
+        trends: { stackedGrowth: 0, stackersGrowth: 0, rewardsGrowth: 0 },
       },
-      'cycles.json': { cycles: [] },
-      'rewards.json': { recentDistributions: [] },
-      'users.json': { 
-        summary: { totalUsers: 0, activeUsers: 0, totalStacked: 0, averageStacked: 0, mostActiveUsers: [] }
-      }
+      "cycles.json": { cycles: [] },
+      "rewards.json": { recentDistributions: [] },
+      "users.json": {
+        summary: {
+          totalUsers: 0,
+          activeUsers: 0,
+          totalStacked: 0,
+          averageStacked: 0,
+          mostActiveUsers: [],
+        },
+      },
     };
     return fallbacks[filename] || {};
   }
