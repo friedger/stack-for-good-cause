@@ -119,29 +119,39 @@ const CycleAnalytics = ({ cycles }: CycleAnalyticsProps) => {
               <thead>
                 <tr className="border-b border-gray-700">
                   <th className="text-left text-gray-300 pb-2">Cycle</th>
-                  <th className="text-right text-gray-300 pb-2">Stacked STX</th>
+                  <th className="text-right text-gray-300 pb-2 hidden sm:table-cell">Stacked STX</th>
                   <th className="text-right text-gray-300 pb-2">BTC Rewards</th>
                   <th className="text-right text-gray-300 pb-2">APY</th>
-                  <th className="text-right text-gray-300 pb-2">Yield</th>
+                  <th className="text-right text-gray-300 pb-2 hidden md:table-cell">Yield</th>
                 </tr>
               </thead>
               <tbody>
                 {latestCycles.map((cycle, index) => (
                   <tr key={cycle.cycle} className={`border-b border-gray-700/50 ${index === 0 ? 'bg-blue-600/10' : ''}`}>
-                    <td className="py-2 text-white font-medium">
-                      #{cycle.cycle}
-                      {index === 0 && <Badge variant="secondary" className="ml-2 bg-blue-600 text-white text-xs">Current</Badge>}
+                    <td className="py-3 text-white font-medium">
+                      <div className="flex flex-col sm:flex-row sm:items-center">
+                        <span>#{cycle.cycle}</span>
+                        {index === 0 && <Badge variant="secondary" className="mt-1 sm:mt-0 sm:ml-2 bg-blue-600 text-white text-xs w-fit">Current</Badge>}
+                        <span className="text-xs text-gray-400 sm:hidden mt-1">
+                          {analyticsService.formatNumber(parseInt(cycle.totalStacked) / 1000000)}M STX
+                        </span>
+                      </div>
                     </td>
-                    <td className="text-right text-gray-300">
+                    <td className="text-right text-gray-300 hidden sm:table-cell">
                       {analyticsService.formatNumber(parseInt(cycle.totalStacked) / 1000000)}M
                     </td>
-                    <td className="text-right text-gray-300">
-                      {analyticsService.formatBTC(cycle.btcRewards)}
+                    <td className="text-right">
+                      <div className="flex flex-col items-end">
+                        <span className="text-gray-300">{analyticsService.formatBTC(cycle.btcRewards)}</span>
+                        <span className="text-xs text-gray-400 md:hidden">
+                          {analyticsService.formatPercentage(cycle.cycleYield * 100)} yield
+                        </span>
+                      </div>
                     </td>
                     <td className="text-right text-gray-300">
                       {analyticsService.formatPercentage(cycle.apy * 100)}
                     </td>
-                    <td className="text-right text-gray-300">
+                    <td className="text-right text-gray-300 hidden md:table-cell">
                       {analyticsService.formatPercentage(cycle.cycleYield * 100)}
                     </td>
                   </tr>

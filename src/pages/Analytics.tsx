@@ -64,10 +64,12 @@ const Analytics = () => {
     }, 0);
     const firstCycle = cycleData[0].cycle
 
-    // Get current cycle data
+    // Get current and previous cycle data
     const currentCycle = cycleData[cycleData.length - 1];
+    const previousCycle = cycleData[cycleData.length - 2];
     const currentLockedSTX = currentCycle ? parseInt(currentCycle.totalStacked) : 0;
-    const currentAPY = currentCycle ? currentCycle.apy * 100 : 0;
+    const lastCycleAPY = previousCycle ? previousCycle.apy * 100 : 0;
+    const currentCycleAPY = currentCycle ? currentCycle.apy * 100 : 0;
 
     // Get member data
     const activeMembers = userData.activeUsers || userData.totalUsers;
@@ -79,7 +81,10 @@ const Analytics = () => {
       activeMembers,
       totalMembers,
       currentLockedSTX,
-      currentAPY
+      lastCycleAPY,
+      currentCycleAPY,
+      previousCycle,
+      currentCycle
     };
   };
 
@@ -182,10 +187,10 @@ const Analytics = () => {
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold text-yellow-400">
-                {metrics.currentAPY.toFixed(2)}%
+                {metrics.lastCycleAPY.toFixed(2)}%
               </div>
               <p className="text-xs text-yellow-300 mt-1">
-                Cycle #{currentCycle?.cycle} estimate
+                Cycle #{metrics.previousCycle?.cycle} • Est. #{metrics.currentCycle?.cycle}: {metrics.currentCycleAPY.toFixed(2)}%
               </p>
             </CardContent>
           </Card>

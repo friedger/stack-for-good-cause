@@ -83,25 +83,33 @@ const RewardAnalytics = ({ rewardsData }: RewardAnalyticsProps) => {
                 <tr className="border-b border-gray-700">
                   <th className="text-left text-gray-300 pb-2">Cycle</th>
                   <th className="text-right text-gray-300 pb-2">BTC Received</th>
-                  <th className="text-right text-gray-300 pb-2">STX Distributed</th>
-                  <th className="text-right text-gray-300 pb-2">Pool Members</th>
+                  <th className="text-right text-gray-300 pb-2 hidden sm:table-cell">STX Distributed</th>
+                  <th className="text-right text-gray-300 pb-2 hidden md:table-cell">Pool Members</th>
                   <th className="text-right text-gray-300 pb-2">Yield Rate</th>
                 </tr>
               </thead>
               <tbody>
                  {rewardsData.map((reward, index) => (
                    <tr key={reward.cycleNumber} className={`border-b border-gray-700/50 ${index === 0 ? 'bg-blue-600/10' : ''}`}>
-                     <td className="py-2 text-white font-medium">
-                       #{reward.cycleNumber}
-                       {index === 0 && <Badge variant="secondary" className="ml-2 bg-blue-600 text-white text-xs">Latest</Badge>}
+                     <td className="py-3 text-white font-medium">
+                       <div className="flex flex-col">
+                         <div className="flex items-center">
+                           <span>#{reward.cycleNumber}</span>
+                           {index === 0 && <Badge variant="secondary" className="ml-2 bg-blue-600 text-white text-xs">Latest</Badge>}
+                         </div>
+                         <div className="sm:hidden text-xs text-gray-400 mt-1 space-y-1">
+                           <div>{analyticsService.formatSTX(reward.stxDistributed)}</div>
+                           <div className="md:hidden">{analyticsService.formatNumber(reward.participants)} members</div>
+                         </div>
+                       </div>
                      </td>
                      <td className="text-right text-orange-400 font-mono">
                        {analyticsService.formatBTC(reward.btcReceived)}
                      </td>
-                     <td className="text-right text-gray-300">
+                     <td className="text-right text-gray-300 hidden sm:table-cell">
                        {analyticsService.formatSTX(reward.stxDistributed)}
                      </td>
-                     <td className="text-right text-gray-300">
+                     <td className="text-right text-gray-300 hidden md:table-cell">
                        {analyticsService.formatNumber(reward.participants)}
                      </td>
                      <td className="text-right text-green-400 font-medium">
