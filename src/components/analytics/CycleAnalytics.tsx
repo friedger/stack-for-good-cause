@@ -1,10 +1,10 @@
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CycleData, analyticsService } from "@/services/analyticsService";
-import { TrendingUp, TrendingDown, Users, DollarSign, Table, BarChart3 } from "lucide-react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { BarChart3, DollarSign, Table } from "lucide-react";
+import { useState } from "react";
+import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 interface CycleAnalyticsProps {
   cycles: CycleData[];
@@ -19,8 +19,8 @@ const CycleAnalytics = ({ cycles }: CycleAnalyticsProps) => {
   // Prepare data for graphs (last 10 cycles in chronological order)
   const graphData = cycles.slice(-10).map(cycle => ({
     cycle: cycle.cycle,
-    stackedInPool: cycle.stackedInPool / 1000000, // Convert to millions
-    payout: cycle.payout / 1000, // Convert to thousands  
+    stackedInPool: cycle.stackedInPool / 1e12, // Convert to millions
+    payout: cycle.payout / 1e9, // Convert to thousands
     activeMembers: cycle.activeMembers,
     payoutRate: cycle.stackedInPool > 0 ? (cycle.payout / cycle.stackedInPool) * 100 : 0 // Payout rate as percentage
   }));
@@ -35,63 +35,68 @@ const CycleAnalytics = ({ cycles }: CycleAnalyticsProps) => {
   };
 
   const TableView = () => (
-    <Card className="bg-gray-800 border-gray-700">
-      <CardHeader>
-        <CardTitle className="text-white">Recent Cycles</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="hidden sm:table-header-group">
-              <tr className="border-b border-gray-700">
-                <th className="text-left text-gray-300 pb-3">Cycle</th>
-                <th className="text-right text-gray-300 pb-3">Stacked in Pool</th>
-                <th className="text-right text-gray-300 pb-3 hidden sm:table-cell">Payout</th>
-                <th className="text-right text-gray-300 pb-3 hidden md:table-cell">Active Members</th>
-              </tr>
-            </thead>
-            <tbody>
-              {latestCycles.map((cycle, index) => (
-                <tr key={cycle.cycle} className={`border-b border-gray-700/50 ${index === 0 ? 'bg-blue-600/10' : ''}`}>
-                  <td className="py-4 text-white font-medium">
-                    <div className="flex flex-col">
-                      <div className="flex items-center gap-2 mb-2 sm:mb-0">
-                        <span className="text-base">#{cycle.cycle}</span>
-                        {index === 0 && <Badge variant="secondary" className="bg-blue-600 text-white text-xs">Current</Badge>}
+    <CardContent>
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead className="hidden sm:table-header-group">
+            <tr className="border-b border-gray-700">
+              <th className="text-left text-gray-300 pb-3 px-3">Cycle</th>
+              <th className="text-right text-gray-300 pb-3 px-3">Stacked in Pool</th>
+              <th className="text-right text-gray-300 pb-3 px-3 hidden md:table-cell">Active Members</th>
+              <th className="text-right text-gray-300 pb-3 px-3 hidden sm:table-cell">Payout</th>
+              <th className="text-right text-gray-300 pb-3 px-3 hidden md:table-cell">Rate</th>
+            </tr>
+          </thead>
+          <tbody>
+            {latestCycles.map((cycle, index) => (
+              <tr key={cycle.cycle} className={`border-b border-gray-700/50 ${index === 0 ? 'bg-blue-600/10' : ''}`}>
+                <td className="py-4 px-3 text-white font-medium">
+                  <div className="flex flex-col">
+                    <div className="flex items-center gap-2 mb-2 sm:mb-0">
+                      <span className="text-base">#{cycle.cycle}</span>
+                      {index === 0 && <Badge variant="secondary" className="bg-blue-600 text-white text-xs">Current</Badge>}
+                    </div>
+                    {/* Mobile-only info */}
+                    <div className="sm:hidden space-y-1 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Stacked:</span>
+                        <span className="text-gray-300">{analyticsService.formatSTX(cycle.stackedInPool / 1000000)}</span>
                       </div>
-                      {/* Mobile-only info */}
-                      <div className="sm:hidden space-y-1 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Stacked:</span>
-                          <span className="text-gray-300">{analyticsService.formatSTX(cycle.stackedInPool / 1000000)}</span>
-                        </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Members:</span>
+                        <span className="text-gray-300">{analyticsService.formatNumber(cycle.activeMembers)}</span>
+                      </div>
+                      {index === 0 ? null : <>
                         <div className="flex justify-between">
                           <span className="text-gray-400">Payout:</span>
-                          <span className="text-gray-300">{index === 0 ? `~${analyticsService.formatSTX(cycle.payout / 1000000)}` : analyticsService.formatSTX(cycle.payout / 1000000)}</span>
+                          <span className="text-gray-300">{analyticsService.formatSTX(cycle.payout / 1000000)}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Members:</span>
-                          <span className="text-gray-300">{analyticsService.formatNumber(cycle.activeMembers)}</span>
+                          <span className="text-gray-400">Rate:</span>
+                          <span className="text-gray-300">{analyticsService.formatPercentage(cycle.payout / cycle.stackedInPool * 100)}</span>
                         </div>
-                      </div>
+                      </>}
                     </div>
-                  </td>
-                  <td className="text-right text-gray-300 py-4">
-                    {analyticsService.formatSTX(cycle.stackedInPool / 1000000)}
-                  </td>
-                  <td className="text-right text-blue-400 font-medium hidden sm:table-cell py-4">
-                    {index === 0 ? `~${analyticsService.formatSTX(cycle.payout / 1000000)}` : analyticsService.formatSTX(cycle.payout / 1000000)}
-                  </td>
-                  <td className="text-right text-gray-300 hidden md:table-cell py-4">
-                    {analyticsService.formatNumber(cycle.activeMembers)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </CardContent>
-    </Card>
+                  </div>
+                </td>
+                <td className="text-right text-gray-300 hidden md:table-cell py-4 px-3">
+                  {analyticsService.formatSTX(cycle.stackedInPool / 1000000)}
+                </td>
+                <td className="text-right text-gray-300 hidden md:table-cell py-4 px-3">
+                  {analyticsService.formatNumber(cycle.activeMembers)}
+                </td>
+                <td className="text-right text-blue-400 font-medium hidden sm:table-cell py-4 px-3">
+                  {index === 0 ? "" : analyticsService.formatSTX(cycle.payout / 1000000)}
+                </td>
+                <td className="text-right text-blue-400 font-medium hidden md:table-cell py-4 px-3">
+                  {index === 0 ? "" : analyticsService.formatPercentage(Math.round(cycle.payout * 10000 / cycle.stackedInPool) / 100)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </CardContent>
   );
 
   const GraphView = () => (
@@ -107,18 +112,18 @@ const CycleAnalytics = ({ cycles }: CycleAnalyticsProps) => {
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={graphData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                <XAxis 
-                  dataKey="cycle" 
+                <XAxis
+                  dataKey="cycle"
                   stroke="#9CA3AF"
                   tickFormatter={formatXAxisLabel}
                   fontSize={12}
                 />
-                <YAxis 
+                <YAxis
                   stroke="#9CA3AF"
                   tickFormatter={(value) => `${value}M`}
                   fontSize={12}
                 />
-                <Tooltip 
+                <Tooltip
                   formatter={formatTooltipValue}
                   labelFormatter={(label) => `Cycle #${label}`}
                   contentStyle={{
@@ -127,10 +132,10 @@ const CycleAnalytics = ({ cycles }: CycleAnalyticsProps) => {
                     borderRadius: '6px'
                   }}
                 />
-                <Line 
-                  type="monotone" 
-                  dataKey="stackedInPool" 
-                  stroke="#3B82F6" 
+                <Line
+                  type="monotone"
+                  dataKey="stackedInPool"
+                  stroke="#3B82F6"
                   strokeWidth={2}
                   dot={{ fill: '#3B82F6', strokeWidth: 2, r: 4 }}
                   activeDot={{ r: 6, stroke: '#3B82F6', strokeWidth: 2 }}
@@ -152,18 +157,18 @@ const CycleAnalytics = ({ cycles }: CycleAnalyticsProps) => {
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={graphData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                <XAxis 
-                  dataKey="cycle" 
+                <XAxis
+                  dataKey="cycle"
                   stroke="#9CA3AF"
                   tickFormatter={formatXAxisLabel}
                   fontSize={12}
                 />
-                <YAxis 
+                <YAxis
                   stroke="#9CA3AF"
                   tickFormatter={(value) => `${value}K`}
                   fontSize={12}
                 />
-                <Tooltip 
+                <Tooltip
                   formatter={formatTooltipValue}
                   labelFormatter={(label) => `Cycle #${label}`}
                   contentStyle={{
@@ -172,10 +177,10 @@ const CycleAnalytics = ({ cycles }: CycleAnalyticsProps) => {
                     borderRadius: '6px'
                   }}
                 />
-                <Line 
-                  type="monotone" 
-                  dataKey="payout" 
-                  stroke="#10B981" 
+                <Line
+                  type="monotone"
+                  dataKey="payout"
+                  stroke="#10B981"
                   strokeWidth={2}
                   dot={{ fill: '#10B981', strokeWidth: 2, r: 4 }}
                   activeDot={{ r: 6, stroke: '#10B981', strokeWidth: 2 }}
@@ -197,17 +202,17 @@ const CycleAnalytics = ({ cycles }: CycleAnalyticsProps) => {
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={graphData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                <XAxis 
-                  dataKey="cycle" 
+                <XAxis
+                  dataKey="cycle"
                   stroke="#9CA3AF"
                   tickFormatter={formatXAxisLabel}
                   fontSize={12}
                 />
-                <YAxis 
+                <YAxis
                   stroke="#9CA3AF"
                   fontSize={12}
                 />
-                <Tooltip 
+                <Tooltip
                   formatter={formatTooltipValue}
                   labelFormatter={(label) => `Cycle #${label}`}
                   contentStyle={{
@@ -216,10 +221,10 @@ const CycleAnalytics = ({ cycles }: CycleAnalyticsProps) => {
                     borderRadius: '6px'
                   }}
                 />
-                <Line 
-                  type="monotone" 
-                  dataKey="activeMembers" 
-                  stroke="#8B5CF6" 
+                <Line
+                  type="monotone"
+                  dataKey="activeMembers"
+                  stroke="#8B5CF6"
                   strokeWidth={2}
                   dot={{ fill: '#8B5CF6', strokeWidth: 2, r: 4 }}
                   activeDot={{ r: 6, stroke: '#8B5CF6', strokeWidth: 2 }}
@@ -241,18 +246,18 @@ const CycleAnalytics = ({ cycles }: CycleAnalyticsProps) => {
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={graphData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                <XAxis 
-                  dataKey="cycle" 
+                <XAxis
+                  dataKey="cycle"
                   stroke="#9CA3AF"
                   tickFormatter={formatXAxisLabel}
                   fontSize={12}
                 />
-                <YAxis 
+                <YAxis
                   stroke="#9CA3AF"
                   tickFormatter={(value) => `${value}%`}
                   fontSize={12}
                 />
-                <Tooltip 
+                <Tooltip
                   formatter={formatTooltipValue}
                   labelFormatter={(label) => `Cycle #${label}`}
                   contentStyle={{
@@ -261,10 +266,10 @@ const CycleAnalytics = ({ cycles }: CycleAnalyticsProps) => {
                     borderRadius: '6px'
                   }}
                 />
-                <Line 
-                  type="monotone" 
-                  dataKey="payoutRate" 
-                  stroke="#F59E0B" 
+                <Line
+                  type="monotone"
+                  dataKey="payoutRate"
+                  stroke="#F59E0B"
                   strokeWidth={2}
                   dot={{ fill: '#F59E0B', strokeWidth: 2, r: 4 }}
                   activeDot={{ r: 6, stroke: '#F59E0B', strokeWidth: 2 }}
@@ -279,7 +284,7 @@ const CycleAnalytics = ({ cycles }: CycleAnalyticsProps) => {
 
   return (
     <div className="space-y-6">
-      {/* BTC Rewards Card - Keep this one */}
+      {/* BTC Rewards Card  */}
       <Card className="bg-gray-800 border-gray-700">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium text-gray-300">BTC Rewards</CardTitle>
@@ -306,8 +311,7 @@ const CycleAnalytics = ({ cycles }: CycleAnalyticsProps) => {
               onClick={() => setViewMode('table')}
               className="text-sm"
             >
-              <Table className="h-4 w-4 mr-2" />
-              Table View
+              <Table className="h-4 w-4 m-2" />
             </Button>
             <Button
               variant={viewMode === 'graph' ? 'default' : 'outline'}
@@ -315,15 +319,17 @@ const CycleAnalytics = ({ cycles }: CycleAnalyticsProps) => {
               onClick={() => setViewMode('graph')}
               className="text-sm"
             >
-              <BarChart3 className="h-4 w-4 mr-2" />
-              Graph View
+              <BarChart3 className="h-4 w-4 m-2" />
             </Button>
           </div>
         </CardHeader>
+        <CardContent>
+          {/* Conditional Rendering */}
+          {viewMode === 'table' ? <TableView /> : <GraphView />}
+        </CardContent>
       </Card>
 
-      {/* Conditional Rendering */}
-      {viewMode === 'table' ? <TableView /> : <GraphView />}
+
     </div>
   );
 };
