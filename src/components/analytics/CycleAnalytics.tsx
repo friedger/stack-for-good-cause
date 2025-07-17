@@ -119,57 +119,45 @@ const CycleAnalytics = ({ cycles }: CycleAnalyticsProps) => {
               <thead className="hidden sm:table-header-group">
                 <tr className="border-b border-gray-700">
                   <th className="text-left text-gray-300 pb-3">Cycle</th>
-                  <th className="text-right text-gray-300 pb-3 hidden sm:table-cell">Stacked STX</th>
-                  <th className="text-right text-gray-300 pb-3">BTC Rewards</th>
-                  <th className="text-right text-gray-300 pb-3">APY</th>
-                  <th className="text-right text-gray-300 pb-3 hidden md:table-cell">Yield</th>
+                  <th className="text-right text-gray-300 pb-3">Stacked in Pool</th>
+                  <th className="text-right text-gray-300 pb-3 hidden sm:table-cell">Payout</th>
+                  <th className="text-right text-gray-300 pb-3 hidden md:table-cell">Active Members</th>
                 </tr>
               </thead>
               <tbody>
                 {latestCycles.map((cycle, index) => (
                   <tr key={cycle.cycle} className={`border-b border-gray-700/50 ${index === 0 ? 'bg-blue-600/10' : ''}`}>
                     <td className="py-4 text-white font-medium">
-                      <div className="flex flex-col sm:flex-row sm:items-center">
+                      <div className="flex flex-col">
                         <div className="flex items-center gap-2 mb-2 sm:mb-0">
                           <span className="text-base">#{cycle.cycle}</span>
                           {index === 0 && <Badge variant="secondary" className="bg-blue-600 text-white text-xs">Current</Badge>}
                         </div>
                         {/* Mobile-only info */}
                         <div className="sm:hidden space-y-1 text-sm">
-                          <div className="text-gray-400">
-                            {analyticsService.formatNumber(parseInt(cycle.totalStacked) / 1000000)}M STX stacked
+                          <div className="flex justify-between">
+                            <span className="text-gray-400">Stacked:</span>
+                            <span className="text-gray-300">{analyticsService.formatSTX(cycle.stackedInPool / 1000000)}</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-gray-400">BTC:</span>
-                            <span className="text-gray-300">{analyticsService.formatBTC(cycle.btcRewards)}</span>
+                            <span className="text-gray-400">Payout:</span>
+                            <span className="text-gray-300">{analyticsService.formatSTX(cycle.payout / 1000000)}</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-gray-400">APY:</span>
-                            <span className="text-gray-300">{analyticsService.formatPercentage(cycle.apy * 100)}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-400">Yield:</span>
-                            <span className="text-gray-300">{analyticsService.formatPercentage(cycle.cycleYield * 100)}</span>
+                            <span className="text-gray-400">Members:</span>
+                            <span className="text-gray-300">{analyticsService.formatNumber(cycle.activeMembers)}</span>
                           </div>
                         </div>
                       </div>
                     </td>
-                    <td className="text-right text-gray-300 hidden sm:table-cell py-4">
-                      {analyticsService.formatNumber(parseInt(cycle.totalStacked) / 1000000)}M
+                    <td className="text-right text-gray-300 py-4">
+                      {analyticsService.formatSTX(cycle.stackedInPool / 1000000)}
                     </td>
-                    <td className="text-right hidden sm:table-cell py-4">
-                      <div className="flex flex-col items-end">
-                        <span className="text-gray-300 font-mono">{analyticsService.formatBTC(cycle.btcRewards)}</span>
-                        <span className="text-xs text-gray-400 md:hidden mt-1">
-                          {analyticsService.formatPercentage(cycle.cycleYield * 100)} yield
-                        </span>
-                      </div>
-                    </td>
-                    <td className="text-right text-gray-300 hidden sm:table-cell py-4 font-medium">
-                      {analyticsService.formatPercentage(cycle.apy * 100)}
+                    <td className="text-right text-blue-400 font-medium hidden sm:table-cell py-4">
+                      {analyticsService.formatSTX(cycle.payout / 1000000)}
                     </td>
                     <td className="text-right text-gray-300 hidden md:table-cell py-4">
-                      {analyticsService.formatPercentage(cycle.cycleYield * 100)}
+                      {analyticsService.formatNumber(cycle.activeMembers)}
                     </td>
                   </tr>
                 ))}
