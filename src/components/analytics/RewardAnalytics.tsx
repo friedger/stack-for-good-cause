@@ -9,8 +9,8 @@ interface RewardAnalyticsProps {
 
 const RewardAnalytics = ({ rewardsData }: RewardAnalyticsProps) => {
   const latestReward = rewardsData[0];
-  const totalRewards = rewardsData.reduce((sum, reward) => sum + reward.totalSTXRewards, 0);
-  const averageRate = rewardsData.length > 0 ? rewardsData.reduce((sum, reward) => sum + reward.ratePercentage, 0) / rewardsData.length : 0;
+  const totalRewards = rewardsData.reduce((sum, reward) => sum + (reward.stxDistributed || 0), 0);
+  const averageRate = rewardsData.length > 0 ? rewardsData.reduce((sum, reward) => sum + (reward.yieldRate || 0), 0) / rewardsData.length : 0;
 
   return (
     <div className="space-y-6">
@@ -52,7 +52,7 @@ const RewardAnalytics = ({ rewardsData }: RewardAnalyticsProps) => {
               {latestReward ? analyticsService.formatBTC(latestReward.btcReceived) : '-'}
             </div>
             <p className="text-xs text-gray-400">
-              {latestReward ? `Cycle #${latestReward.cycle}` : 'No data'}
+              {latestReward ? `Cycle #${latestReward.cycleNumber}` : 'No data'}
             </p>
           </CardContent>
         </Card>
@@ -64,7 +64,7 @@ const RewardAnalytics = ({ rewardsData }: RewardAnalyticsProps) => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-white">
-              {latestReward ? analyticsService.formatNumber(latestReward.poolMembers) : '-'}
+              {latestReward ? analyticsService.formatNumber(latestReward.participants) : '-'}
             </div>
             <p className="text-xs text-gray-400">Latest cycle participants</p>
           </CardContent>
@@ -89,26 +89,26 @@ const RewardAnalytics = ({ rewardsData }: RewardAnalyticsProps) => {
                 </tr>
               </thead>
               <tbody>
-                {rewardsData.map((reward, index) => (
-                  <tr key={reward.cycle} className={`border-b border-gray-700/50 ${index === 0 ? 'bg-blue-600/10' : ''}`}>
-                    <td className="py-2 text-white font-medium">
-                      #{reward.cycle}
-                      {index === 0 && <Badge variant="secondary" className="ml-2 bg-blue-600 text-white text-xs">Latest</Badge>}
-                    </td>
-                    <td className="text-right text-orange-400 font-mono">
-                      {analyticsService.formatBTC(reward.btcReceived)}
-                    </td>
-                    <td className="text-right text-gray-300">
-                      {analyticsService.formatSTX(reward.totalSTXDistributed)}
-                    </td>
-                    <td className="text-right text-gray-300">
-                      {analyticsService.formatNumber(reward.poolMembers)}
-                    </td>
-                    <td className="text-right text-green-400 font-medium">
-                      {analyticsService.formatPercentage(reward.ratePercentage)}
-                    </td>
-                  </tr>
-                ))}
+                 {rewardsData.map((reward, index) => (
+                   <tr key={reward.cycleNumber} className={`border-b border-gray-700/50 ${index === 0 ? 'bg-blue-600/10' : ''}`}>
+                     <td className="py-2 text-white font-medium">
+                       #{reward.cycleNumber}
+                       {index === 0 && <Badge variant="secondary" className="ml-2 bg-blue-600 text-white text-xs">Latest</Badge>}
+                     </td>
+                     <td className="text-right text-orange-400 font-mono">
+                       {analyticsService.formatBTC(reward.btcReceived)}
+                     </td>
+                     <td className="text-right text-gray-300">
+                       {analyticsService.formatSTX(reward.stxDistributed)}
+                     </td>
+                     <td className="text-right text-gray-300">
+                       {analyticsService.formatNumber(reward.participants)}
+                     </td>
+                     <td className="text-right text-green-400 font-medium">
+                       {analyticsService.formatPercentage(reward.yieldRate || 0)}
+                     </td>
+                   </tr>
+                 ))}
               </tbody>
             </table>
           </div>
@@ -120,7 +120,7 @@ const RewardAnalytics = ({ rewardsData }: RewardAnalyticsProps) => {
         <Card className="bg-gray-800 border-gray-700">
           <CardHeader>
             <CardTitle className="text-white">
-              Cycle #{latestReward.cycle} Detailed Breakdown
+              Cycle #{latestReward.cycleNumber} Detailed Breakdown
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -135,21 +135,21 @@ const RewardAnalytics = ({ rewardsData }: RewardAnalyticsProps) => {
               <div className="space-y-2">
                 <h4 className="text-sm font-medium text-gray-300">Total STX Distributed</h4>
                 <div className="text-lg font-semibold text-blue-400">
-                  {analyticsService.formatSTX(latestReward.totalSTXDistributed)}
+                  {analyticsService.formatSTX(latestReward.stxDistributed)}
                 </div>
               </div>
               
               <div className="space-y-2">
                 <h4 className="text-sm font-medium text-gray-300">Pool Participants</h4>
                 <div className="text-lg font-semibold text-gray-300">
-                  {analyticsService.formatNumber(latestReward.poolMembers)} members
+                  {analyticsService.formatNumber(latestReward.participants)} members
                 </div>
               </div>
               
               <div className="space-y-2">
                 <h4 className="text-sm font-medium text-gray-300">Effective Yield</h4>
                 <div className="text-lg font-semibold text-green-400">
-                  {analyticsService.formatPercentage(latestReward.ratePercentage)}
+                  {analyticsService.formatPercentage(latestReward.yieldRate || 0)}
                 </div>
               </div>
             </div>

@@ -168,7 +168,7 @@ class AnalyticsService {
   }
 
   formatPercentage(rate: number): string {
-    return `${rate.toFixed(2)}%`;
+    return `${(rate || 0).toFixed(2)}%`;
   }
 }
 
