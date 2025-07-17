@@ -612,7 +612,7 @@
     }
   ],
   "metadata": {
-    "totalCycles": 85,
+    "totalCycles": 114,
     "earliestCycle": 1,
     "dataSource": "stacks-blockchain-api"
   }

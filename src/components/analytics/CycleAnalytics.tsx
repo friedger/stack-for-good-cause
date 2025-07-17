@@ -8,9 +8,10 @@ interface CycleAnalyticsProps {
 }
 
 const CycleAnalytics = ({ cycles }: CycleAnalyticsProps) => {
-  const latestCycles = cycles.slice(0, 10);
-  const currentCycle = cycles[0];
-  const previousCycle = cycles[1];
+  const latestCycles = cycles.slice(-10);
+  latestCycles.reverse();
+  const currentCycle = cycles[cycles.length - 1];
+  const previousCycle = cycles[cycles.length - 2];
 
   const getStackedSTXsTrend = () => {
     if (!currentCycle || !previousCycle) return null;

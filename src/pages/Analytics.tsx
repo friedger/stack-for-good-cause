@@ -48,7 +48,7 @@ const Analytics = () => {
             <Skeleton className="h-8 w-48 bg-gray-700" />
             <Skeleton className="h-4 w-96 bg-gray-700" />
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {[...Array(4)].map((_, i) => (
               <Card key={i} className="bg-gray-800 border-gray-700">
@@ -67,7 +67,7 @@ const Analytics = () => {
   }
 
   const totalDistributed = 9934023; // From the cycles page
-  const currentCycle = cycleData[0];
+  const currentCycle = cycleData[cycleData.length - 1];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
@@ -143,14 +143,14 @@ const Analytics = () => {
         {/* Detailed Analytics Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid w-full grid-cols-2 bg-gray-800 border-gray-700">
-            <TabsTrigger 
-              value="overview" 
+            <TabsTrigger
+              value="overview"
               className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
             >
               Cycle Overview
             </TabsTrigger>
-            <TabsTrigger 
-              value="rewards" 
+            <TabsTrigger
+              value="rewards"
               className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
             >
               Rewards Analysis
