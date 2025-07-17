@@ -48,6 +48,9 @@ const DesktopNavigation = ({
           Projects
         </Link>
       )}
+      <Link to="/analytics" className="text-white hover:text-orange-400 transition-colors">
+        Analytics
+      </Link>
       {/* <Link to="/dashboard" className="text-white hover:text-orange-400 transition-colors">
         Dashboard
       </Link> */}

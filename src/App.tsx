@@ -10,6 +10,7 @@ import Projects from "./pages/Projects";
 import ProjectDetail from "./pages/ProjectDetail";
 import Admin from "./pages/Admin";
 import Dashboard from "./pages/Dashboard";
+import Analytics from "./pages/Analytics";
 import NotFound from "./pages/NotFound";
 import Layout from "./Layout";
 
@@ -27,6 +28,7 @@ const AppRouter = () => (
             <Route path="/stacking" element={<Stacking />} />
             <Route path="/projects" element={<Projects />} />
             <Route path="/projects/:slug" element={<ProjectDetail />} />
+            <Route path="/analytics" element={<Analytics />} />
             <Route path="/admin" element={<Admin />} />
             {/* <Route path="/dashboard" element={<Dashboard />} /> */}
             <Route path="*" element={<NotFound />} />

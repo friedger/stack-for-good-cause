@@ -4,11 +4,21 @@ import { useNavigate } from "react-router-dom";
 import ProjectCardMedium from "../shared/ProjectCardMedium";
 
 interface ProjectManagerSingleProjectProps {
-
+  selectedProjects?: any[];
+  onSelectedProjectsChange?: (projects: any[]) => void;
+  disabled?: boolean;
+  stxAmount?: string;
+  contributionPercentage?: number;
+  rewardType?: string;
 }
 
 const ProjectManagerSingleProject = ({
-
+  selectedProjects,
+  onSelectedProjectsChange,
+  disabled,
+  stxAmount,
+  contributionPercentage,
+  rewardType
 }: ProjectManagerSingleProjectProps) => {
   const navigate = useNavigate();
 

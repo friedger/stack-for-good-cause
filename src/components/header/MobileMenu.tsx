@@ -67,6 +67,13 @@ const MobileMenu = ({
             Projects
           </Link>
         )}
+        <Link
+          to="/analytics"
+          className="text-white hover:text-orange-400 transition-colors px-2 py-1"
+          onClick={onClose}
+        >
+          Analytics
+        </Link>
         {/* <Link
           to="/dashboard"
           className="text-white hover:text-orange-400 transition-colors px-2 py-1"

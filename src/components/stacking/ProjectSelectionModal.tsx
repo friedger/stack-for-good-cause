@@ -85,6 +85,16 @@ const ProjectSelectionModal = ({
                 project={project}
                 isSelected={isSelected}
                 canSelect={canSelect}
+                readOnly={false}
+                toggleProject={(proj) => {
+                  if (canSelect) {
+                    setTempSelected(prev => 
+                      isSelected 
+                        ? prev.filter(p => p.id !== proj.id)
+                        : [...prev, proj]
+                    );
+                  }
+                }}
               />
             );
           })}
