@@ -14,23 +14,23 @@ const CycleAnalytics = ({ cycles }: CycleAnalyticsProps) => {
 
   const getStackedSTXsTrend = () => {
     if (!currentCycle || !previousCycle) return null;
-    const change = currentCycle.stackedSTXs - previousCycle.stackedSTXs;
+    const change = currentCycle.totalStacked - previousCycle.totalStacked;
     const isPositive = change > 0;
     return {
       change: Math.abs(change),
       isPositive,
-      percentage: ((Math.abs(change) / previousCycle.stackedSTXs) * 100).toFixed(2)
+      percentage: ((Math.abs(change) / previousCycle.totalStacked) * 100).toFixed(2)
     };
   };
 
   const getStackersTrend = () => {
     if (!currentCycle || !previousCycle) return null;
-    const change = currentCycle.stackers - previousCycle.stackers;
+    const change = currentCycle.activeStackers - previousCycle.activeStackers;
     const isPositive = change > 0;
     return {
       change: Math.abs(change),
       isPositive,
-      percentage: ((Math.abs(change) / previousCycle.stackers) * 100).toFixed(2)
+      percentage: ((Math.abs(change) / previousCycle.activeStackers) * 100).toFixed(2)
     };
   };
 
@@ -45,12 +45,12 @@ const CycleAnalytics = ({ cycles }: CycleAnalyticsProps) => {
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-gray-300">Current Cycle</CardTitle>
             <Badge variant="secondary" className="bg-blue-600 text-white">
-              #{currentCycle?.cycle}
+              #{currentCycle?.cycleNumber}
             </Badge>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-white">
-              {currentCycle ? analyticsService.formatSTX(currentCycle.stackedSTXs) : '-'}
+              {currentCycle ? analyticsService.formatSTX(currentCycle.totalStacked) : '-'}
             </div>
             <p className="text-xs text-gray-400">Total Stacked</p>
           </CardContent>
@@ -63,7 +63,7 @@ const CycleAnalytics = ({ cycles }: CycleAnalyticsProps) => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-white">
-              {currentCycle ? analyticsService.formatNumber(currentCycle.stackers) : '-'}
+              {currentCycle ? analyticsService.formatNumber(currentCycle.activeStackers) : '-'}
             </div>
             {stackersTrend && (
               <p className={`text-xs flex items-center ${stackersTrend.isPositive ? 'text-green-400' : 'text-red-400'}`}>
@@ -81,10 +81,10 @@ const CycleAnalytics = ({ cycles }: CycleAnalyticsProps) => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-white">
-              {previousCycle?.payoutInSTX ? analyticsService.formatSTX(previousCycle.payoutInSTX) : '-'}
+              {previousCycle?.totalRewards ? analyticsService.formatSTX(previousCycle.totalRewards) : '-'}
             </div>
             <p className="text-xs text-gray-400">
-              {previousCycle?.ratePerCycle ? `${analyticsService.formatPercentage(previousCycle.ratePerCycle)} yield` : 'Cycle completed'}
+              Cycle completed
             </p>
           </CardContent>
         </Card>
@@ -124,22 +124,22 @@ const CycleAnalytics = ({ cycles }: CycleAnalyticsProps) => {
               </thead>
               <tbody>
                 {latestCycles.map((cycle, index) => (
-                  <tr key={cycle.cycle} className={`border-b border-gray-700/50 ${index === 0 ? 'bg-blue-600/10' : ''}`}>
+                  <tr key={cycle.cycleNumber} className={`border-b border-gray-700/50 ${index === 0 ? 'bg-blue-600/10' : ''}`}>
                     <td className="py-2 text-white font-medium">
-                      #{cycle.cycle}
+                      #{cycle.cycleNumber}
                       {index === 0 && <Badge variant="secondary" className="ml-2 bg-blue-600 text-white text-xs">Current</Badge>}
                     </td>
                     <td className="text-right text-gray-300">
-                      {analyticsService.formatNumber(cycle.stackedSTXs)}
+                      {analyticsService.formatNumber(cycle.totalStacked)}
                     </td>
                     <td className="text-right text-gray-300">
-                      {analyticsService.formatNumber(cycle.stackers)}
+                      {analyticsService.formatNumber(cycle.activeStackers)}
                     </td>
                     <td className="text-right text-gray-300">
-                      {cycle.payoutInSTX ? analyticsService.formatNumber(cycle.payoutInSTX) : '-'}
+                      {cycle.totalRewards ? analyticsService.formatNumber(cycle.totalRewards) : '-'}
                     </td>
                     <td className="text-right text-gray-300">
-                      {cycle.ratePerCycle ? `${cycle.ratePerCycle.toFixed(2)}%` : '-'}
+                      -
                     </td>
                   </tr>
                 ))}
