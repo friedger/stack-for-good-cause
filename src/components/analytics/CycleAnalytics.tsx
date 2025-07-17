@@ -116,42 +116,59 @@ const CycleAnalytics = ({ cycles }: CycleAnalyticsProps) => {
         <CardContent>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead>
+              <thead className="hidden sm:table-header-group">
                 <tr className="border-b border-gray-700">
-                  <th className="text-left text-gray-300 pb-2">Cycle</th>
-                  <th className="text-right text-gray-300 pb-2 hidden sm:table-cell">Stacked STX</th>
-                  <th className="text-right text-gray-300 pb-2">BTC Rewards</th>
-                  <th className="text-right text-gray-300 pb-2">APY</th>
-                  <th className="text-right text-gray-300 pb-2 hidden md:table-cell">Yield</th>
+                  <th className="text-left text-gray-300 pb-3">Cycle</th>
+                  <th className="text-right text-gray-300 pb-3 hidden sm:table-cell">Stacked STX</th>
+                  <th className="text-right text-gray-300 pb-3">BTC Rewards</th>
+                  <th className="text-right text-gray-300 pb-3">APY</th>
+                  <th className="text-right text-gray-300 pb-3 hidden md:table-cell">Yield</th>
                 </tr>
               </thead>
               <tbody>
                 {latestCycles.map((cycle, index) => (
                   <tr key={cycle.cycle} className={`border-b border-gray-700/50 ${index === 0 ? 'bg-blue-600/10' : ''}`}>
-                    <td className="py-3 text-white font-medium">
+                    <td className="py-4 text-white font-medium">
                       <div className="flex flex-col sm:flex-row sm:items-center">
-                        <span>#{cycle.cycle}</span>
-                        {index === 0 && <Badge variant="secondary" className="mt-1 sm:mt-0 sm:ml-2 bg-blue-600 text-white text-xs w-fit">Current</Badge>}
-                        <span className="text-xs text-gray-400 sm:hidden mt-1">
-                          {analyticsService.formatNumber(parseInt(cycle.totalStacked) / 1000000)}M STX
-                        </span>
+                        <div className="flex items-center gap-2 mb-2 sm:mb-0">
+                          <span className="text-base">#{cycle.cycle}</span>
+                          {index === 0 && <Badge variant="secondary" className="bg-blue-600 text-white text-xs">Current</Badge>}
+                        </div>
+                        {/* Mobile-only info */}
+                        <div className="sm:hidden space-y-1 text-sm">
+                          <div className="text-gray-400">
+                            {analyticsService.formatNumber(parseInt(cycle.totalStacked) / 1000000)}M STX stacked
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-400">BTC:</span>
+                            <span className="text-gray-300">{analyticsService.formatBTC(cycle.btcRewards)}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-400">APY:</span>
+                            <span className="text-gray-300">{analyticsService.formatPercentage(cycle.apy * 100)}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-400">Yield:</span>
+                            <span className="text-gray-300">{analyticsService.formatPercentage(cycle.cycleYield * 100)}</span>
+                          </div>
+                        </div>
                       </div>
                     </td>
-                    <td className="text-right text-gray-300 hidden sm:table-cell">
+                    <td className="text-right text-gray-300 hidden sm:table-cell py-4">
                       {analyticsService.formatNumber(parseInt(cycle.totalStacked) / 1000000)}M
                     </td>
-                    <td className="text-right">
+                    <td className="text-right hidden sm:table-cell py-4">
                       <div className="flex flex-col items-end">
-                        <span className="text-gray-300">{analyticsService.formatBTC(cycle.btcRewards)}</span>
-                        <span className="text-xs text-gray-400 md:hidden">
+                        <span className="text-gray-300 font-mono">{analyticsService.formatBTC(cycle.btcRewards)}</span>
+                        <span className="text-xs text-gray-400 md:hidden mt-1">
                           {analyticsService.formatPercentage(cycle.cycleYield * 100)} yield
                         </span>
                       </div>
                     </td>
-                    <td className="text-right text-gray-300">
+                    <td className="text-right text-gray-300 hidden sm:table-cell py-4 font-medium">
                       {analyticsService.formatPercentage(cycle.apy * 100)}
                     </td>
-                    <td className="text-right text-gray-300 hidden md:table-cell">
+                    <td className="text-right text-gray-300 hidden md:table-cell py-4">
                       {analyticsService.formatPercentage(cycle.cycleYield * 100)}
                     </td>
                   </tr>

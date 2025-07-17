@@ -164,7 +164,7 @@ class AnalyticsService {
           btcRewards: 0,
           fastPoolV1: 0,
           fastPoolV2: 0,
-          stacked: 0,
+          stackedInPool: 0,
           payout: 0,
           activeMembers: 0,
           totalStacked: "125000000000000",

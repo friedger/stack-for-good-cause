@@ -79,40 +79,55 @@ const RewardAnalytics = ({ rewardsData }: RewardAnalyticsProps) => {
         <CardContent>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead>
+              <thead className="hidden sm:table-header-group">
                 <tr className="border-b border-gray-700">
-                  <th className="text-left text-gray-300 pb-2">Cycle</th>
-                  <th className="text-right text-gray-300 pb-2">BTC Received</th>
-                  <th className="text-right text-gray-300 pb-2 hidden sm:table-cell">STX Distributed</th>
-                  <th className="text-right text-gray-300 pb-2 hidden md:table-cell">Pool Members</th>
-                  <th className="text-right text-gray-300 pb-2">Yield Rate</th>
+                  <th className="text-left text-gray-300 pb-3">Cycle</th>
+                  <th className="text-right text-gray-300 pb-3">BTC Received</th>
+                  <th className="text-right text-gray-300 pb-3 hidden sm:table-cell">STX Distributed</th>
+                  <th className="text-right text-gray-300 pb-3 hidden md:table-cell">Pool Members</th>
+                  <th className="text-right text-gray-300 pb-3">Yield Rate</th>
                 </tr>
               </thead>
               <tbody>
                  {rewardsData.map((reward, index) => (
                    <tr key={reward.cycleNumber} className={`border-b border-gray-700/50 ${index === 0 ? 'bg-blue-600/10' : ''}`}>
-                     <td className="py-3 text-white font-medium">
+                     <td className="py-4 text-white font-medium">
                        <div className="flex flex-col">
-                         <div className="flex items-center">
-                           <span>#{reward.cycleNumber}</span>
-                           {index === 0 && <Badge variant="secondary" className="ml-2 bg-blue-600 text-white text-xs">Latest</Badge>}
+                         <div className="flex items-center gap-2 mb-2 sm:mb-0">
+                           <span className="text-base">#{reward.cycleNumber}</span>
+                           {index === 0 && <Badge variant="secondary" className="bg-blue-600 text-white text-xs">Latest</Badge>}
                          </div>
-                         <div className="sm:hidden text-xs text-gray-400 mt-1 space-y-1">
-                           <div>{analyticsService.formatSTX(reward.stxDistributed)}</div>
-                           <div className="md:hidden">{analyticsService.formatNumber(reward.participants)} members</div>
+                         {/* Mobile-only info */}
+                         <div className="sm:hidden space-y-1 text-sm">
+                           <div className="flex justify-between">
+                             <span className="text-gray-400">BTC Received:</span>
+                             <span className="text-orange-400 font-mono">{analyticsService.formatBTC(reward.btcReceived)}</span>
+                           </div>
+                           <div className="flex justify-between">
+                             <span className="text-gray-400">STX Distributed:</span>
+                             <span className="text-gray-300">{analyticsService.formatSTX(reward.stxDistributed)}</span>
+                           </div>
+                           <div className="flex justify-between">
+                             <span className="text-gray-400">Members:</span>
+                             <span className="text-gray-300">{analyticsService.formatNumber(reward.participants)}</span>
+                           </div>
+                           <div className="flex justify-between">
+                             <span className="text-gray-400">Yield Rate:</span>
+                             <span className="text-green-400 font-medium">{analyticsService.formatPercentage(reward.yieldRate || 0)}</span>
+                           </div>
                          </div>
                        </div>
                      </td>
-                     <td className="text-right text-orange-400 font-mono">
+                     <td className="text-right text-orange-400 font-mono hidden sm:table-cell py-4">
                        {analyticsService.formatBTC(reward.btcReceived)}
                      </td>
-                     <td className="text-right text-gray-300 hidden sm:table-cell">
+                     <td className="text-right text-gray-300 hidden sm:table-cell py-4">
                        {analyticsService.formatSTX(reward.stxDistributed)}
                      </td>
-                     <td className="text-right text-gray-300 hidden md:table-cell">
+                     <td className="text-right text-gray-300 hidden md:table-cell py-4">
                        {analyticsService.formatNumber(reward.participants)}
                      </td>
-                     <td className="text-right text-green-400 font-medium">
+                     <td className="text-right text-green-400 font-medium hidden sm:table-cell py-4">
                        {analyticsService.formatPercentage(reward.yieldRate || 0)}
                      </td>
                    </tr>
