@@ -6,19 +6,15 @@ interface StacksNodeResponse {
     is_pox_active: boolean;
   };
   current_burnchain_block_height: number;
-  current_cycle_burnchain_block_height: number;
   next_cycle: {
     id: number;
     min_threshold_ustx: number;
     stacked_ustx: number;
-    is_pox_active: boolean;
+    prepare_phase_start_block_height: number;
+    reward_phase_start_block_height: number;
   };
-  next_cycle_burnchain_block_height: number;
-  min_amount_ustx: number;
-  prepare_phase_start_block_height: number;
   first_burnchain_block_height: number;
-  reward_phase_start_block_height: number;
-  reward_slots: number;
+  reward_cycle_length: number;
 }
 
 interface CycleBlockHeights {
@@ -62,16 +58,16 @@ class StacksNodeService {
       
       const currentCycle = data.current_cycle.id;
       const currentBlockHeight = data.current_burnchain_block_height;
-      const cycleStartBlock = data.current_cycle_burnchain_block_height;
+      const CYCLE_LENGTH = data.reward_cycle_length;
+      const cycleStartBlock = data.first_burnchain_block_height + (currentCycle * CYCLE_LENGTH);
       
       // Calculate Fast Pool event blocks based on cycle structure
-      const CYCLE_LENGTH = 2100; // blocks
       const rewardDistributionEndBlock = cycleStartBlock + 432; // ~3 days
       const extendingStartBlock = cycleStartBlock + 1050; // ~7 days
       const aggregateCommitsBlock = cycleStartBlock + 1400; // ~9.5 days
       const lisaClosesBlock = cycleStartBlock + 1700; // ~11.5 days
       const fastPoolClosesBlock = cycleStartBlock + 1900; // ~13 days
-      const preparePhaseStartBlock = data.prepare_phase_start_block_height;
+      const preparePhaseStartBlock = data.next_cycle.prepare_phase_start_block_height;
       const cycleEndBlock = cycleStartBlock + CYCLE_LENGTH;
       const automaticUnlockBlock = cycleEndBlock + 1;
 
