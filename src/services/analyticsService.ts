@@ -40,6 +40,7 @@ export interface RewardData {
 
 export interface UserData {
   totalUsers: number;
+  activeUsers: number;
   totalStacked: number;
   averageStacked: number;
   mostActiveUsers: Array<{
@@ -121,6 +122,7 @@ class AnalyticsService {
     const data = await this.fetchJsonData('users.json');
     return data.summary || {
       totalUsers: 0,
+      activeUsers: 0,
       totalStacked: 0,
       averageStacked: 0,
       mostActiveUsers: [],
@@ -158,6 +160,7 @@ class AnalyticsService {
       ],
       userData: {
         totalUsers: 1250,
+        activeUsers: 1250,
         totalStacked: 125000000,
         averageStacked: 100000,
         mostActiveUsers: [],
@@ -177,7 +180,7 @@ class AnalyticsService {
       'cycles.json': { cycles: [] },
       'rewards.json': { recentDistributions: [] },
       'users.json': { 
-        summary: { totalUsers: 0, totalStacked: 0, averageStacked: 0, mostActiveUsers: [] }
+        summary: { totalUsers: 0, activeUsers: 0, totalStacked: 0, averageStacked: 0, mostActiveUsers: [] }
       }
     };
     return fallbacks[filename] || {};
