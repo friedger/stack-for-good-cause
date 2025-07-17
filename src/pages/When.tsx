@@ -4,15 +4,8 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { stacksNodeService } from "@/services/stacksNodeService";
 import { Clock, Calendar, Activity, Timer, AlertCircle, TrendingUp } from "lucide-react";
+import { FastPoolEvent, fastPoolEvents } from "@/lib/fastpoolPhases";
 
-interface FastPoolEvent {
-  name: string;
-  blockHeight: number;
-  description: string;
-  status: 'completed' | 'active' | 'upcoming';
-  timeRemaining?: string;
-  blocksRemaining?: number;
-}
 
 const When = () => {
   const [events, setEvents] = useState<FastPoolEvent[]>([]);
@@ -25,72 +18,10 @@ const When = () => {
       setError(null);
       try {
         const cycleData = await stacksNodeService.getCycleBlockHeights();
-        
-        const fastPoolEvents: FastPoolEvent[] = [
-          {
-            name: "Miners start PoX Cycle",
-            blockHeight: cycleData.cycleStartBlock,
-            description: "Beginning of the current stacking cycle",
-            status: cycleData.currentBlockHeight >= cycleData.cycleStartBlock ? 'completed' : 'upcoming'
-          },
-          {
-            name: "Fast Pool ends rewards distribution",
-            blockHeight: cycleData.rewardDistributionEndBlock,
-            description: "Fast Pool completes reward distribution to members",
-            status: cycleData.currentBlockHeight >= cycleData.rewardDistributionEndBlock ? 'completed' : 'upcoming'
-          },
-          {
-            name: "Current block height",
-            blockHeight: cycleData.currentBlockHeight,
-            description: "Current position in the blockchain",
-            status: 'active'
-          },
-          {
-            name: "Fast Pool starts extending stacking, everyone can extend",
-            blockHeight: cycleData.extendingStartBlock,
-            description: "Extension phase begins - existing stackers can extend their commitment",
-            status: cycleData.currentBlockHeight >= cycleData.extendingStartBlock ? 'completed' : 'upcoming'
-          },
-          {
-            name: "Fast Pool aggregates partial commits (estimated)",
-            blockHeight: cycleData.aggregateCommitsBlock,
-            description: "Fast Pool combines partial stacking commitments",
-            status: cycleData.currentBlockHeight >= cycleData.aggregateCommitsBlock ? 'completed' : 'upcoming'
-          },
-          {
-            name: "Lisa closes for next cycle",
-            blockHeight: cycleData.lisaClosesBlock,
-            description: "Lisa protocol closes accepting new delegations",
-            status: cycleData.currentBlockHeight >= cycleData.lisaClosesBlock ? 'completed' : 'upcoming'
-          },
-          {
-            name: "Fast Pool closes for next cycle (estimated), last aggregate partial commit",
-            blockHeight: cycleData.fastPoolClosesBlock,
-            description: "Fast Pool stops accepting new members and performs final aggregation",
-            status: cycleData.currentBlockHeight >= cycleData.fastPoolClosesBlock ? 'completed' : 'upcoming'
-          },
-          {
-            name: "Begin of prepare phase, no more stacking possible",
-            blockHeight: cycleData.preparePhaseStartBlock,
-            description: "Prepare phase starts - no new stacking operations allowed",
-            status: cycleData.currentBlockHeight >= cycleData.preparePhaseStartBlock ? 'completed' : 'upcoming'
-          },
-          {
-            name: "End of cycle",
-            blockHeight: cycleData.cycleEndBlock,
-            description: "Current stacking cycle ends",
-            status: cycleData.currentBlockHeight >= cycleData.cycleEndBlock ? 'completed' : 'upcoming'
-          },
-          {
-            name: "Automatic unlock (if locking period ended)",
-            blockHeight: cycleData.automaticUnlockBlock,
-            description: "Automatic unlock for stackers whose locking period has ended",
-            status: cycleData.currentBlockHeight >= cycleData.automaticUnlockBlock ? 'completed' : 'upcoming'
-          }
-        ];
 
+        const events: FastPoolEvent[] = fastPoolEvents(cycleData);
         // Calculate time remaining for upcoming events
-        const eventsWithTiming = fastPoolEvents.map(event => {
+        const eventsWithTiming = events.map(event => {
           if (event.status === 'upcoming') {
             const blocksRemaining = stacksNodeService.getBlocksUntil(event.blockHeight, cycleData.currentBlockHeight);
             const timeRemaining = stacksNodeService.calculateTimeFromBlocks(blocksRemaining);
@@ -154,7 +85,7 @@ const When = () => {
   }
 
   const currentCycleEvent = events.find(e => e.name === "Current block height");
-  const cycleNumber = events.find(e => e.name === "Miners start PoX Cycle")?.blockHeight ? 
+  const cycleNumber = events.find(e => e.name === "Miners start PoX Cycle")?.blockHeight ?
     Math.floor((events.find(e => e.name === "Miners start PoX Cycle")!.blockHeight - 666050) / 2100) + 1 : 114;
 
   return (
@@ -197,13 +128,12 @@ const When = () => {
               {events.map((event, index) => (
                 <div key={index} className="flex items-start space-x-4">
                   <div className="flex-shrink-0 mt-1">
-                    <Badge 
-                      variant={event.status === 'active' ? 'default' : 
-                             event.status === 'completed' ? 'secondary' : 'outline'}
-                      className={`${
-                        event.status === 'active' ? 'bg-green-600 hover:bg-green-700' :
+                    <Badge
+                      variant={event.status === 'active' ? 'default' :
+                        event.status === 'completed' ? 'secondary' : 'outline'}
+                      className={`${event.status === 'active' ? 'bg-green-600 hover:bg-green-700' :
                         event.status === 'completed' ? 'bg-gray-600' : 'border-gray-500'
-                      }`}
+                        }`}
                     >
                       {event.status === 'active' && <Activity className="h-3 w-3 mr-1" />}
                       {event.status === 'completed' && <TrendingUp className="h-3 w-3 mr-1" />}

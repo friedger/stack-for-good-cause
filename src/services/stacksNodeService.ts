@@ -1,3 +1,5 @@
+import { StackingClient } from "@stacks/stacking";
+
 interface StacksNodeResponse {
   current_cycle: {
     id: number;
@@ -32,42 +34,74 @@ interface CycleBlockHeights {
 }
 
 class StacksNodeService {
-  private readonly STACKS_API_URL = 'https://stacks-node-api.mainnet.stacks.co/v2/pox';
+  private stackingClient: StackingClient;
+
+  constructor() {
+    // Initialize StackingClient for advanced operations
+    this.stackingClient = new StackingClient({
+      address: "SP000000000000000000002Q6VF78",
+    });
+  }
 
   async getCurrentBlockHeight(): Promise<number> {
     try {
-      const response = await fetch(this.STACKS_API_URL);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data: StacksNodeResponse = await response.json();
-      return data.current_burnchain_block_height;
+      const coreInfo = await this.stackingClient.getCoreInfo();
+      return coreInfo.burn_block_height;
     } catch (error) {
-      console.error('Error fetching current block height:', error);
-      throw error;
+      console.error("Error fetching current block height:", error);
+      throw new Error("Failed to fetch current block height");
+    }
+  }
+
+  async getPoxInfo(): Promise<StacksNodeResponse> {
+    try {
+      const poxInfo = await this.stackingClient.getPoxInfo();
+
+      // Transform the stacking library response to match our interface
+      return {
+        current_cycle: {
+          id: poxInfo.current_cycle.id,
+          min_threshold_ustx: poxInfo.current_cycle.min_threshold_ustx,
+          stacked_ustx: poxInfo.current_cycle.stacked_ustx,
+          is_pox_active: poxInfo.current_cycle.is_pox_active,
+        },
+        current_burnchain_block_height: poxInfo.current_burnchain_block_height,
+        next_cycle: {
+          id: poxInfo.next_cycle.id,
+          min_threshold_ustx: poxInfo.next_cycle.min_threshold_ustx,
+          stacked_ustx: poxInfo.next_cycle.stacked_ustx,
+          prepare_phase_start_block_height:
+            poxInfo.next_cycle.prepare_phase_start_block_height,
+          reward_phase_start_block_height:
+            poxInfo.next_cycle.reward_phase_start_block_height,
+        },
+        first_burnchain_block_height: poxInfo.first_burnchain_block_height,
+        reward_cycle_length: poxInfo.reward_cycle_length,
+      };
+    } catch (error) {
+      console.error("Error fetching PoX info:", error);
+      throw new Error("Failed to fetch PoX information");
     }
   }
 
   async getCycleBlockHeights(): Promise<CycleBlockHeights> {
     try {
-      const response = await fetch(this.STACKS_API_URL);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data: StacksNodeResponse = await response.json();
-      
+      const data = await this.getPoxInfo();
+
       const currentCycle = data.current_cycle.id;
       const currentBlockHeight = data.current_burnchain_block_height;
       const CYCLE_LENGTH = data.reward_cycle_length;
-      const cycleStartBlock = data.first_burnchain_block_height + (currentCycle * CYCLE_LENGTH);
-      
+      const cycleStartBlock =
+        data.first_burnchain_block_height + currentCycle * CYCLE_LENGTH;
+
       // Calculate Fast Pool event blocks based on cycle structure
       const rewardDistributionEndBlock = cycleStartBlock + 432; // ~3 days
       const extendingStartBlock = cycleStartBlock + 1050; // ~7 days
       const aggregateCommitsBlock = cycleStartBlock + 1400; // ~9.5 days
       const lisaClosesBlock = cycleStartBlock + 1700; // ~11.5 days
       const fastPoolClosesBlock = cycleStartBlock + 1900; // ~13 days
-      const preparePhaseStartBlock = data.next_cycle.prepare_phase_start_block_height;
+      const preparePhaseStartBlock =
+        data.next_cycle.prepare_phase_start_block_height;
       const cycleEndBlock = cycleStartBlock + CYCLE_LENGTH;
       const automaticUnlockBlock = cycleEndBlock + 1;
 
@@ -82,10 +116,10 @@ class StacksNodeService {
         fastPoolClosesBlock,
         preparePhaseStartBlock,
         cycleEndBlock,
-        automaticUnlockBlock
+        automaticUnlockBlock,
       };
     } catch (error) {
-      console.error('Error fetching cycle block heights:', error);
+      console.error("Error fetching cycle block heights:", error);
       throw error;
     }
   }
@@ -95,7 +129,7 @@ class StacksNodeService {
     const totalMinutes = blocks * MINUTES_PER_BLOCK;
     const days = Math.floor(totalMinutes / (24 * 60));
     const hours = (totalMinutes % (24 * 60)) / 60;
-    
+
     return `${days} days and ${hours.toFixed(2)} hours`;
   }
 

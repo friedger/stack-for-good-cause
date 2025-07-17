@@ -6,6 +6,7 @@ import { Clock, Activity, PieChart as PieChartIcon } from "lucide-react";
 import { CycleData } from "@/services/analyticsService";
 import { stacksNodeService } from "@/services/stacksNodeService";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
+import { phases } from "@/lib/fastpoolPhases";
 
 interface CycleProgressCardProps {
   currentCycle: CycleData | null;
@@ -20,86 +21,28 @@ const CycleProgressCard = ({ currentCycle }: CycleProgressCardProps) => {
       setLoading(true);
       try {
         const cycleData = await stacksNodeService.getCycleBlockHeights();
-        
+
         // Calculate cycle progress based on real block heights
         const CYCLE_LENGTH = 2100;
         const currentBlockInCycle = cycleData.currentBlockHeight - cycleData.cycleStartBlock;
-        
-        // Phases from the When page
-        const phases = [
-          {
-            name: "Cycle Start",
-            startBlock: 0,
-            endBlock: cycleData.rewardDistributionEndBlock - cycleData.cycleStartBlock,
-            color: "#10B981", // emerald-500
-            bgColor: "#065F46", // emerald-800
-            description: "Beginning of the stacking cycle"
-          },
-          {
-            name: "Rewards Distribution",
-            startBlock: cycleData.rewardDistributionEndBlock - cycleData.cycleStartBlock,
-            endBlock: cycleData.extendingStartBlock - cycleData.cycleStartBlock,
-            color: "#3B82F6", // blue-500
-            bgColor: "#1E40AF", // blue-800
-            description: "Fast Pool distributes rewards to members"
-          },
-          {
-            name: "Extension Phase",
-            startBlock: cycleData.extendingStartBlock - cycleData.cycleStartBlock,
-            endBlock: cycleData.aggregateCommitsBlock - cycleData.cycleStartBlock,
-            color: "#F59E0B", // amber-500
-            bgColor: "#92400E", // amber-800
-            description: "Existing stackers can extend commitments"
-          },
-          {
-            name: "Aggregate Commits",
-            startBlock: cycleData.aggregateCommitsBlock - cycleData.cycleStartBlock,
-            endBlock: cycleData.lisaClosesBlock - cycleData.cycleStartBlock,
-            color: "#8B5CF6", // violet-500
-            bgColor: "#5B21B6", // violet-800
-            description: "Fast Pool combines partial stacking commitments"
-          },
-          {
-            name: "Lisa Closing",
-            startBlock: cycleData.lisaClosesBlock - cycleData.cycleStartBlock,
-            endBlock: cycleData.fastPoolClosesBlock - cycleData.cycleStartBlock,
-            color: "#EC4899", // pink-500
-            bgColor: "#9D174D", // pink-800
-            description: "Lisa protocol closes accepting new delegations"
-          },
-          {
-            name: "Fast Pool Closing",
-            startBlock: cycleData.fastPoolClosesBlock - cycleData.cycleStartBlock,
-            endBlock: cycleData.preparePhaseStartBlock - cycleData.cycleStartBlock,
-            color: "#F43F5E", // rose-500
-            bgColor: "#9F1239", // rose-800
-            description: "Fast Pool stops accepting new members"
-          },
-          {
-            name: "Prepare Phase",
-            startBlock: cycleData.preparePhaseStartBlock - cycleData.cycleStartBlock,
-            endBlock: CYCLE_LENGTH,
-            color: "#EF4444", // red-500
-            bgColor: "#991B1B", // red-800
-            description: "No new stacking operations allowed"
-          }
-        ];
+
+
 
         // Determine which phase is currently active
         let currentPhase = null;
         let blocksRemainingInPhase = 0;
-        
+
         // Enhance phases with additional data for the chart
-        const enhancedPhases = phases.map(phase => {
+        const enhancedPhases = phases(cycleData).map(phase => {
           const blockCount = phase.endBlock - phase.startBlock;
           const isActive = currentBlockInCycle >= phase.startBlock && currentBlockInCycle < phase.endBlock;
           const isCompleted = currentBlockInCycle >= phase.endBlock;
-          
+
           if (isActive) {
             currentPhase = phase;
             blocksRemainingInPhase = phase.endBlock - currentBlockInCycle;
           }
-          
+
           return {
             ...phase,
             blockCount,
@@ -112,10 +55,10 @@ const CycleProgressCard = ({ currentCycle }: CycleProgressCardProps) => {
             valueRemaining: isActive ? phase.endBlock - currentBlockInCycle : isCompleted ? 0 : blockCount
           };
         });
-        
+
         // Prepare data for the pie chart
         const pieChartData = [];
-        
+
         enhancedPhases.forEach(phase => {
           if (phase.completed) {
             // Completed phases
@@ -149,7 +92,7 @@ const CycleProgressCard = ({ currentCycle }: CycleProgressCardProps) => {
             });
           }
         });
-        
+
         setCycleProgress({
           currentPhase: currentPhase?.name || "Unknown",
           currentPhaseColor: currentPhase?.color || "#CCCCCC",
@@ -175,9 +118,8 @@ const CycleProgressCard = ({ currentCycle }: CycleProgressCardProps) => {
   if (loading) {
     return (
       <Card className="bg-gray-800 border-gray-700">
-        <CardHeader>
-          <CardTitle className="text-white text-lg">Cycle Progress</CardTitle>
-          <p className="text-sm text-gray-400">Current Stacking Cycle</p>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle className="text-white">Cycle Progress</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-6">
@@ -200,9 +142,8 @@ const CycleProgressCard = ({ currentCycle }: CycleProgressCardProps) => {
   if (!cycleProgress) {
     return (
       <Card className="bg-gray-800 border-gray-700">
-        <CardHeader>
-          <CardTitle className="text-white text-lg">Cycle Progress</CardTitle>
-          <p className="text-sm text-gray-400">Current Stacking Cycle</p>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle className="text-white">Cycle Progress</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-center text-gray-400">No cycle data available</div>
@@ -213,9 +154,8 @@ const CycleProgressCard = ({ currentCycle }: CycleProgressCardProps) => {
 
   return (
     <Card className="bg-gray-800 border-gray-700">
-      <CardHeader>
-        <CardTitle className="text-white text-lg">Cycle Progress</CardTitle>
-        <p className="text-sm text-gray-400">Current Stacking Cycle</p>
+      <CardHeader className="flex flex-row items-center justify-between">
+        <CardTitle className="text-white">Cycle Progress</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
@@ -223,7 +163,7 @@ const CycleProgressCard = ({ currentCycle }: CycleProgressCardProps) => {
           <div className="text-center bg-gray-700/50 rounded-lg p-4">
             <div className="flex items-center justify-center gap-2 mb-2">
               <Activity className="h-5 w-5" style={{ color: cycleProgress.currentPhaseColor }} />
-              <span 
+              <span
                 className="text-xl font-bold"
                 style={{ color: cycleProgress.currentPhaseColor }}
               >
@@ -234,7 +174,7 @@ const CycleProgressCard = ({ currentCycle }: CycleProgressCardProps) => {
               Cycle #{cycleProgress.currentCycle} • {cycleProgress.blocksRemainingInPhase} blocks remaining in phase
             </div>
             <div className="text-xs text-gray-400">
-              Block {cycleProgress.currentBlockInCycle} of {cycleProgress.cycleLength} 
+              Block {cycleProgress.currentBlockInCycle} of {cycleProgress.cycleLength}
               ({cycleProgress.cycleProgress.toFixed(1)}% complete)
             </div>
           </div>
@@ -245,7 +185,7 @@ const CycleProgressCard = ({ currentCycle }: CycleProgressCardProps) => {
               <h4 className="text-sm font-medium text-gray-300">Cycle Phases</h4>
               <PieChartIcon className="h-4 w-4 text-gray-400" />
             </div>
-            
+
             <div className="h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -270,8 +210,8 @@ const CycleProgressCard = ({ currentCycle }: CycleProgressCardProps) => {
                   <Tooltip
                     formatter={(value: number) => [`${value} blocks`, 'Size']}
                     labelFormatter={(name) => name}
-                    contentStyle={{ 
-                      backgroundColor: '#1F2937', 
+                    contentStyle={{
+                      backgroundColor: '#1F2937',
                       borderColor: '#374151',
                       color: 'white',
                       borderRadius: '0.375rem'
@@ -280,7 +220,7 @@ const CycleProgressCard = ({ currentCycle }: CycleProgressCardProps) => {
                 </PieChart>
               </ResponsiveContainer>
             </div>
-            
+
             {/* Legend */}
             <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
               {cycleProgress.phases.map((phase: any, index: number) => {
@@ -288,16 +228,15 @@ const CycleProgressCard = ({ currentCycle }: CycleProgressCardProps) => {
                 const isActive = phase.active;
                 return (
                   <div key={index} className="flex items-center space-x-2">
-                    <div 
+                    <div
                       className="w-3 h-3 rounded-full"
-                      style={{ 
-                        backgroundColor: isCompleted || isActive ? phase.color : phase.bgColor 
+                      style={{
+                        backgroundColor: isCompleted || isActive ? phase.color : phase.bgColor
                       }}
                     />
-                    <span className={`text-xs truncate ${
-                      isActive ? 'text-white font-medium' : 
+                    <span className={`text-xs truncate ${isActive ? 'text-white font-medium' :
                       isCompleted ? 'text-gray-300' : 'text-gray-400'
-                    }`}>
+                      }`}>
                       {phase.name}
                       {isActive && <span className="ml-1 text-blue-400">(Active)</span>}
                     </span>
@@ -313,7 +252,7 @@ const CycleProgressCard = ({ currentCycle }: CycleProgressCardProps) => {
               <span className="text-sm font-medium text-gray-300">Overall Cycle Progress</span>
               <span className="text-sm text-gray-400">{cycleProgress.cycleProgress.toFixed(1)}%</span>
             </div>
-            <Progress 
+            <Progress
               value={cycleProgress.cycleProgress}
               className="h-3"
             />
