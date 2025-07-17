@@ -20,7 +20,7 @@ const CycleAnalytics = ({ cycles }: CycleAnalyticsProps) => {
   const graphData = cycles.slice(-10).map(cycle => ({
     cycle: cycle.cycle,
     stackedInPool: cycle.stackedInPool / 1000000, // Convert to millions
-    payout: cycle.payout / 1000000, // Convert to millions  
+    payout: cycle.payout / 1000, // Convert to thousands  
     activeMembers: cycle.activeMembers,
     payoutRate: cycle.stackedInPool > 0 ? (cycle.payout / cycle.stackedInPool) * 100 : 0 // Payout rate as percentage
   }));
@@ -28,7 +28,7 @@ const CycleAnalytics = ({ cycles }: CycleAnalyticsProps) => {
   const formatXAxisLabel = (tickItem: any) => `#${tickItem}`;
   const formatTooltipValue = (value: any, name: string) => {
     if (name === 'stackedInPool') return [`${value.toFixed(2)}M STX`, 'Stacked in Pool'];
-    if (name === 'payout') return [`${value.toFixed(2)}M STX`, 'Payout'];
+    if (name === 'payout') return [`${value.toFixed(0)}K STX`, 'Payout'];
     if (name === 'activeMembers') return [`${value}`, 'Active Members'];
     if (name === 'payoutRate') return [`${value.toFixed(2)}%`, 'Payout Rate'];
     return [value, name];
@@ -160,7 +160,7 @@ const CycleAnalytics = ({ cycles }: CycleAnalyticsProps) => {
                 />
                 <YAxis 
                   stroke="#9CA3AF"
-                  tickFormatter={(value) => `${value}M`}
+                  tickFormatter={(value) => `${value}K`}
                   fontSize={12}
                 />
                 <Tooltip 
