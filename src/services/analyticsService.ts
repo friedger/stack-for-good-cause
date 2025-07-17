@@ -1,11 +1,23 @@
-import { supabase } from '../integrations/supabase/client';
+import { supabase } from "../integrations/supabase/client";
 
-export interface CycleData {
+interface Member {
+  timestamp: string;
+  blockheight: number;
+  txid: string;
+  amount: number;
+  stacker: string;
+  unlock: number;
+  rewardCycle: number;
+  lockingPeriod: number;
+}
+
+interface CycleData {
   cycleNumber: number;
+  comment?: string;
   totalStacked: number;
   totalRewards: number;
   activeStackers: number;
-  poolMembers?: any[];
+  poolMembers?: Member[];
 }
 
 export interface RewardData {
@@ -40,32 +52,34 @@ class AnalyticsService {
   async fetchAnalyticsData(): Promise<AnalyticsData> {
     // Check local cache first
     const now = Date.now();
-    if (this.cachedData && (now - this.cacheTimestamp) < this.CACHE_TTL) {
-      console.log('Returning cached analytics data');
+    if (this.cachedData && now - this.cacheTimestamp < this.CACHE_TTL) {
+      console.log("Returning cached analytics data");
       return this.cachedData;
     }
 
     try {
-      console.log('Fetching fresh analytics data from edge function...');
-      const { data, error } = await supabase.functions.invoke('stacking-analytics');
-      
+      console.log("Fetching fresh analytics data from edge function...");
+      const { data, error } = await supabase.functions.invoke(
+        "stacking-analytics"
+      );
+
       if (error) {
-        console.error('Error fetching analytics:', error);
+        console.error("Error fetching analytics:", error);
         throw error;
       }
 
       this.cachedData = data;
       this.cacheTimestamp = now;
-      
-      console.log('Analytics data updated:', {
+
+      console.log("Analytics data updated:", {
         cycles: data.cycleData?.length,
         users: data.userData?.totalUsers,
-        rewards: data.rewardData?.length
+        rewards: data.rewardData?.length,
       });
-      
+
       return data;
     } catch (error) {
-      console.error('Failed to fetch analytics data:', error);
+      console.error("Failed to fetch analytics data:", error);
       // Return fallback data if edge function fails
       return this.getFallbackData();
     }
@@ -83,12 +97,14 @@ class AnalyticsService {
 
   async fetchUserData(): Promise<UserData> {
     const data = await this.fetchAnalyticsData();
-    return data.userData || {
-      totalUsers: 0,
-      totalStacked: 0,
-      averageStacked: 0,
-      mostActiveUsers: []
-    };
+    return (
+      data.userData || {
+        totalUsers: 0,
+        totalStacked: 0,
+        averageStacked: 0,
+        mostActiveUsers: [],
+      }
+    );
   }
 
   private getFallbackData(): AnalyticsData {
@@ -98,17 +114,17 @@ class AnalyticsService {
           cycleNumber: 85,
           totalStacked: 125000000,
           totalRewards: 2500000,
-          activeStackers: 1250
-        }
+          activeStackers: 1250,
+        },
       ],
       userData: {
         totalUsers: 1250,
         totalStacked: 125000000,
         averageStacked: 100000,
-        mostActiveUsers: []
+        mostActiveUsers: [],
       },
       rewardData: [],
-      lastUpdated: new Date().toISOString()
+      lastUpdated: new Date().toISOString(),
     };
   }
 
