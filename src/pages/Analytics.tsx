@@ -1,21 +1,16 @@
 
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { analyticsService, CycleData, Metadata, RewardData, UserData } from "@/services/analyticsService";
+import { analyticsService, CycleData, Metadata, UserData } from "@/services/analyticsService";
 import CycleAnalytics from "@/components/analytics/CycleAnalytics";
-import RewardAnalytics from "@/components/analytics/RewardAnalytics";
-import { BarChart3, TrendingUp, Users, Award, Coins, Lock, Percent } from "lucide-react";
+import { BarChart3, Coins, Lock, Percent, Users } from "lucide-react";
 
 const Analytics = () => {
   const [cycleData, setCycleData] = useState<CycleData[]>([]);
   const [metaData, setMetaData] = useState<Metadata>({ totalMembers: 0, totalCycles: 0 });
-  const [rewardsData, setRewardsData] = useState<RewardData[]>([]);
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("overview");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -28,10 +23,6 @@ const Analytics = () => {
         // Fetch user data
         const users = await analyticsService.fetchUserData();
         setUserData(users);
-
-        // Fetch reward data
-        const rewards = await analyticsService.fetchRewardData();
-        setRewardsData(rewards);
 
         // Fetch metadata
         const meta = await analyticsService.fetchMetadata();
@@ -201,31 +192,8 @@ const Analytics = () => {
           </Card>
         </div>
 
-        {/* Detailed Analytics Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 bg-gray-800/50 border-gray-700 backdrop-blur-sm">
-            <TabsTrigger
-              value="overview"
-              className="data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all duration-200"
-            >
-              Cycle Overview
-            </TabsTrigger>
-            <TabsTrigger
-              value="rewards"
-              className="data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all duration-200"
-            >
-              Rewards Analysis
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="overview" className="space-y-6">
-            <CycleAnalytics cycles={cycleData} />
-          </TabsContent>
-
-          <TabsContent value="rewards" className="space-y-6">
-            <RewardAnalytics rewardsData={rewardsData} />
-          </TabsContent>
-        </Tabs>
+        {/* Detailed Analytics */}
+        <CycleAnalytics cycles={cycleData} />
       </div>
     </div>
   );
