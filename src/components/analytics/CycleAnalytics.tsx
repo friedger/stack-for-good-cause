@@ -11,7 +11,7 @@ interface CycleAnalyticsProps {
 }
 
 const CycleAnalytics = ({ cycles }: CycleAnalyticsProps) => {
-  const [viewMode, setViewMode] = useState<'table' | 'graph'>('table');
+  const [viewMode, setViewMode] = useState<'table' | 'graph'>('graph');
   const latestCycles = cycles.slice(-10);
   latestCycles.reverse();
   const currentCycle = cycles[cycles.length - 1];
@@ -21,7 +21,8 @@ const CycleAnalytics = ({ cycles }: CycleAnalyticsProps) => {
     cycle: cycle.cycle,
     stackedInPool: cycle.stackedInPool / 1000000, // Convert to millions
     payout: cycle.payout / 1000000, // Convert to millions  
-    activeMembers: cycle.activeMembers
+    activeMembers: cycle.activeMembers,
+    payoutRate: cycle.stackedInPool > 0 ? (cycle.payout / cycle.stackedInPool) * 100 : 0 // Payout rate as percentage
   }));
 
   const formatXAxisLabel = (tickItem: any) => `#${tickItem}`;
@@ -29,6 +30,7 @@ const CycleAnalytics = ({ cycles }: CycleAnalyticsProps) => {
     if (name === 'stackedInPool') return [`${value.toFixed(2)}M STX`, 'Stacked in Pool'];
     if (name === 'payout') return [`${value.toFixed(2)}M STX`, 'Payout'];
     if (name === 'activeMembers') return [`${value}`, 'Active Members'];
+    if (name === 'payoutRate') return [`${value.toFixed(2)}%`, 'Payout Rate'];
     return [value, name];
   };
 
@@ -93,25 +95,28 @@ const CycleAnalytics = ({ cycles }: CycleAnalyticsProps) => {
   );
 
   const GraphView = () => (
-    <div className="space-y-6">
+    <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
       {/* Stacked in Pool Graph */}
       <Card className="bg-gray-800 border-gray-700">
         <CardHeader>
-          <CardTitle className="text-white">Stacked in Pool (Last 10 Cycles)</CardTitle>
+          <CardTitle className="text-white text-lg">Stacked in Pool</CardTitle>
+          <p className="text-sm text-gray-400">Last 10 Cycles</p>
         </CardHeader>
         <CardContent>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={graphData}>
+              <LineChart data={graphData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                 <XAxis 
                   dataKey="cycle" 
                   stroke="#9CA3AF"
                   tickFormatter={formatXAxisLabel}
+                  fontSize={12}
                 />
                 <YAxis 
                   stroke="#9CA3AF"
                   tickFormatter={(value) => `${value}M`}
+                  fontSize={12}
                 />
                 <Tooltip 
                   formatter={formatTooltipValue}
@@ -139,21 +144,24 @@ const CycleAnalytics = ({ cycles }: CycleAnalyticsProps) => {
       {/* Payouts Graph */}
       <Card className="bg-gray-800 border-gray-700">
         <CardHeader>
-          <CardTitle className="text-white">Payouts (Last 10 Cycles)</CardTitle>
+          <CardTitle className="text-white text-lg">Payouts</CardTitle>
+          <p className="text-sm text-gray-400">Last 10 Cycles</p>
         </CardHeader>
         <CardContent>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={graphData}>
+              <LineChart data={graphData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                 <XAxis 
                   dataKey="cycle" 
                   stroke="#9CA3AF"
                   tickFormatter={formatXAxisLabel}
+                  fontSize={12}
                 />
                 <YAxis 
                   stroke="#9CA3AF"
                   tickFormatter={(value) => `${value}M`}
+                  fontSize={12}
                 />
                 <Tooltip 
                   formatter={formatTooltipValue}
@@ -181,19 +189,24 @@ const CycleAnalytics = ({ cycles }: CycleAnalyticsProps) => {
       {/* Active Members Graph */}
       <Card className="bg-gray-800 border-gray-700">
         <CardHeader>
-          <CardTitle className="text-white">Active Members (Last 10 Cycles)</CardTitle>
+          <CardTitle className="text-white text-lg">Active Members</CardTitle>
+          <p className="text-sm text-gray-400">Last 10 Cycles</p>
         </CardHeader>
         <CardContent>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={graphData}>
+              <LineChart data={graphData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                 <XAxis 
                   dataKey="cycle" 
                   stroke="#9CA3AF"
                   tickFormatter={formatXAxisLabel}
+                  fontSize={12}
                 />
-                <YAxis stroke="#9CA3AF" />
+                <YAxis 
+                  stroke="#9CA3AF"
+                  fontSize={12}
+                />
                 <Tooltip 
                   formatter={formatTooltipValue}
                   labelFormatter={(label) => `Cycle #${label}`}
@@ -210,6 +223,51 @@ const CycleAnalytics = ({ cycles }: CycleAnalyticsProps) => {
                   strokeWidth={2}
                   dot={{ fill: '#8B5CF6', strokeWidth: 2, r: 4 }}
                   activeDot={{ r: 6, stroke: '#8B5CF6', strokeWidth: 2 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Payout Rate Graph */}
+      <Card className="bg-gray-800 border-gray-700">
+        <CardHeader>
+          <CardTitle className="text-white text-lg">Payout Rate</CardTitle>
+          <p className="text-sm text-gray-400">Payout / Stacked Pool (%)</p>
+        </CardHeader>
+        <CardContent>
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={graphData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                <XAxis 
+                  dataKey="cycle" 
+                  stroke="#9CA3AF"
+                  tickFormatter={formatXAxisLabel}
+                  fontSize={12}
+                />
+                <YAxis 
+                  stroke="#9CA3AF"
+                  tickFormatter={(value) => `${value}%`}
+                  fontSize={12}
+                />
+                <Tooltip 
+                  formatter={formatTooltipValue}
+                  labelFormatter={(label) => `Cycle #${label}`}
+                  contentStyle={{
+                    backgroundColor: '#1F2937',
+                    border: '1px solid #374151',
+                    borderRadius: '6px'
+                  }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="payoutRate" 
+                  stroke="#F59E0B" 
+                  strokeWidth={2}
+                  dot={{ fill: '#F59E0B', strokeWidth: 2, r: 4 }}
+                  activeDot={{ r: 6, stroke: '#F59E0B', strokeWidth: 2 }}
                 />
               </LineChart>
             </ResponsiveContainer>
