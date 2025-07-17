@@ -1,0 +1,40 @@
+{
+  "lastUpdated": "2024-07-17T10:00:00Z",
+  "summary": {
+    "totalUsers": 5800,
+    "activeUsers": 1250,
+    "totalStacked": 125000000,
+    "averageStacked": 100000,
+    "newUsersThisCycle": 25
+  },
+  "userStats": {
+    "stackingDistribution": [
+      { "range": "10k-50k STX", "count": 750, "percentage": 60 },
+      { "range": "50k-100k STX", "count": 300, "percentage": 24 },
+      { "range": "100k-500k STX", "count": 150, "percentage": 12 },
+      { "range": "500k+ STX", "count": 50, "percentage": 4 }
+    ],
+    "participationFrequency": [
+      { "range": "1-5 cycles", "count": 2900, "percentage": 50 },
+      { "range": "6-15 cycles", "count": 1740, "percentage": 30 },
+      { "range": "16-30 cycles", "count": 870, "percentage": 15 },
+      { "range": "30+ cycles", "count": 290, "percentage": 5 }
+    ]
+  },
+  "mostActiveUsers": [
+    {
+      "address": "SP1ABC...XYZ",
+      "totalStacked": 2500000,
+      "cyclesParticipated": 45,
+      "lastActiveDate": "2024-07-15T00:00:00Z",
+      "averageStake": 555555
+    },
+    {
+      "address": "SP2DEF...ABC",
+      "totalStacked": 2200000,
+      "cyclesParticipated": 42,
+      "lastActiveDate": "2024-07-15T00:00:00Z",
+      "averageStake": 523809
+    }
+  ]
+}

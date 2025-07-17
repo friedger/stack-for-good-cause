@@ -1,0 +1,48 @@
+{
+  "lastUpdated": "2024-07-17T10:00:00Z",
+  "summary": {
+    "totalBtcReceived": 1847.3,
+    "totalStxDistributed": 50000000,
+    "averageYield": 2.0,
+    "totalParticipants": 5800,
+    "distributionEvents": 42
+  },
+  "recentDistributions": [
+    {
+      "cycleNumber": 85,
+      "distributionDate": "2024-07-15T12:00:00Z",
+      "btcReceived": 42.5,
+      "stxDistributed": 2500000,
+      "participants": 1250,
+      "yieldRate": 2.1,
+      "transactionId": "0x1234567890abcdef...",
+      "status": "completed"
+    },
+    {
+      "cycleNumber": 84,
+      "distributionDate": "2024-06-30T12:00:00Z",
+      "btcReceived": 41.8,
+      "stxDistributed": 2450000,
+      "participants": 1230,
+      "yieldRate": 2.0,
+      "transactionId": "0xabcdef1234567890...",
+      "status": "completed"
+    }
+  ],
+  "yearlyBreakdown": [
+    {
+      "year": 2024,
+      "totalBtc": 520.4,
+      "totalStx": 15600000,
+      "averageYield": 2.1,
+      "cycles": 12
+    },
+    {
+      "year": 2023,
+      "totalBtc": 890.2,
+      "totalStx": 24200000,
+      "averageYield": 1.9,
+      "cycles": 24
+    }
+  ]
+}

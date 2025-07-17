@@ -1,6 +1,6 @@
 import { supabase } from "../integrations/supabase/client";
 
-interface Member {
+export interface Member {
   timestamp: string;
   blockheight: number;
   txid: string;
@@ -11,7 +11,7 @@ interface Member {
   lockingPeriod: number;
 }
 
-interface CycleData {
+export interface CycleData {
   cycleNumber: number;
   comment?: string;
   totalStacked: number;
@@ -45,66 +45,77 @@ export interface AnalyticsData {
 }
 
 class AnalyticsService {
-  private cachedData: AnalyticsData | null = null;
-  private cacheTimestamp = 0;
-  private readonly CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
+  private cache: Map<string, { data: any; timestamp: number }> = new Map();
+  private readonly CACHE_TTL = 5 * 60 * 1000; // 5 minutes for JSON files
 
-  async fetchAnalyticsData(): Promise<AnalyticsData> {
-    // Check local cache first
+  private async fetchJsonData(filename: string): Promise<any> {
+    const cacheKey = filename;
+    const cached = this.cache.get(cacheKey);
     const now = Date.now();
-    if (this.cachedData && now - this.cacheTimestamp < this.CACHE_TTL) {
-      console.log("Returning cached analytics data");
-      return this.cachedData;
+
+    if (cached && now - cached.timestamp < this.CACHE_TTL) {
+      console.log(`Returning cached data for ${filename}`);
+      return cached.data;
     }
 
     try {
-      console.log("Fetching fresh analytics data from edge function...");
-      const { data, error } = await supabase.functions.invoke(
-        "stacking-analytics"
-      );
-
-      if (error) {
-        console.error("Error fetching analytics:", error);
-        throw error;
+      console.log(`Fetching fresh data from ${filename}...`);
+      const response = await fetch(`/data/${filename}`);
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch ${filename}: ${response.statusText}`);
       }
 
-      this.cachedData = data;
-      this.cacheTimestamp = now;
-
-      console.log("Analytics data updated:", {
-        cycles: data.cycleData?.length,
-        users: data.userData?.totalUsers,
-        rewards: data.rewardData?.length,
-      });
-
+      const data = await response.json();
+      this.cache.set(cacheKey, { data, timestamp: now });
+      
+      console.log(`Data updated from ${filename}`);
       return data;
     } catch (error) {
-      console.error("Failed to fetch analytics data:", error);
-      // Return fallback data if edge function fails
-      return this.getFallbackData();
+      console.error(`Failed to fetch ${filename}:`, error);
+      // Return cached data if available, otherwise fallback
+      return cached?.data || this.getFallbackDataForFile(filename);
     }
   }
 
+  async fetchAnalyticsData(): Promise<AnalyticsData> {
+    const [overview, cycles, rewards, users] = await Promise.all([
+      this.fetchJsonData('overview.json'),
+      this.fetchJsonData('cycles.json'),
+      this.fetchJsonData('rewards.json'),
+      this.fetchJsonData('users.json')
+    ]);
+
+    return {
+      cycleData: cycles.cycles || [],
+      userData: users.summary || this.getFallbackData().userData,
+      rewardData: rewards.recentDistributions || [],
+      lastUpdated: overview.lastUpdated || new Date().toISOString()
+    };
+  }
+
   async fetchCycleData(): Promise<CycleData[]> {
-    const data = await this.fetchAnalyticsData();
-    return data.cycleData || [];
+    const data = await this.fetchJsonData('cycles.json');
+    return data.cycles || [];
   }
 
   async fetchRewardData(): Promise<RewardData[]> {
-    const data = await this.fetchAnalyticsData();
-    return data.rewardData || [];
+    const data = await this.fetchJsonData('rewards.json');
+    return data.recentDistributions || [];
   }
 
   async fetchUserData(): Promise<UserData> {
-    const data = await this.fetchAnalyticsData();
-    return (
-      data.userData || {
-        totalUsers: 0,
-        totalStacked: 0,
-        averageStacked: 0,
-        mostActiveUsers: [],
-      }
-    );
+    const data = await this.fetchJsonData('users.json');
+    return data.summary || {
+      totalUsers: 0,
+      totalStacked: 0,
+      averageStacked: 0,
+      mostActiveUsers: [],
+    };
+  }
+
+  async fetchOverviewData(): Promise<any> {
+    return this.fetchJsonData('overview.json');
   }
 
   private getFallbackData(): AnalyticsData {
@@ -126,6 +137,22 @@ class AnalyticsService {
       rewardData: [],
       lastUpdated: new Date().toISOString(),
     };
+  }
+
+  private getFallbackDataForFile(filename: string): any {
+    const fallbacks: Record<string, any> = {
+      'overview.json': {
+        summary: { totalStacked: 0, totalRewards: 0, activeStackers: 0 },
+        recentCycles: [],
+        trends: { stackedGrowth: 0, stackersGrowth: 0, rewardsGrowth: 0 }
+      },
+      'cycles.json': { cycles: [] },
+      'rewards.json': { recentDistributions: [] },
+      'users.json': { 
+        summary: { totalUsers: 0, totalStacked: 0, averageStacked: 0, mostActiveUsers: [] }
+      }
+    };
+    return fallbacks[filename] || {};
   }
 
   formatNumber(num: number): string {
