@@ -53,15 +53,16 @@ const Analytics = () => {
       };
     }
 
-    // Filter cycles from cycle 3 onwards and calculate total STX distributed
-    const cyclesSince3 = cycleData.filter(cycle => cycle.cycle >= 3);
-    const totalDistributedSinceCycle3 = cyclesSince3.reduce((total, cycle) => {
+    // Calculate total STX distributed
+    const totalDistributedStx = cycleData.reduce((total, cycle) => {
       // Convert fastPoolV1 and fastPoolV2 BTC to STX equivalent
       // Using a rough conversion rate based on recent cycles
-      const btcToStxRate = 50000; // Approximate conversion rate
-      const stxFromBTC = (cycle.fastPoolV1 + cycle.fastPoolV2) * btcToStxRate;
+      const stxFromBTC = (cycle.fastPoolV1 + cycle.fastPoolV2) * cycle.btcPriceAtEnd / cycle.stxPriceAtEnd;
+      console.log(`Cycle ${cycle.cycle}: BTC to STX conversion = ${stxFromBTC}`);
+      console.log(cycle.btcPriceAtEnd, cycle.stxPriceAtEnd);
       return total + stxFromBTC;
     }, 0);
+    const firstCycle = cycleData[0].cycle
 
     // Get current cycle data
     const currentCycle = cycleData[cycleData.length - 1];
@@ -73,7 +74,8 @@ const Analytics = () => {
     const totalMembers = userData.totalUsers;
 
     return {
-      totalDistributedSinceCycle3,
+      firstCycle,
+      totalDistributedStx,
       activeMembers,
       totalMembers,
       currentLockedSTX,
@@ -136,9 +138,9 @@ const Analytics = () => {
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold text-blue-400">
-                {analyticsService.formatSTX(metrics.totalDistributedSinceCycle3)}
+                {analyticsService.formatSTX(metrics.totalDistributedStx)}
               </div>
-              <p className="text-xs text-blue-300 mt-1">Since cycle 3</p>
+              <p className="text-xs text-blue-300 mt-1">Since cycle {metrics.firstCycle}</p>
             </CardContent>
           </Card>
 
