@@ -1,5 +1,5 @@
-
 import { supabase } from "@/integrations/supabase/client";
+import { priceCache } from "./cachingService";
 
 export interface PriceData {
   symbol: string;
@@ -10,9 +10,6 @@ export interface PriceData {
 }
 
 class PriceService {
-  private priceCache: Map<string, PriceData> = new Map();
-  private cacheTimeout = 5 * 60 * 1000; // 5 minutes
-
   async getBitcoinPrice(): Promise<PriceData> {
     return this.getPrice("BTC", "USD");
   }
@@ -30,32 +27,28 @@ class PriceService {
     baseSymbol: "USD" | "STX"
   ): Promise<PriceData> {
     const cacheKey = `${symbol}_${baseSymbol}`;
-    const cached = this.priceCache.get(cacheKey);
-    const now = Date.now();
 
-    // Return cached data if it's still fresh
-    if (
-      cached &&
-      now - new Date(cached.lastUpdated).getTime() < this.cacheTimeout
-    ) {
+    // Check shared cache first
+    const cached = priceCache.get(cacheKey);
+    if (cached) {
       return cached;
     }
 
     try {
       // Fetch real prices from CoinGecko via Edge Function
-      const { data, error } = await supabase.functions.invoke('fetch-prices', {
-        body: { symbols: ['BTC', 'STX'] }
+      const { data, error } = await supabase.functions.invoke("fetch-prices", {
+        body: { symbols: ["BTC", "STX"] },
       });
 
       if (error) {
         throw new Error(`Edge function error: ${error.message}`);
       }
 
-      console.log('Price data received:', data);
+      console.log("Price data received:", data);
 
       let priceData: PriceData;
 
-      if (symbol === 'BTC' && baseSymbol === 'STX') {
+      if (symbol === "BTC" && baseSymbol === "STX") {
         // Use the calculated BTC/STX price
         priceData = data.BTC_STX;
       } else {
@@ -67,15 +60,15 @@ class PriceService {
         priceData = coinData;
       }
 
-      this.priceCache.set(cacheKey, priceData);
+      // Store in shared cache
+      priceCache.set(cacheKey, priceData);
       return priceData;
-
     } catch (error) {
       console.error(`Failed to fetch real price for ${symbol}:`, error);
 
-      // Return cached data even if stale, or fallback to mock data
-      if (cached) {
-        return cached;
+      const staleCached = priceCache.getStale(cacheKey);
+      if (staleCached) {
+        return staleCached;
       }
 
       // Fallback mock data as last resort
@@ -90,20 +83,23 @@ class PriceService {
         },
       };
 
-      const mockData = mockPrices[symbol as keyof typeof mockPrices][baseSymbol];
-      
-      return {
+      const mockData =
+        mockPrices[symbol as keyof typeof mockPrices][baseSymbol];
+
+      const fallbackData: PriceData = {
         symbol,
         baseSymbol,
         price: mockData.price,
         change24h: mockData.change24h,
         lastUpdated: new Date().toISOString(),
       };
+
+      return fallbackData;
     }
   }
 
   clearCache(): void {
-    this.priceCache.clear();
+    priceCache.clear();
   }
 }
 

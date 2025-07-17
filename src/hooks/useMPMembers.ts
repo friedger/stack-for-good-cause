@@ -1,24 +1,17 @@
-import {
-  Client,
-  createClient,
-  OperationResponse,
-} from "@stacks/blockchain-api-client";
-import { paths } from "@stacks/blockchain-api-client/lib/generated/schema";
+import { OperationResponse } from "@stacks/blockchain-api-client";
 import {
   BufferCV,
-  ClarityValue,
-  cvToJSON,
   cvToString,
   hexToCV,
   ListCV,
   PrincipalCV,
-  stringAsciiCV,
   StringAsciiCV,
   TupleCV,
   UIntCV,
 } from "@stacks/transactions";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
+import { useApiClient } from "./useApiClient";
 
 // Initialize Supabase client
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "";
@@ -60,14 +53,8 @@ export const useMultiPoolMembers = () => {
     eventsProcessed: number;
   } | null>(null);
 
-  // Lazy API client creation
-  const apiClientRef = useRef<Client<paths>>(null);
-  const getApiClient = useCallback(() => {
-    if (!apiClientRef.current) {
-      apiClientRef.current = createClient();
-    }
-    return apiClientRef.current;
-  }, []);
+  // Use shared API client
+  const { getApiClient } = useApiClient();
 
   const batchFetchTransactions = useCallback(
     async (txIds: string[]) => {
@@ -283,8 +270,11 @@ export const useMultiPoolMembers = () => {
     supabaseError,
     writeToSupabase,
     isSupabaseConfigured: !!supabase,
+    getSupabaseStats,
+    lastSyncInfo,
   };
 };
+
 function extractContractLogValue(
   r: { event_index: number } & {
     event_type: "smart_contract_log";
