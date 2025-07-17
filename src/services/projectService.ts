@@ -1,6 +1,6 @@
 import { nostrService } from "./nostrService";
-import { Project, CreateProjectData } from "./projectCore";
-import { curatedProjects } from "./projectData";
+import { Project, CreateProjectData } from "../lib/projectCore";
+import { curatedProjects } from "../lib/projectData";
 
 class ProjectService {
   private projects: Project[] = [...curatedProjects];
@@ -108,4 +108,4 @@ class ProjectService {
 }
 
 export const projectService = new ProjectService();
-export type { Project, CreateProjectData } from "./projectCore";
+export type { Project, CreateProjectData } from "../lib/projectCore";

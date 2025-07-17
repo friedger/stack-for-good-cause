@@ -2,7 +2,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useProjectInitialization } from "@/hooks/useProjectInitialization";
 import { useStackingLogic } from "@/hooks/useStackingLogic";
-import { Project } from "@/services/projectCore";
+import { Project } from "@/lib/projectCore";
 import { Heart, TrendingUp } from "lucide-react";
 import DonationSettings from "./stacking/DonationSettings";
 import { configService } from "@/services/configService";

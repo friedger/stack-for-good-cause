@@ -1,3 +1,4 @@
+import { useApiClient } from "@/hooks/useApiClient";
 import { hexToBytes } from "@stacks/common";
 import {
   connect,
@@ -66,6 +67,10 @@ class WalletService {
     };
   }
 
+  isWalletConnected(): boolean {
+    return isConnected();
+  }
+
   async allowPox4ContractCaller() {
     const response = await request("stx_callContract", {
       contract: "SP000000000000000000002Q6VF78.pox-4",
@@ -118,8 +123,9 @@ class WalletService {
     return response.txid;
   }
 
-  isWalletConnected(): boolean {
-    return isConnected();
+  async getStackingStatus() {
+    const { getApiClient } = useApiClient();
+    const response = getApiClient().GET("/extended/");
   }
 }
 
