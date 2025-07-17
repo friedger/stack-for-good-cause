@@ -141,7 +141,7 @@ const CycleAnalytics = ({ cycles }: CycleAnalyticsProps) => {
                           </div>
                           <div className="flex justify-between">
                             <span className="text-gray-400">Payout:</span>
-                            <span className="text-gray-300">{analyticsService.formatSTX(cycle.payout / 1000000)}</span>
+                            <span className="text-gray-300">{index === 0 ? `~${analyticsService.formatSTX(cycle.payout / 1000000)}` : analyticsService.formatSTX(cycle.payout / 1000000)}</span>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-gray-400">Members:</span>
@@ -154,7 +154,7 @@ const CycleAnalytics = ({ cycles }: CycleAnalyticsProps) => {
                       {analyticsService.formatSTX(cycle.stackedInPool / 1000000)}
                     </td>
                     <td className="text-right text-blue-400 font-medium hidden sm:table-cell py-4">
-                      {analyticsService.formatSTX(cycle.payout / 1000000)}
+                      {index === 0 ? `~${analyticsService.formatSTX(cycle.payout / 1000000)}` : analyticsService.formatSTX(cycle.payout / 1000000)}
                     </td>
                     <td className="text-right text-gray-300 hidden md:table-cell py-4">
                       {analyticsService.formatNumber(cycle.activeMembers)}
