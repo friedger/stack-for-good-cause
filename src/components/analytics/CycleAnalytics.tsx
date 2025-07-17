@@ -284,22 +284,6 @@ const CycleAnalytics = ({ cycles }: CycleAnalyticsProps) => {
 
   return (
     <div className="space-y-6">
-      {/* BTC Rewards Card  */}
-      <Card className="bg-gray-800 border-gray-700">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-gray-300">BTC Rewards</CardTitle>
-          <DollarSign className="h-4 w-4 text-gray-400" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold text-white">
-            {currentCycle ? analyticsService.formatBTC(currentCycle.btcRewards) : '-'}
-          </div>
-          <p className="text-xs text-gray-400">
-            ${currentCycle ? analyticsService.formatNumber(currentCycle.rewardsUsd) : '-'}
-          </p>
-        </CardContent>
-      </Card>
-
       {/* View Toggle */}
       <Card className="bg-gray-800 border-gray-700">
         <CardHeader className="flex flex-row items-center justify-between">

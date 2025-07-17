@@ -141,7 +141,7 @@ const Analytics = () => {
               <div className="text-3xl font-bold text-blue-400">
                 {analyticsService.formatNumber(metrics.totalDistributedStx / 1e12)}M
               </div>
-              <p className="text-xs text-blue-300 mt-1">Since cycle {metrics.firstCycle}</p>
+              <p className="text-xs text-blue-300 mt-1">since Feb 2021 (cycle #{metrics.firstCycle})</p>
             </CardContent>
           </Card>
 
