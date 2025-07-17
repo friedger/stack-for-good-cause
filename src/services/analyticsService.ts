@@ -12,12 +12,25 @@ export interface Member {
 }
 
 export interface CycleData {
-  cycleNumber: number;
-  comment?: string;
-  totalStacked: number;
-  totalRewards: number;
-  activeStackers: number;
-  poolMembers?: Member[];
+  cycle: number;
+  cycleStart: number;
+  cycleRewardsEnd: number;
+  stacksCycleStart: number;
+  stacksCycleRewardsEnd: number;
+  cycleStartDate: string;
+  cycleRewardsEndDate: string;
+  stxPriceAtEnd: number;
+  btcPriceAtEnd: number;
+  btcRewards: number;
+  fastPoolV1: number;
+  fastPoolV2: number;
+  totalStacked: string;
+  rewardsUsd: number;
+  blockRewardsUsd: number;
+  stackedUsd: number;
+  cycleYield: number;
+  apy: number;
+  threshold: number;
 }
 
 export interface RewardData {
@@ -122,10 +135,25 @@ class AnalyticsService {
     return {
       cycleData: [
         {
-          cycleNumber: 85,
-          totalStacked: 125000000,
-          totalRewards: 2500000,
-          activeStackers: 1250,
+          cycle: 85,
+          cycleStart: 0,
+          cycleRewardsEnd: 0,
+          stacksCycleStart: 0,
+          stacksCycleRewardsEnd: 0,
+          cycleStartDate: "",
+          cycleRewardsEndDate: "",
+          stxPriceAtEnd: 0,
+          btcPriceAtEnd: 0,
+          btcRewards: 0,
+          fastPoolV1: 0,
+          fastPoolV2: 0,
+          totalStacked: "125000000000000",
+          rewardsUsd: 2500000,
+          blockRewardsUsd: 0,
+          stackedUsd: 0,
+          cycleYield: 0,
+          apy: 0,
+          threshold: 0,
         },
       ],
       userData: {

@@ -102,12 +102,12 @@ const Analytics = () => {
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-gray-300">Current Cycle</CardTitle>
               <Badge variant="secondary" className="bg-blue-600 text-white">
-                #{currentCycle?.cycleNumber}
+                #{currentCycle?.cycle}
               </Badge>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-blue-400">
-                {currentCycle ? analyticsService.formatSTX(currentCycle.totalStacked) : '-'}
+                {currentCycle ? analyticsService.formatNumber(parseInt(currentCycle.totalStacked) / 1000000) + 'M STX' : '-'}
               </div>
               <p className="text-xs text-gray-400">Total stacked</p>
             </CardContent>
@@ -120,7 +120,7 @@ const Analytics = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-green-400">
-                {userData ? analyticsService.formatNumber(userData.totalUsers) : (currentCycle ? analyticsService.formatNumber(currentCycle.activeStackers) : '-')}
+                {userData ? analyticsService.formatNumber(userData.totalUsers) : '-'}
               </div>
               <p className="text-xs text-gray-400">Current participants</p>
             </CardContent>
