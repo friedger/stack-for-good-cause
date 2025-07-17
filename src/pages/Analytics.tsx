@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { analyticsService, CycleData, Metadata, UserData } from "@/services/analyticsService";
 import CycleAnalytics from "@/components/analytics/CycleAnalytics";
+import CycleProgressCard from "@/components/analytics/CycleProgressCard";
 import { BarChart3, Coins, Lock, Percent, Users } from "lucide-react";
 
 const Analytics = () => {
@@ -191,6 +192,9 @@ const Analytics = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* Cycle Progress */}
+        <CycleProgressCard currentCycle={currentCycle} />
 
         {/* Detailed Analytics */}
         <CycleAnalytics cycles={cycleData} />

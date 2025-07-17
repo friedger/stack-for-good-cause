@@ -11,6 +11,7 @@ import ProjectDetail from "./pages/ProjectDetail";
 import Admin from "./pages/Admin";
 import Dashboard from "./pages/Dashboard";
 import Analytics from "./pages/Analytics";
+import When from "./pages/When";
 import NotFound from "./pages/NotFound";
 import Layout from "./Layout";
 
@@ -29,6 +30,7 @@ const AppRouter = () => (
             <Route path="/projects" element={<Projects />} />
             <Route path="/projects/:slug" element={<ProjectDetail />} />
             <Route path="/analytics" element={<Analytics />} />
+            <Route path="/when" element={<When />} />
             <Route path="/admin" element={<Admin />} />
             {/* <Route path="/dashboard" element={<Dashboard />} /> */}
             <Route path="*" element={<NotFound />} />
