@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
+import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Clock } from "lucide-react";
+import { Clock, Activity } from "lucide-react";
 import { CycleData } from "@/services/analyticsService";
 import { stacksNodeService } from "@/services/stacksNodeService";
 
@@ -28,61 +28,77 @@ const CycleProgressCard = ({ currentCycle }: CycleProgressCardProps) => {
         const currentBlockInCycle = cycleData.currentBlockHeight - cycleData.cycleStartBlock;
         
         let phase = "";
-        let color = "";
+        let phaseProgress = 0;
         let blocksRemaining = 0;
+        let phaseStartBlock = 0;
+        let phaseEndBlock = 0;
         
-        if (currentBlockInCycle < CYCLE_LENGTH - PREPARE_PHASE_BLOCKS - EXTENSION_PHASE_BLOCKS) {
+        const openPhaseEnd = CYCLE_LENGTH - PREPARE_PHASE_BLOCKS - EXTENSION_PHASE_BLOCKS;
+        const extendingPhaseEnd = CYCLE_LENGTH - PREPARE_PHASE_BLOCKS;
+        
+        if (currentBlockInCycle < openPhaseEnd) {
           phase = "Fast Pool Open";
-          color = "#22c55e"; // green
-          blocksRemaining = CYCLE_LENGTH - PREPARE_PHASE_BLOCKS - EXTENSION_PHASE_BLOCKS - currentBlockInCycle;
-        } else if (currentBlockInCycle < CYCLE_LENGTH - PREPARE_PHASE_BLOCKS) {
+          phaseStartBlock = 0;
+          phaseEndBlock = openPhaseEnd;
+          phaseProgress = (currentBlockInCycle / openPhaseEnd) * 100;
+          blocksRemaining = openPhaseEnd - currentBlockInCycle;
+        } else if (currentBlockInCycle < extendingPhaseEnd) {
           phase = "Fast Pool Extending";
-          color = "#eab308"; // yellow
-          blocksRemaining = CYCLE_LENGTH - PREPARE_PHASE_BLOCKS - currentBlockInCycle;
+          phaseStartBlock = openPhaseEnd;
+          phaseEndBlock = extendingPhaseEnd;
+          phaseProgress = ((currentBlockInCycle - openPhaseEnd) / EXTENSION_PHASE_BLOCKS) * 100;
+          blocksRemaining = extendingPhaseEnd - currentBlockInCycle;
         } else {
           phase = "Prepare Phase";
-          color = "#ea580c"; // orange
+          phaseStartBlock = extendingPhaseEnd;
+          phaseEndBlock = CYCLE_LENGTH;
+          phaseProgress = ((currentBlockInCycle - extendingPhaseEnd) / PREPARE_PHASE_BLOCKS) * 100;
           blocksRemaining = CYCLE_LENGTH - currentBlockInCycle;
         }
 
-        // Calculate percentages for pie chart
-        const openBlocks = CYCLE_LENGTH - PREPARE_PHASE_BLOCKS - EXTENSION_PHASE_BLOCKS;
-        const extendingBlocks = EXTENSION_PHASE_BLOCKS;
-        const prepareBlocks = PREPARE_PHASE_BLOCKS;
-        
-        const data = [
+        const phases = [
           {
             name: "Fast Pool Open",
-            value: openBlocks,
-            percentage: ((openBlocks / CYCLE_LENGTH) * 100).toFixed(1),
-            color: "#d1fae5", // light green
-            activeColor: "#22c55e" // green
+            startBlock: 0,
+            endBlock: openPhaseEnd,
+            blocks: openPhaseEnd,
+            percentage: ((openPhaseEnd / CYCLE_LENGTH) * 100).toFixed(1),
+            color: "#10B981", // emerald-500
+            bgColor: "#065F46", // emerald-800
+            active: phase === "Fast Pool Open"
           },
           {
             name: "Fast Pool Extending", 
-            value: extendingBlocks,
-            percentage: ((extendingBlocks / CYCLE_LENGTH) * 100).toFixed(1),
-            color: "#fef3c7", // light yellow
-            activeColor: "#eab308" // yellow
+            startBlock: openPhaseEnd,
+            endBlock: extendingPhaseEnd,
+            blocks: EXTENSION_PHASE_BLOCKS,
+            percentage: ((EXTENSION_PHASE_BLOCKS / CYCLE_LENGTH) * 100).toFixed(1),
+            color: "#F59E0B", // amber-500
+            bgColor: "#92400E", // amber-800
+            active: phase === "Fast Pool Extending"
           },
           {
             name: "Prepare Phase",
-            value: prepareBlocks, 
-            percentage: ((prepareBlocks / CYCLE_LENGTH) * 100).toFixed(1),
-            color: "#fed7aa", // light orange
-            activeColor: "#ea580c" // orange
+            startBlock: extendingPhaseEnd,
+            endBlock: CYCLE_LENGTH,
+            blocks: PREPARE_PHASE_BLOCKS, 
+            percentage: ((PREPARE_PHASE_BLOCKS / CYCLE_LENGTH) * 100).toFixed(1),
+            color: "#EF4444", // red-500
+            bgColor: "#991B1B", // red-800
+            active: phase === "Prepare Phase"
           }
         ];
 
         setCycleProgress({
           phase,
-          color,
+          phaseProgress: Math.min(100, Math.max(0, phaseProgress)),
           blocksRemaining: Math.max(0, blocksRemaining),
           currentBlockInCycle: Math.max(0, currentBlockInCycle),
-          data,
+          phases,
           cycleLength: CYCLE_LENGTH,
           currentCycle: cycleData.currentCycle,
-          currentBlockHeight: cycleData.currentBlockHeight
+          currentBlockHeight: cycleData.currentBlockHeight,
+          cycleProgress: (currentBlockInCycle / CYCLE_LENGTH) * 100
         });
       } catch (error) {
         console.error('Error fetching cycle progress:', error);
@@ -97,18 +113,22 @@ const CycleProgressCard = ({ currentCycle }: CycleProgressCardProps) => {
   if (loading) {
     return (
       <Card className="bg-gray-800 border-gray-700">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-gray-300">Cycle Progress</CardTitle>
-          <Clock className="h-4 w-4 text-gray-400" />
+        <CardHeader>
+          <CardTitle className="text-white text-lg">Cycle Progress</CardTitle>
+          <p className="text-sm text-gray-400">Current Stacking Cycle</p>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div className="text-center">
               <Skeleton className="h-8 w-32 bg-gray-700 mx-auto mb-2" />
               <Skeleton className="h-4 w-48 bg-gray-700 mx-auto mb-1" />
               <Skeleton className="h-3 w-36 bg-gray-700 mx-auto" />
             </div>
-            <Skeleton className="h-64 w-full bg-gray-700" />
+            <div className="space-y-4">
+              <Skeleton className="h-20 w-full bg-gray-700" />
+              <Skeleton className="h-20 w-full bg-gray-700" />
+              <Skeleton className="h-20 w-full bg-gray-700" />
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -118,9 +138,9 @@ const CycleProgressCard = ({ currentCycle }: CycleProgressCardProps) => {
   if (!cycleProgress) {
     return (
       <Card className="bg-gray-800 border-gray-700">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-gray-300">Cycle Progress</CardTitle>
-          <Clock className="h-4 w-4 text-gray-400" />
+        <CardHeader>
+          <CardTitle className="text-white text-lg">Cycle Progress</CardTitle>
+          <p className="text-sm text-gray-400">Current Stacking Cycle</p>
         </CardHeader>
         <CardContent>
           <div className="text-center text-gray-400">No cycle data available</div>
@@ -129,74 +149,118 @@ const CycleProgressCard = ({ currentCycle }: CycleProgressCardProps) => {
     );
   }
 
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      const data = payload[0].payload;
-      return (
-        <div className="bg-gray-900 border border-gray-700 p-3 rounded-lg shadow-lg">
-          <p className="text-white font-medium">{data.name}</p>
-          <p className="text-gray-300">{data.value} blocks ({data.percentage}%)</p>
-        </div>
-      );
-    }
-    return null;
-  };
-
   return (
     <Card className="bg-gray-800 border-gray-700">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium text-gray-300">Cycle Progress</CardTitle>
-        <Clock className="h-4 w-4 text-gray-400" />
+      <CardHeader>
+        <CardTitle className="text-white text-lg">Cycle Progress</CardTitle>
+        <p className="text-sm text-gray-400">Current Stacking Cycle</p>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
-          {/* Current Phase Info */}
-          <div className="text-center">
-            <div className="text-2xl font-bold mb-1" style={{ color: cycleProgress.color }}>
-              {cycleProgress.phase}
+        <div className="space-y-6">
+          {/* Current Phase Status */}
+          <div className="text-center bg-gray-700/50 rounded-lg p-4">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <Activity className="h-5 w-5" style={{ color: cycleProgress.phases.find((p: any) => p.active)?.color }} />
+              <span 
+                className="text-xl font-bold"
+                style={{ color: cycleProgress.phases.find((p: any) => p.active)?.color }}
+              >
+                {cycleProgress.phase}
+              </span>
             </div>
-            <div className="text-sm text-gray-400">
+            <div className="text-sm text-gray-300 mb-1">
               Cycle #{cycleProgress.currentCycle} • {cycleProgress.blocksRemaining} blocks remaining
             </div>
-            <div className="text-xs text-gray-500 mt-1">
-              Block {cycleProgress.currentBlockInCycle} of {cycleProgress.cycleLength}
-            </div>
-            <div className="text-xs text-gray-500">
-              Current height: {cycleProgress.currentBlockHeight?.toLocaleString()}
+            <div className="text-xs text-gray-400">
+              Block {cycleProgress.currentBlockInCycle} of {cycleProgress.cycleLength} 
+              ({cycleProgress.cycleProgress.toFixed(1)}% complete)
             </div>
           </div>
 
-          {/* Pie Chart */}
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={cycleProgress.data}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={50}
-                  outerRadius={90}
-                  paddingAngle={2}
-                  dataKey="value"
+          {/* Phase Breakdown */}
+          <div className="space-y-4">
+            <h4 className="text-sm font-medium text-gray-300">Phase Breakdown</h4>
+            {cycleProgress.phases.map((phase: any, index: number) => {
+              const isCompleted = cycleProgress.currentBlockInCycle >= phase.endBlock;
+              const isActive = phase.active;
+              const progressInPhase = isActive ? 
+                ((cycleProgress.currentBlockInCycle - phase.startBlock) / phase.blocks) * 100 : 
+                isCompleted ? 100 : 0;
+
+              return (
+                <div 
+                  key={index}
+                  className={`p-4 rounded-lg border transition-all ${
+                    isActive 
+                      ? 'border-gray-600 bg-gray-700/30' 
+                      : 'border-gray-700/50 bg-gray-800/50'
+                  }`}
                 >
-                  {cycleProgress.data.map((entry: any, index: number) => (
-                    <Cell 
-                      key={`cell-${index}`} 
-                      fill={cycleProgress.phase === entry.name ? entry.activeColor : entry.color}
-                      stroke={cycleProgress.phase === entry.name ? entry.activeColor : "transparent"}
-                      strokeWidth={cycleProgress.phase === entry.name ? 2 : 0}
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <div 
+                        className="w-3 h-3 rounded-full"
+                        style={{ 
+                          backgroundColor: isCompleted || isActive ? phase.color : phase.bgColor 
+                        }}
+                      />
+                      <span 
+                        className={`font-medium ${
+                          isActive ? 'text-white' : isCompleted ? 'text-gray-300' : 'text-gray-400'
+                        }`}
+                      >
+                        {phase.name}
+                      </span>
+                      {isActive && (
+                        <span className="px-2 py-1 text-xs bg-blue-600 text-white rounded-full">
+                          Active
+                        </span>
+                      )}
+                      {isCompleted && !isActive && (
+                        <span className="px-2 py-1 text-xs bg-green-600 text-white rounded-full">
+                          Complete
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-sm text-gray-400">
+                      {phase.blocks} blocks ({phase.percentage}%)
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-xs text-gray-400">
+                      <span>Block {phase.startBlock}</span>
+                      <span>{progressInPhase.toFixed(1)}% complete</span>
+                      <span>Block {phase.endBlock}</span>
+                    </div>
+                    <Progress 
+                      value={progressInPhase}
+                      className="h-2"
+                      style={{
+                        '--progress-foreground': isCompleted || isActive ? phase.color : phase.bgColor
+                      } as any}
                     />
-                  ))}
-                </Pie>
-                <Tooltip content={<CustomTooltip />} />
-                <Legend 
-                  wrapperStyle={{ color: '#9ca3af' }}
-                  formatter={(value: string, entry: any) => (
-                    <span style={{ color: entry.color }}>{value}</span>
-                  )}
-                />
-              </PieChart>
-            </ResponsiveContainer>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Overall Cycle Progress */}
+          <div className="bg-gray-700/30 rounded-lg p-4">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm font-medium text-gray-300">Overall Cycle Progress</span>
+              <span className="text-sm text-gray-400">{cycleProgress.cycleProgress.toFixed(1)}%</span>
+            </div>
+            <Progress 
+              value={cycleProgress.cycleProgress}
+              className="h-3"
+            />
+            <div className="flex justify-between text-xs text-gray-500 mt-2">
+              <span>Block 0</span>
+              <span>Current: #{cycleProgress.currentBlockHeight?.toLocaleString()}</span>
+              <span>Block {cycleProgress.cycleLength}</span>
+            </div>
           </div>
         </div>
       </CardContent>
