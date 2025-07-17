@@ -28,7 +28,7 @@ const Logo = ({ size = "md", showText = true, className = "" }: LogoProps) => {
     <Link to="/" className={`flex items-center text-white hover:text-blue-700/80 transition-colors ${className}`}>
       <div className={`${sizeClasses[size]} mr-2 relative`}>
         <img
-          src="/lovable-uploads/edfad3b9-edd8-4928-a9d4-7a01d9605d4b.png"
+          src="/img/logo.png"
           alt="FastPool Logo"
           className="w-full h-full object-contain brightness-0 invert"
           style={{
@@ -39,8 +39,8 @@ const Logo = ({ size = "md", showText = true, className = "" }: LogoProps) => {
           className="absolute inset-0 w-full h-full"
           style={{
             background: 'white',
-            mask: 'url(/lovable-uploads/edfad3b9-edd8-4928-a9d4-7a01d9605d4b.png) no-repeat center/contain',
-            WebkitMask: 'url(/lovable-uploads/edfad3b9-edd8-4928-a9d4-7a01d9605d4b.png) no-repeat center/contain'
+            mask: 'url(/img/logo.png) no-repeat center/contain',
+            WebkitMask: 'url(/img/logo.png) no-repeat center/contain'
           }}
         />
       </div>
