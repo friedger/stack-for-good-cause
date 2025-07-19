@@ -4,7 +4,7 @@ import { isConnected } from "@stacks/connect";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useApiClient } from "./useApiClient";
 
-export const useAccountBalance = () => {
+export const useUser = () => {
   const [balance, setBalance] = useState<AccountBalance | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -12,7 +12,7 @@ export const useAccountBalance = () => {
 
   // Use shared API client
   const { getApiClient } = useApiClient();
-  
+
   // Create balance service instance
   const balanceService = useMemo(() => {
     return new BalanceService(getApiClient());

@@ -19,7 +19,7 @@ interface StacksNodeResponse {
   reward_cycle_length: number;
 }
 
-interface CycleBlockHeights {
+export interface CycleBlockHeights {
   currentCycle: number;
   currentBlockHeight: number;
   cycleStartBlock: number;

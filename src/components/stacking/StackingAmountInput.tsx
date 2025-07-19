@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAccountBalance } from "@/hooks/useAccountBalance";
+import { useUser } from "@/hooks/useUser";
 import { useStackingService } from "@/hooks/useStackingService";
 import { ustxToLocalString } from "@/lib/format";
 import { priceService } from "@/services/priceService";
@@ -20,7 +20,7 @@ interface StackingAmountInputProps {
 const StackingAmountInput = ({ value, onChange, disabled, rewardType }: StackingAmountInputProps) => {
   const [btcPrice, setBtcPrice] = useState<number>(0);
   const { estimatedApy } = useStackingService();
-  const { loading, stxBalance } = useAccountBalance();
+  const { loading, stxBalance } = useUser();
 
   useEffect(() => {
     onChange(stxBalance.toString());

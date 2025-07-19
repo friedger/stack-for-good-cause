@@ -5,46 +5,27 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { stacksNodeService } from "@/services/stacksNodeService";
 import { Clock, Calendar, Activity, Timer, AlertCircle, TrendingUp } from "lucide-react";
 import { FastPoolEvent, fastPoolEvents } from "@/lib/fastpoolPhases";
+import { useCycleBlockHeights } from "@/hooks/useCycleBlockHeights";
 
 
 const When = () => {
-  const [events, setEvents] = useState<FastPoolEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { cycleData, loading: cycleLoading, error: cycleError } = useCycleBlockHeights();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const cycleData = await stacksNodeService.getCycleBlockHeights();
-
-        const events: FastPoolEvent[] = fastPoolEvents(cycleData);
-        // Calculate time remaining for upcoming events
-        const eventsWithTiming = events.map(event => {
-          if (event.status === 'upcoming') {
-            const blocksRemaining = stacksNodeService.getBlocksUntil(event.blockHeight, cycleData.currentBlockHeight);
-            const timeRemaining = stacksNodeService.calculateTimeFromBlocks(blocksRemaining);
-            return {
-              ...event,
-              blocksRemaining,
-              timeRemaining
-            };
-          }
-          return event;
-        });
-
-        setEvents(eventsWithTiming);
-      } catch (error) {
-        console.error('Error fetching cycle data:', error);
-        setError('Failed to load cycle timing information');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
+  // Calculate time remaining for upcoming events
+  const events = fastPoolEvents(cycleData).map(event => {
+    if (event.status === 'upcoming') {
+      const blocksRemaining = stacksNodeService.getBlocksUntil(event.blockHeight, cycleData.currentBlockHeight);
+      const timeRemaining = stacksNodeService.calculateTimeFromBlocks(blocksRemaining);
+      return {
+        ...event,
+        blocksRemaining,
+        timeRemaining
+      };
+    }
+    return event;
+  });
 
   if (loading) {
     return (

@@ -1,4 +1,5 @@
 import { useApiClient } from "@/hooks/useApiClient";
+import { poolAddress } from "@/lib/consts";
 import { hexToBytes } from "@stacks/common";
 import {
   connect,
@@ -24,8 +25,6 @@ export interface WalletInfo {
   btcAddress?: string;
   isConnected: boolean;
 }
-const poolAddress =
-  "SPMPMA1V6P430M8C91QS1G9XJ95S59JS1TZFZ4Q4.pox4-multi-pool-v1";
 
 class WalletService {
   async connectWallet(): Promise<WalletInfo | null> {
@@ -121,11 +120,6 @@ class WalletService {
 
     console.log("Revoke stacking transaction broadcast:", response.txid);
     return response.txid;
-  }
-
-  async getStackingStatus() {
-    const { getApiClient } = useApiClient();
-    const response = getApiClient().GET("/extended/");
   }
 }
 
