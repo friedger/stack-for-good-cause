@@ -43,94 +43,82 @@ export const phases = (cycleData) => [
   },
 ];
 
-export const fastPoolEvents = (cycleData): FastPoolEvent[] => [
-  {
-    name: "Miners start PoX Cycle",
-    blockHeight: cycleData.cycleStartBlock,
-    description: "Beginning of the current stacking cycle",
-    status:
-      cycleData.currentBlockHeight >= cycleData.cycleStartBlock
+export const fastPoolEvents = (cycleData): FastPoolEvent[] => {
+  const events = [
+    {
+      name: "Miners start PoX Cycle",
+      blockHeight: cycleData.cycleStartBlock,
+      description: "Beginning of the current stacking cycle",
+    },
+    {
+      name: "Fast Pool ends rewards distribution",
+      blockHeight: cycleData.rewardDistributionEndBlock,
+      description: "Fast Pool completes reward distribution to members",
+    },
+
+    {
+      name: "Fast Pool starts extending stacking, everyone can extend",
+      blockHeight: cycleData.extendingStartBlock,
+      description:
+        "Extension phase begins - existing stackers can extend their commitment",
+    },
+    {
+      name: "Fast Pool aggregates partial commits (estimated)",
+      blockHeight: cycleData.aggregateCommitsBlock,
+      description: "Fast Pool combines partial stacking commitments",
+    },
+    {
+      name: "Lisa closes for next cycle",
+      blockHeight: cycleData.lisaClosesBlock,
+      description: "Lisa protocol closes accepting new delegations",
+    },
+    {
+      name: "Fast Pool closes for next cycle (estimated), last aggregate partial commit",
+      blockHeight: cycleData.fastPoolClosesBlock,
+      description:
+        "Fast Pool stops accepting new members and performs final aggregation",
+    },
+    {
+      name: "Begin of prepare phase, no more stacking possible",
+      blockHeight: cycleData.preparePhaseStartBlock,
+      description: "Prepare phase starts - no new stacking operations allowed",
+    },
+    {
+      name: "End of cycle",
+      blockHeight: cycleData.cycleEndBlock,
+      description: "Current stacking cycle ends",
+    },
+    {
+      name: "Automatic unlock (if locking period ended)",
+      blockHeight: cycleData.automaticUnlockBlock,
+      description:
+        "Automatic unlock for stackers whose locking period has ended",
+    },
+  ];
+
+  events.forEach((event: any) => {
+    event.status =
+      cycleData.currentBlockHeight >= event.blockHeight
         ? "completed"
-        : "upcoming",
-  },
-  {
-    name: "Fast Pool ends rewards distribution",
-    blockHeight: cycleData.rewardDistributionEndBlock,
-    description: "Fast Pool completes reward distribution to members",
-    status:
-      cycleData.currentBlockHeight >= cycleData.rewardDistributionEndBlock
-        ? "completed"
-        : "upcoming",
-  },
-  {
-    name: "Current block height",
-    blockHeight: cycleData.currentBlockHeight,
-    description: "Current position in the blockchain",
+        : "upcoming";
+    return event;
+  });
+
+  // insert current block height in the events list before the first event with a hight block height
+  const currentBlockHeight = cycleData.currentBlockHeight;
+  const currentCycleEvent = {
+    name: "Current Cycle",
+    blockHeight: currentBlockHeight,
+    description: "Current block height of the stacking cycle",
     status: "active",
-  },
-  {
-    name: "Fast Pool starts extending stacking, everyone can extend",
-    blockHeight: cycleData.extendingStartBlock,
-    description:
-      "Extension phase begins - existing stackers can extend their commitment",
-    status:
-      cycleData.currentBlockHeight >= cycleData.extendingStartBlock
-        ? "completed"
-        : "upcoming",
-  },
-  {
-    name: "Fast Pool aggregates partial commits (estimated)",
-    blockHeight: cycleData.aggregateCommitsBlock,
-    description: "Fast Pool combines partial stacking commitments",
-    status:
-      cycleData.currentBlockHeight >= cycleData.aggregateCommitsBlock
-        ? "completed"
-        : "upcoming",
-  },
-  {
-    name: "Lisa closes for next cycle",
-    blockHeight: cycleData.lisaClosesBlock,
-    description: "Lisa protocol closes accepting new delegations",
-    status:
-      cycleData.currentBlockHeight >= cycleData.lisaClosesBlock
-        ? "completed"
-        : "upcoming",
-  },
-  {
-    name: "Fast Pool closes for next cycle (estimated), last aggregate partial commit",
-    blockHeight: cycleData.fastPoolClosesBlock,
-    description:
-      "Fast Pool stops accepting new members and performs final aggregation",
-    status:
-      cycleData.currentBlockHeight >= cycleData.fastPoolClosesBlock
-        ? "completed"
-        : "upcoming",
-  },
-  {
-    name: "Begin of prepare phase, no more stacking possible",
-    blockHeight: cycleData.preparePhaseStartBlock,
-    description: "Prepare phase starts - no new stacking operations allowed",
-    status:
-      cycleData.currentBlockHeight >= cycleData.preparePhaseStartBlock
-        ? "completed"
-        : "upcoming",
-  },
-  {
-    name: "End of cycle",
-    blockHeight: cycleData.cycleEndBlock,
-    description: "Current stacking cycle ends",
-    status:
-      cycleData.currentBlockHeight >= cycleData.cycleEndBlock
-        ? "completed"
-        : "upcoming",
-  },
-  {
-    name: "Automatic unlock (if locking period ended)",
-    blockHeight: cycleData.automaticUnlockBlock,
-    description: "Automatic unlock for stackers whose locking period has ended",
-    status:
-      cycleData.currentBlockHeight >= cycleData.automaticUnlockBlock
-        ? "completed"
-        : "upcoming",
-  },
-];
+  };
+  const index = events.findIndex(
+    (event) => event.blockHeight > currentBlockHeight
+  );
+  if (index === -1) {
+    events.push(currentCycleEvent);
+  } else {
+    events.splice(index, 0, currentCycleEvent) as FastPoolEvent[];
+  }
+  return events as FastPoolEvent[];
+};
