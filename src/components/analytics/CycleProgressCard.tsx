@@ -4,7 +4,6 @@ import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Clock, Activity, PieChart as PieChartIcon } from "lucide-react";
 import { CycleData } from "@/services/analyticsService";
-import { stacksNodeService } from "@/services/stacksNodeService";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
 import { phases } from "@/lib/fastpoolPhases";
 import { useCycleBlockHeights } from "@/hooks/useCycleBlockHeights";
@@ -15,95 +14,97 @@ interface CycleProgressCardProps {
 
 const CycleProgressCard = ({ currentCycle }: CycleProgressCardProps) => {
   const [cycleProgress, setCycleProgress] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const { cycleData, loading: cycleLoading, error: cycleError } = useCycleBlockHeights();
+  const { cycleData, loading, error: cycleError } = useCycleBlockHeights();
 
-
-  // Calculate cycle progress based on real block heights
-  const CYCLE_LENGTH = 2100;
-  const currentBlockInCycle = cycleData.currentBlockHeight - cycleData.cycleStartBlock;
-
-
-
-  // Determine which phase is currently active
-  let currentPhase = null;
-  let blocksRemainingInPhase = 0;
-
-  // Enhance phases with additional data for the chart
-  const enhancedPhases = phases(cycleData).map(phase => {
-    const blockCount = phase.endBlock - phase.startBlock;
-    const isActive = currentBlockInCycle >= phase.startBlock && currentBlockInCycle < phase.endBlock;
-    const isCompleted = currentBlockInCycle >= phase.endBlock;
-
-    if (isActive) {
-      currentPhase = phase;
-      blocksRemainingInPhase = phase.endBlock - currentBlockInCycle;
+  // Move the calculation logic into useEffect
+  useEffect(() => {
+    if (!cycleData) {
+      setCycleProgress(null);
+      return;
     }
 
-    return {
-      ...phase,
-      blockCount,
-      percentage: ((blockCount / CYCLE_LENGTH) * 100).toFixed(1),
-      active: isActive,
-      completed: isCompleted,
-      value: blockCount, // for pie chart
-      // For pie chart visualization - split current phase into completed and remaining
-      valueCompleted: isActive ? currentBlockInCycle - phase.startBlock : isCompleted ? blockCount : 0,
-      valueRemaining: isActive ? phase.endBlock - currentBlockInCycle : isCompleted ? 0 : blockCount
-    };
-  });
+    // Calculate cycle progress based on real block heights
+    const CYCLE_LENGTH = 2100;
+    const currentBlockInCycle = cycleData.currentBlockHeight - cycleData.cycleStartBlock;
 
-  // Prepare data for the pie chart
-  const pieChartData = [];
+    // Determine which phase is currently active
+    let currentPhase = null;
+    let blocksRemainingInPhase = 0;
 
-  enhancedPhases.forEach(phase => {
-    if (phase.completed) {
-      // Completed phases
-      pieChartData.push({
-        name: phase.name,
-        value: phase.blockCount,
-        color: phase.color,
-        type: 'completed'
-      });
-    } else if (phase.active) {
-      // Active phase - split into completed and remaining portions
-      pieChartData.push({
-        name: `${phase.name} (Completed)`,
-        value: phase.valueCompleted,
-        color: phase.color,
-        type: 'active-completed'
-      });
-      pieChartData.push({
-        name: `${phase.name} (Remaining)`,
-        value: phase.valueRemaining,
-        color: phase.bgColor,
-        type: 'active-remaining'
-      });
-    } else {
-      // Upcoming phases
-      pieChartData.push({
-        name: phase.name,
-        value: phase.blockCount,
-        color: phase.bgColor,
-        type: 'upcoming'
-      });
-    }
-  });
+    // Enhance phases with additional data for the chart
+    const enhancedPhases = phases(cycleData).map(phase => {
+      const blockCount = phase.endBlock - phase.startBlock;
+      const isActive = currentBlockInCycle >= phase.startBlock && currentBlockInCycle < phase.endBlock;
+      const isCompleted = currentBlockInCycle >= phase.endBlock;
 
-  setCycleProgress({
-    currentPhase: currentPhase?.name || "Unknown",
-    currentPhaseColor: currentPhase?.color || "#CCCCCC",
-    blocksRemainingInPhase,
-    currentBlockInCycle: Math.max(0, currentBlockInCycle),
-    phases: enhancedPhases,
-    pieChartData,
-    cycleLength: CYCLE_LENGTH,
-    currentCycle: cycleData.currentCycle,
-    currentBlockHeight: cycleData.currentBlockHeight,
-    cycleProgress: (currentBlockInCycle / CYCLE_LENGTH) * 100
-  });
+      if (isActive) {
+        currentPhase = phase;
+        blocksRemainingInPhase = phase.endBlock - currentBlockInCycle;
+      }
 
-  if (loading) {
+      return {
+        ...phase,
+        blockCount,
+        percentage: ((blockCount / CYCLE_LENGTH) * 100).toFixed(1),
+        active: isActive,
+        completed: isCompleted,
+        value: blockCount,
+        valueCompleted: isActive ? currentBlockInCycle - phase.startBlock : isCompleted ? blockCount : 0,
+        valueRemaining: isActive ? phase.endBlock - currentBlockInCycle : isCompleted ? 0 : blockCount
+      };
+    });
+
+    // Prepare data for the pie chart
+    const pieChartData: any[] = [];
+
+    enhancedPhases.forEach(phase => {
+      if (phase.completed) {
+        pieChartData.push({
+          name: phase.name,
+          value: phase.blockCount,
+          color: phase.color,
+          type: 'completed'
+        });
+      } else if (phase.active) {
+        pieChartData.push({
+          name: `${phase.name} (Completed)`,
+          value: phase.valueCompleted,
+          color: phase.color,
+          type: 'active-completed'
+        });
+        pieChartData.push({
+          name: `${phase.name} (Remaining)`,
+          value: phase.valueRemaining,
+          color: phase.bgColor,
+          type: 'active-remaining'
+        });
+      } else {
+        pieChartData.push({
+          name: phase.name,
+          value: phase.blockCount,
+          color: phase.bgColor,
+          type: 'upcoming'
+        });
+      }
+    });
+
+    setCycleProgress({
+      currentPhase: currentPhase?.name || "Unknown",
+      currentPhaseColor: currentPhase?.color || "#CCCCCC",
+      blocksRemainingInPhase,
+      currentBlockInCycle: Math.max(0, currentBlockInCycle),
+      phases: enhancedPhases,
+      pieChartData,
+      cycleLength: CYCLE_LENGTH,
+      currentCycle: cycleData.currentCycle,
+      currentBlockHeight: cycleData.currentBlockHeight,
+      cycleProgress: (currentBlockInCycle / CYCLE_LENGTH) * 100
+    });
+  }, [cycleData]); // Only recalculate when cycleData changes
+
+  console.log("Cycle Data:", cycleData, loading, cycleError);
+
+  if (loading || !cycleData) {
     return (
       <Card className="bg-gray-800 border-gray-700">
         <CardHeader className="flex flex-row items-center justify-between">
