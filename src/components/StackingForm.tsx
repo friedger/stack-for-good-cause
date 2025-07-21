@@ -2,13 +2,15 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useStackingLogic } from "@/hooks/useStackingLogic";
 import { Project } from "@/services/projectService";
-import { TrendingUp } from "lucide-react";
+import { TrendingUp, Wallet } from "lucide-react";
 import { useState } from "react";
 import RewardTypeSelector from "./stacking/RewardTypeSelector";
 import StackingActions from "./stacking/StackingActions";
 import StackingAmountInput from "./stacking/StackingAmountInput";
 import StackingConditions from "./stacking/StackingConditions";
 import UserDataVerificationModal from "./stacking/UserDataVerificationModal";
+import { useUser } from "@/hooks/useUser";
+import { walletService } from "@/services/walletService";
 
 interface StackingFormProps {
   stxAmount: string;
@@ -41,6 +43,8 @@ const StackingForm = ({
     handleStacking,
     handleStopStacking,
   } = useStackingLogic();
+
+  const { stxAddress } = useUser();
 
   const onStartStacking = () => {
     if (!conditionsAccepted) {
@@ -84,15 +88,23 @@ const StackingForm = ({
             disabled={isStacking}
           />
 
-          <StackingActions
-            isStacking={isStacking}
-            isProcessing={isProcessingTx}
-            onAllowFastPool={allowFastPool}
-            onStartStacking={onStartStacking}
-            onStopStacking={handleStopStacking}
-            conditionsAccepted={conditionsAccepted}
-            setShowVerificationModal={setShowVerificationModal}
-          />
+          {stxAddress ?
+
+            <StackingActions
+              isStacking={isStacking}
+              isProcessing={isProcessingTx}
+              onAllowFastPool={allowFastPool}
+              onStartStacking={onStartStacking}
+              onStopStacking={handleStopStacking}
+              conditionsAccepted={conditionsAccepted}
+              setShowVerificationModal={setShowVerificationModal}
+            /> :
+            <div className="flex items-center text-sm text-blue-400 hover:text-blue-700 hover:cursor-pointer"
+              onClick={() => walletService.connectWallet()}>
+              <Wallet className="h-4 w-4 mr-1" />
+              Connect Wallet
+            </div>
+          }
         </CardContent>
       </Card>
 

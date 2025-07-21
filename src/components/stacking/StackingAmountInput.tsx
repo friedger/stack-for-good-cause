@@ -97,11 +97,12 @@ const StackingAmountInput = ({ value, onChange, disabled, rewardType }: Stacking
             {loading ? "Loading..." : `${ustxToLocalString(stxBalance)} STX`}
           </div>
         ) :
-          <div className="flex items-center text-sm text-blue-400"
+          <div className="flex items-center text-sm text-blue-400 hover:text-blue-700 hover:cursor-pointer"
             onClick={() => walletService.connectWallet()}>
             <Wallet className="h-4 w-4 mr-1" />
             Connect Wallet
-          </div>}
+          </div>
+        }
       </div>
 
       <div className="space-y-3">

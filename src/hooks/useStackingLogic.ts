@@ -4,6 +4,7 @@ import { Project } from "@/services/projectService";
 import { stackingStatsService } from "@/services/stackingStatsService";
 import { userRejectedRequest, walletService } from "@/services/walletService";
 import { useState } from "react";
+import { useUser } from "./useUser";
 
 type StackingState =
   | "not-stacking"
@@ -16,9 +17,10 @@ export const useStackingLogic = () => {
   const [stackingState, setStackingState] =
     useState<StackingState>("not-stacking");
   const [isProcessingTx, setIsProcessingTx] = useState(false);
+  const { stxAddress } = useUser();
 
   const allowFastPool = async () => {
-    if (!walletService.isWalletConnected()) {
+    if (!stxAddress) {
       toast({
         title: "Wallet Not Connected",
         description: "Please connect your wallet first.",
