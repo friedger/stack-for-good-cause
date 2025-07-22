@@ -106,7 +106,7 @@ const StackingAmountInput = ({ value, onChange, disabled, rewardType }: Stacking
         }
       </div>
 
-      <UserStackingInfo />
+      <UserStackingInfo showConnectWallet={false} />
 
       <div className="space-y-3">
         <div className="flex space-x-2">

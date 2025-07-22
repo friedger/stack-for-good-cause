@@ -5,11 +5,18 @@ import { walletService } from "@/services/walletService";
 import { Lock, Wallet } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
-const UserStackingInfo = () => {
+interface UserStackingInfoProps {
+  showConnectWallet?: boolean;
+}
+
+const UserStackingInfo = ({ showConnectWallet = true }: UserStackingInfoProps) => {
   const { loading, stxBalance, lockedStx } = useUser();
   const { stackingStatus, delegationStatus } = useUserStackingService();
 
   if (!stxBalance && !loading) {
+    if (!showConnectWallet) {
+      return null;
+    }
     return (
       <div className="flex items-center justify-center p-4 text-sm text-blue-400 hover:text-blue-700 hover:cursor-pointer"
         onClick={() => walletService.connectWallet()}>
