@@ -11,6 +11,7 @@ import StackingConditions from "./stacking/StackingConditions";
 import UserDataVerificationModal from "./stacking/UserDataVerificationModal";
 import { useUser } from "@/hooks/useUser";
 import { walletService } from "@/services/walletService";
+import { useUserStackingService } from "@/hooks/useStackingInfo";
 
 interface StackingFormProps {
   stxAmount: string;
@@ -38,13 +39,17 @@ const StackingForm = ({
 
   const {
     isProcessingTx,
-    isStacking,
     allowFastPool,
     handleStacking,
     handleStopStacking,
   } = useStackingLogic();
 
   const { stxAddress } = useUser();
+  const { multiPoolAllowed, stackingStatus, delegationStatus } = useUserStackingService();
+  console.log({ multiPoolAllowed, stackingStatus, delegationStatus });
+
+  const isStacking = stackingStatus?.stacked || false;
+  const canStopStacking = delegationStatus?.delegated
 
   const onStartStacking = () => {
     if (!conditionsAccepted) {
@@ -92,7 +97,9 @@ const StackingForm = ({
 
             <StackingActions
               isStacking={isStacking}
+              canStopStacking={canStopStacking}
               isProcessing={isProcessingTx}
+              isMultiPoolAllowed={multiPoolAllowed}
               onAllowFastPool={allowFastPool}
               onStartStacking={onStartStacking}
               onStopStacking={handleStopStacking}

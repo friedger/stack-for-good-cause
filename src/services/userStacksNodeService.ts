@@ -51,7 +51,7 @@ class UserStackingService {
     const allowedResponse = (await fetchCallReadOnlyFunction({
       contractAddress: "SP000000000000000000002Q6VF78",
       contractName: "pox-4",
-      functionName: "get-allowed-contract-caller",
+      functionName: "get-allowance-contract-callers",
       functionArgs: [principalCV(this.userAddress), principalCV(poolAddress)],
       senderAddress: this.userAddress,
     })) as OptionalCV<TupleCV<{ "until-burn-ht": OptionalCV<UIntCV> }>>;
