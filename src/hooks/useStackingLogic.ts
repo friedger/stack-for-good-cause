@@ -51,7 +51,8 @@ export const useStackingLogic = () => {
     enableDonation: boolean,
     donationPercentage: number[],
     selectedProjects: Project[],
-    sharePublicly: boolean
+    sharePublicly: boolean,
+    isUpdating: boolean = false
   ) => {
     if (!walletService.isWalletConnected()) {
       toast({
@@ -62,10 +63,10 @@ export const useStackingLogic = () => {
       return;
     }
 
-    if (!stxAmount) {
+        if (!stxAmount) {
       toast({
         title: "Missing Information",
-        description: "Please enter STX amount to start stacking.",
+        description: `Please enter STX amount to ${isUpdating ? "update" : "start"} stacking.`,
         variant: "destructive",
       });
       return;
@@ -123,7 +124,7 @@ export const useStackingLogic = () => {
               rewardType
             );
             toast({
-              title: "Stacking Started!",
+              title: isUpdating ? "Stacking Updated!" : "Stacking Started!",
               description: `Transaction broadcast: ${txId.slice(
                 0,
                 8
@@ -131,7 +132,7 @@ export const useStackingLogic = () => {
             });
           } catch (error) {
             toast({
-              title: "Stacking Started!",
+              title: isUpdating ? "Stacking Updated!" : "Stacking Started!",
               description: `Transaction broadcast: ${txId.slice(
                 0,
                 8
@@ -142,7 +143,7 @@ export const useStackingLogic = () => {
           }
         } else {
           toast({
-            title: "Stacking Started!",
+            title: isUpdating ? "Stacking Updated!" : "Stacking Started!",
             description: `Transaction broadcast: ${txId.slice(
               0,
               8

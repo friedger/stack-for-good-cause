@@ -21,7 +21,7 @@ interface StackingAmountInputProps {
 const StackingAmountInput = ({ value, onChange, disabled, rewardType }: StackingAmountInputProps) => {
   const [btcPrice, setBtcPrice] = useState<number>(0);
   const { estimatedApy } = useStackingService();
-  const { loading, stxBalance } = useUser();
+  const { loading, stxBalance, lockedStx } = useUser();
 
   useEffect(() => {
     onChange(stxBalance.toString());
@@ -54,6 +54,44 @@ const StackingAmountInput = ({ value, onChange, disabled, rewardType }: Stacking
       onChange(maxAmount.toString());
     }
   };
+
+  const getMinimumAmount = () => {
+    // If user is already stacking, minimum is current locked amount + 1 STX
+    if (lockedStx > 0) {
+      return Math.floor(lockedStx) + 1;
+    }
+    // Otherwise, minimum is 40 STX
+    return 40;
+  };
+
+  const validateAmount = (amount: string) => {
+    const numAmount = parseFloat(amount);
+    const minAmount = getMinimumAmount();
+    
+    if (isNaN(numAmount) || numAmount < minAmount) {
+      return false;
+    }
+    return true;
+  };
+
+  const getAmountError = () => {
+    const numAmount = parseFloat(value);
+    const minAmount = getMinimumAmount();
+    
+    if (isNaN(numAmount) || !value) return null;
+    
+    if (numAmount < minAmount) {
+      if (lockedStx > 0) {
+        return `Amount must be at least ${minAmount} STX to update your stacking`;
+      }
+      return `Minimum stacking amount is ${minAmount} STX`;
+    }
+    
+    return null;
+  };
+
+  const minAmount = getMinimumAmount();
+  const amountError = getAmountError();
 
   const getEstimatedRewards = () => {
     if (!value || parseFloat(value) < 40) return null;
@@ -118,7 +156,7 @@ const StackingAmountInput = ({ value, onChange, disabled, rewardType }: Stacking
             onChange={(e) => handleInputChange(e.target.value)}
             className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 disabled:cursor-default"
             disabled={disabled || loading || stxBalance === 0}
-            min="40"
+            min={minAmount}
           />
           {stxBalance > 0 && (<Button
             type="button"
@@ -131,10 +169,16 @@ const StackingAmountInput = ({ value, onChange, disabled, rewardType }: Stacking
           </Button>
           )}
         </div>
+        {amountError && (
+          <p className="text-red-400 text-sm">{amountError}</p>
+        )}
       </div>
 
       <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0 text-sm text-gray-400">
-        <span>Minimum Stacking: 40 STX</span>
+        <span>
+          Minimum: {minAmount} STX
+          {lockedStx > 0 && " (to update stacking)"}
+        </span>
 
         <span className="text-green-400">
           {estimatedRewards ? (<>

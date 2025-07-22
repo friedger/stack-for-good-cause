@@ -14,9 +14,21 @@ interface StackingActionsProps {
   onStopStacking: () => void;
   conditionsAccepted?: boolean;
   setShowVerificationModal: (show: boolean) => void;
+  canUpdateStacking?: boolean;
 }
 
-const StackingActions = ({ isStacking, canStopStacking, isProcessing, isMultiPoolAllowed, onAllowFastPool, onStartStacking, onStopStacking, conditionsAccepted, setShowVerificationModal }: StackingActionsProps) => {
+const StackingActions = ({ 
+  isStacking, 
+  canStopStacking, 
+  isProcessing, 
+  isMultiPoolAllowed, 
+  onAllowFastPool, 
+  onStartStacking, 
+  onStopStacking, 
+  conditionsAccepted, 
+  setShowVerificationModal,
+  canUpdateStacking = false
+}: StackingActionsProps) => {
   const [allowFastPoolCalled, setAllowFastPoolCalled] = useState<boolean>(false);
   const [delegateCalled, setDelegateCalled] = useState<boolean>(false);
 
@@ -44,7 +56,7 @@ const StackingActions = ({ isStacking, canStopStacking, isProcessing, isMultiPoo
           size="lg"
           disabled={isProcessing || !conditionsAccepted || delegateCalled}
         >
-          {isProcessing ? "Processing..." : "Start Stacking"}
+          {isProcessing ? "Processing..." : (isStacking ? "Update Stacking" : "Start Stacking")}
         </PrimaryButton>
         <div className="flex justify-end">
           <div className="flex items-center text-sm text-blue-400 cursor-help"

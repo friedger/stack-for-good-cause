@@ -10,8 +10,8 @@ import StackingAmountInput from "./stacking/StackingAmountInput";
 import StackingConditions from "./stacking/StackingConditions";
 import UserDataVerificationModal from "./stacking/UserDataVerificationModal";
 import { useUser } from "@/hooks/useUser";
-import { walletService } from "@/services/walletService";
 import { useUserStackingService } from "@/hooks/useStackingInfo";
+import { walletService } from "@/services/walletService";
 
 interface StackingFormProps {
   stxAmount: string;
@@ -44,16 +44,31 @@ const StackingForm = ({
     handleStopStacking,
   } = useStackingLogic();
 
-  const { stxAddress } = useUser();
+  const { stxAddress, lockedStx } = useUser();
   const { multiPoolAllowed, stackingStatus, delegationStatus } = useUserStackingService();
-  console.log({ multiPoolAllowed, stackingStatus, delegationStatus });
 
   const isStacking = stackingStatus?.stacked || false;
-  const canStopStacking = delegationStatus?.delegated
+  const canStopStacking = delegationStatus?.delegated;
+  const isUpdating = isStacking && lockedStx > 0;
+
+  // Validate stacking amount
+  const validateStackingAmount = () => {
+    const numAmount = parseFloat(stxAmount);
+    if (isNaN(numAmount) || !stxAmount) return false;
+    
+    if (isUpdating) {
+      return numAmount >= Math.floor(lockedStx) + 1;
+    }
+    return numAmount >= 40;
+  };
 
   const onStartStacking = () => {
     if (!conditionsAccepted) {
-      return; // Don't proceed if conditions not accepted
+      return;
+    }
+
+    if (!validateStackingAmount()) {
+      return;
     }
 
     handleStacking(
@@ -62,7 +77,8 @@ const StackingForm = ({
       enableDonation,
       donationPercentage,
       selectedProjects,
-      sharePublicly
+      sharePublicly,
+      isUpdating
     );
   };
 
@@ -81,16 +97,16 @@ const StackingForm = ({
           <StackingAmountInput
             value={stxAmount}
             onChange={setStxAmount}
-            disabled={isStacking}
+            disabled={false}
             rewardType={rewardType}
           />
 
-          <RewardTypeSelector value={rewardType} onChange={setRewardType} disabled={isStacking} />
+          <RewardTypeSelector value={rewardType} onChange={setRewardType} disabled={false} />
 
           <StackingConditions
             accepted={conditionsAccepted}
             onAcceptedChange={setConditionsAccepted}
-            disabled={isStacking}
+            disabled={false}
           />
 
           {stxAddress ?
@@ -105,6 +121,7 @@ const StackingForm = ({
               onStopStacking={handleStopStacking}
               conditionsAccepted={conditionsAccepted}
               setShowVerificationModal={setShowVerificationModal}
+              canUpdateStacking={validateStackingAmount()}
             /> :
             <div className="flex items-center text-sm text-blue-400 hover:text-blue-700 hover:cursor-pointer"
               onClick={() => walletService.connectWallet()}>
