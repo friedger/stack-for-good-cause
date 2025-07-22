@@ -7,8 +7,9 @@ import { useStackingService } from "@/hooks/useStackingService";
 import { ustxToLocalString } from "@/lib/format";
 import { priceService } from "@/services/priceService";
 import { walletService } from "@/services/walletService";
-import { Wallet } from "lucide-react";
+import { Lock, Wallet } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useUserStackingService } from "@/hooks/useStackingInfo";
 
 interface StackingAmountInputProps {
   value: string;
@@ -20,7 +21,8 @@ interface StackingAmountInputProps {
 const StackingAmountInput = ({ value, onChange, disabled, rewardType }: StackingAmountInputProps) => {
   const [btcPrice, setBtcPrice] = useState<number>(0);
   const { estimatedApy } = useStackingService();
-  const { loading, stxBalance } = useUser();
+  const { loading, stxBalance, lockedStx } = useUser();
+  const { stackingStatus, delegationStatus } = useUserStackingService();
 
   useEffect(() => {
     onChange(stxBalance.toString());
@@ -89,13 +91,35 @@ const StackingAmountInput = ({ value, onChange, disabled, rewardType }: Stacking
           Stacking Amount
         </Label>
         {stxBalance || loading ? (
-          <div className="flex items-center text-sm text-gray-400">
-            <Wallet className="h-4 w-4 mr-1" />
-            <span className="hidden sm:inline">
-              Balance:
-            </span>
-            {loading ? "Loading..." : `${ustxToLocalString(stxBalance)} STX`}
-          </div>
+          <>
+            <div className="flex items-center text-sm text-gray-400">
+              <Wallet className="h-4 w-4 mr-1" />
+              <span className="hidden sm:inline">
+                Balance:
+              </span>
+              {loading ? "Loading..." : `${ustxToLocalString(stxBalance)} STX`}
+            </div>
+            {stackingStatus?.stacked &&
+              <>
+                <div className="flex items-center text-sm text-gray-400">
+                  <Lock className="h-4 w-4 mr-1" />
+                  <span className="hidden sm:inline">
+                    Stacked:
+                  </span>
+                  {loading ? "Loading..." : `${ustxToLocalString(lockedStx)} STX`}
+                </div>
+                {delegationStatus &&
+                  <div className="flex items-center text-sm text-gray-400">
+                    <Lock className="h-4 w-4 mr-1" />
+                    <span className="hidden sm:inline">
+                      Delegated to:
+                    </span>
+                    {loading ? "Loading..." : `${delegationStatus.delegated ? delegationStatus.details.delegated_to : "revoked"}`}
+                  </div>
+                }
+              </>
+            }
+          </>
         ) :
           <div className="flex items-center text-sm text-blue-400 hover:text-blue-700 hover:cursor-pointer"
             onClick={() => walletService.connectWallet()}>
