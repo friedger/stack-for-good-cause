@@ -4,6 +4,7 @@ import { ustxToLocalString } from "@/lib/format";
 import { walletService } from "@/services/walletService";
 import { Lock, Wallet } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { DelegationInfo } from "@stacks/stacking";
 
 interface UserStackingInfoProps {
   showConnectWallet?: boolean;
@@ -29,19 +30,8 @@ const UserStackingInfo = ({ showConnectWallet = true }: UserStackingInfoProps) =
   return (
     <Card className="bg-card/30 backdrop-blur-sm border-border/50">
       <CardContent className="p-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {/* Wallet Balance */}
-          <div className="flex items-center space-x-2">
-            <div className="p-2 rounded-full bg-blue-500/20">
-              <Wallet className="h-4 w-4 text-blue-400" />
-            </div>
-            <div>
-              <p className="text-xs text-gray-400">Wallet Balance</p>
-              <p className="text-sm font-medium text-white">
-                {loading ? "Loading..." : `${ustxToLocalString(stxBalance)} STX`}
-              </p>
-            </div>
-          </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
 
           {/* Stacked Amount */}
           {stackingStatus?.stacked && (
@@ -65,11 +55,11 @@ const UserStackingInfo = ({ showConnectWallet = true }: UserStackingInfoProps) =
                 <Lock className="h-4 w-4 text-purple-400" />
               </div>
               <div>
-                <p className="text-xs text-gray-400">Delegation Status</p>
+                <p className="text-xs text-gray-400">Pool Admin</p>
                 <p className="text-sm font-medium text-white">
-                  {loading ? "Loading..." : 
-                    delegationStatus.delegated ? 
-                      `Delegated to: ${delegationStatus.details.delegated_to.slice(0, 8)}...` : 
+                  {loading ? "Loading..." :
+                    delegationStatus.delegated ?
+                      poolAddress(delegationStatus) :
                       "Revoked"
                   }
                 </p>
@@ -80,6 +70,16 @@ const UserStackingInfo = ({ showConnectWallet = true }: UserStackingInfoProps) =
       </CardContent>
     </Card>
   );
+
 };
+
+function poolAddress(delegationStatus: DelegationInfo & { delegated: true }) {
+  const [addr, name] = delegationStatus.details.delegated_to.split(".");
+  if (name) {
+    return `${addr.slice(0, 5)}...${name}`;
+  } else {
+    return `${addr.slice(0, 8)}...`;
+  }
+}
 
 export default UserStackingInfo;
