@@ -164,4 +164,31 @@ export const curatedProjects: Project[] = [
       { id: "2", name: "Henry Brown", amount: 500, date: "2024-01-19" },
     ],
   },
+  {
+    id: "6",
+    name: "Nothing $NOT",
+    description: "Do nothing and be happy",
+    fullDescription:
+      "Our vision is to create a better everyday life on Stacks for all to accomplish more… and to become the most memed token, anchored to Bitcoin, in the world.",
+    category: "Content",
+    totalRaised: 3200.45,
+    backers: 31,
+    status: "approved",
+    creator: "Stacks OGs",
+    stxAddress: "SM776ZBWZXXJRH8GV0PPRMSM550D553B334A1VKN",
+    image:
+      "https://images.unsplash.com/photo-1583668928307-a9c4fc140c48?w=400&h=250&fit=crop",
+    slug: "nothing-token",
+    updates: [],
+    backersList: [
+      {
+        id: "1",
+        name: "Grace Lee",
+        amount: 1000,
+        date: "2024-01-20",
+        message: "The future is renewable!",
+      },
+      { id: "2", name: "Henry Brown", amount: 500, date: "2024-01-19" },
+    ],
+  },
 ];
