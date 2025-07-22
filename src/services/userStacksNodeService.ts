@@ -62,7 +62,6 @@ class UserStackingService {
   async canStack(amount: string, cycles: number) {
     try {
       const result = await this.stackingClient.canStack({
-        amount,
         cycles,
         poxAddress: "", // Will be set by pool
       });
