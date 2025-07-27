@@ -14,7 +14,102 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      projects: {
+        Row: {
+          created_at: string | null
+          id: string
+          project_stx_address: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          project_stx_address: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          project_stx_address?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      user_data: {
+        Row: {
+          block_height: number
+          created_at: string | null
+          id: string
+          stx_address: string
+          tx_id: string
+          tx_index: number
+          updated_at: string | null
+        }
+        Insert: {
+          block_height: number
+          created_at?: string | null
+          id?: string
+          stx_address: string
+          tx_id: string
+          tx_index: number
+          updated_at?: string | null
+        }
+        Update: {
+          block_height?: number
+          created_at?: string | null
+          id?: string
+          stx_address?: string
+          tx_id?: string
+          tx_index?: number
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      user_project_mapping: {
+        Row: {
+          created_at: string | null
+          currency: Database["public"]["Enums"]["currency_type"]
+          id: string
+          project_id: string
+          ratio: number
+          updated_at: string | null
+          user_data_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          currency: Database["public"]["Enums"]["currency_type"]
+          id?: string
+          project_id: string
+          ratio: number
+          updated_at?: string | null
+          user_data_id: string
+        }
+        Update: {
+          created_at?: string | null
+          currency?: Database["public"]["Enums"]["currency_type"]
+          id?: string
+          project_id?: string
+          ratio?: number
+          updated_at?: string | null
+          user_data_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_project_mapping_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_project_mapping_user_data_id_fkey"
+            columns: ["user_data_id"]
+            isOneToOne: false
+            referencedRelation: "user_data"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +118,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      currency_type: "stx" | "sbtc"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +245,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      currency_type: ["stx", "sbtc"],
+    },
   },
 } as const
