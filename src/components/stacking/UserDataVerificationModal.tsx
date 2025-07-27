@@ -137,6 +137,9 @@ const UserDataVerificationModal = ({ open, onOpenChange }: UserDataVerificationM
         </DialogHeader>
 
         <div className="space-y-4">
+          The hex-encoded string <code>user-data</code> defines the distribution of the stacking rewards.
+          It contains the version, the currency for rewards, and a list of STX addresses of supported projects with their respective shares.
+          <br />
           <div className="space-y-2">
             <Label htmlFor="hex-input">Hex String</Label>
             <Input
