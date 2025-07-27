@@ -2,3 +2,6 @@ project_id = "hshemdmizqdvkicdtfky"
 
 [functions.stacking-analytics]
 verify_jwt = false
+
+[functions.stacking-webhook]
+verify_jwt = false
