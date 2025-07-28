@@ -72,6 +72,7 @@ export type Database = {
           id: string
           project_id: string
           ratio: number
+          tx_id: string
           updated_at: string | null
           user_data_id: string
         }
@@ -81,6 +82,7 @@ export type Database = {
           id?: string
           project_id: string
           ratio: number
+          tx_id?: string
           updated_at?: string | null
           user_data_id: string
         }
@@ -90,6 +92,7 @@ export type Database = {
           id?: string
           project_id?: string
           ratio?: number
+          tx_id?: string
           updated_at?: string | null
           user_data_id?: string
         }
