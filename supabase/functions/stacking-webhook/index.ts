@@ -116,12 +116,17 @@ Deno.serve(async (req) => {
           // Start transaction by inserting/updating user_data
           const { data: userData, error: userError } = await supabase
             .from("user_data")
-            .upsert({
-              stx_address: tx.metadata.sender,
-              block_height: block.block_identifier.index,
-              tx_id: tx.transaction_identifier.hash,
-              tx_index: tx.metadata.position.index,
-            })
+            .upsert(
+              {
+                stx_address: tx.metadata.sender,
+                block_height: block.block_identifier.index,
+                tx_id: tx.transaction_identifier.hash,
+                tx_index: tx.metadata.position.index,
+              },
+              {
+                onConflict: "tx_id,tx_index",
+              }
+            )
             .select()
             .single();
 
@@ -149,20 +154,31 @@ Deno.serve(async (req) => {
               const { data: projectsData, error: projectsError } =
                 await supabase
                   .from("projects")
-                  .upsert({
-                    project_stx_address: projectAddress,
-                  })
+                  .upsert(
+                    {
+                      project_stx_address: projectAddress,
+                    },
+                    {
+                      onConflict: "project_stx_address",
+                    }
+                  )
                   .select()
                   .single();
 
               const { data: mappingData, error: mappingError } = await supabase
                 .from("user_project_mapping")
-                .upsert({
-                  user_data_id: userData.id,
-                  project_id: projectsData.id,
-                  ratio: ratio,
-                  currency: currency,
-                })
+                .upsert(
+                  {
+                    user_data_id: userData.id,
+                    project_id: projectsData.id,
+                    tx_id: tx.transaction_identifier.hash,
+                    ratio: ratio,
+                    currency: currency,
+                  },
+                  {
+                    onConflict: "user_data_id,project_id,tx_id",
+                  }
+                )
                 .select()
                 .single();
 
