@@ -115,7 +115,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_latest_user_project_mappings: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          user_data_id: string
+          project_id: string
+          ratio: number
+          currency: string
+          block_height: number
+          tx_index: number
+          tx_id: string
+        }[]
+      }
     }
     Enums: {
       currency_type: "stx" | "sbtc"
