@@ -1,0 +1,8 @@
+{
+  "imports": {
+    "@stacks/common": "https://esm.sh/@stacks/common@7.0.2",
+    "@stacks/transactions": "https://esm.sh/@stacks/transactions@7.1.0",
+    "@stacks/blockchain-api-client": "https://esm.sh/@stacks/blockchain-api-client@8.11.2",
+    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2.50.3"
+  }
+}

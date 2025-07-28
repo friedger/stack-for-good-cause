@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "lib": ["deno.window"],
+    "strict": true
+  },
+  "lint": {
+    "rules": {
+      "tags": ["recommended"]
+    }
+  },
+  "fmt": {
+    "files": {
+      "include": ["supabase/functions/"]
+    }
+  },
+  "tasks": {
+    "supabase:serve": "supabase functions serve",
+    "supabase:deploy": "supabase functions deploy",
+    "supabase:logs": "supabase functions logs"
+  },
+  "imports": {
+    "@stacks/common": "https://esm.sh/@stacks/common@7.0.2",
+    "@stacks/transactions": "https://esm.sh/@stacks/transactions@7.1.0",
+    "@supabase/functions-js": "https://esm.sh/@supabase/functions-js@2.4.1"
+  }
+}

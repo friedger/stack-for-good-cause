@@ -7,7 +7,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*", "./shared/*", "./supabase/functions/*"]
     },
     "noImplicitAny": false,
     "noUnusedParameters": false,

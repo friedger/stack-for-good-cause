@@ -1,0 +1,44 @@
+const tx = {
+  metadata: {
+    description:
+      "invoked: SPMPMA1V6P430M8C91QS1G9XJ95S59JS1TZFZ4Q4.pox4-multi-pool-v1::delegate-stx(u1000100000, 0x0c0000000401630d0000000373747801700b000000010516a1c0a35bbe0e5e077a28e3e82f109bf1b2adfeaa01720b00000001010000000000000000000000000000002801760100000000000000000000000000000001)",
+    execution_cost: {
+      read_count: 50,
+      read_length: 401912,
+      runtime: 565866,
+      write_count: 2,
+      write_length: 151,
+    },
+    fee: 3000,
+    kind: {
+      data: {
+        args: [
+          "u1000100000",
+          "0x0c0000000401630d0000000373747801700b000000010516a1c0a35bbe0e5e077a28e3e82f109bf1b2adfeaa01720b00000001010000000000000000000000000000002801760100000000000000000000000000000001",
+        ],
+        contract_identifier:
+          "SPMPMA1V6P430M8C91QS1G9XJ95S59JS1TZFZ4Q4.pox4-multi-pool-v1",
+        method: "delegate-stx",
+      },
+      type: "ContractCall",
+    },
+    nonce: 162,
+    position: { index: 1 },
+    raw_tx:
+      "0x00000000010400c9ca75edb76de9a60355ad4d4cc288317e5bdf6000000000000000a20000000000000bb80000422144afaa00f21e25842c9c9c2a78603b88ecc0f64d4f8b1d8afdab4d7339b05fd0972cad7df80828ea79c5ff125c4e7004defd2967d66c9b84777706082b030302000000000216296a283b358830510c486f90c13d924b92a6590e12706f78342d6d756c74692d706f6f6c2d76310c64656c65676174652d73747800000002010000000000000000000000003b9c50a002000000570c0000000401630d0000000373747801700b000000010516a1c0a35bbe0e5e077a28e3e82f109bf1b2adfeaa01720b00000001010000000000000000000000000000002801760100000000000000000000000000000001",
+    receipt: {
+      contract_calls_stack: [],
+      events: [],
+      mutated_assets_radius: [],
+      mutated_contracts_radius: [],
+    },
+    result: "(err u603)",
+    sender: "SP34WMXFDPXPYK9G3APPMTK62H0RQWPYZC2DZY7SC",
+    sponsor: null,
+    success: false,
+  },
+  operations: [],
+  transaction_identifier: {
+    hash: "0x0b351924299a524219a42d8e452923c329cc1219527e5de300c3b5fd7c3a5eda",
+  },
+};

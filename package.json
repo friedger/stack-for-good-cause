@@ -8,7 +8,10 @@
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deno:check": "deno check supabase/functions/**/*.ts",
+    "deno:lint": "deno lint supabase/functions/",
+    "deno:fmt": "deno fmt supabase/functions/"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",

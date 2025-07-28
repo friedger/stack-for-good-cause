@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { parseUserData } from "../../../src/lib/user-data.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -11,33 +12,42 @@ interface ProjectMapping {
   ratio: number;
   currency: "stx" | "sbtc";
 }
-
-interface WebhookPayload {
-  apply: {
-    block_identifier: {
-      hash: string;
-      index: number;
-    };
-    metadata: {
-      bitcoin_anchor_block_identifier: {
-        hash: string;
-        index: number;
+interface BlockIdentifier {
+  hash: string;
+  index: number;
+}
+interface Transaction {
+  metadata: {
+    kind: {
+      data: {
+        args: string[];
+        contract_identifier: string;
+        method: string;
       };
     };
-    transactions: {
-      metadata: {};
-      operations: {}[];
-      transaction_identifier: {};
-    }[];
+    nonce: number;
+    position: { index: number };
+    raw_tx: string;
+    result: string;
+    sender: string;
+    success: boolean;
+  };
+  operations: {}[];
+  transaction_identifier: {
+    hash: string;
+  };
+}
+interface WebhookPayload {
+  apply: {
+    block_identifier: BlockIdentifier;
+    metadata: {
+      bitcoin_anchor_block_identifier: BlockIdentifier;
+    };
+    transactions: Transaction[];
   }[];
   rollback: {
-    block_identifier: {
-      hash: string;
-      index: number;
-    };
-    transactions: {
-      transaction_identifier: {};
-    }[];
+    block_identifier: BlockIdentifier;
+    transactions: Transaction[];
   }[];
 }
 
@@ -92,15 +102,25 @@ Deno.serve(async (req) => {
     if (rollback) {
       for (const block of rollback) {
         for (const tx of block.transactions) {
-          console.log("Processing tx:", tx);
+          console.log("Processing rollback tx:", tx);
+        }
+      }
+    }
+
+    // Then apply new canonical transactions
+    if (apply) {
+      for (const block of apply) {
+        for (const tx of block.transactions) {
+          console.log("Processing apply tx:", tx);
+
           // Start transaction by inserting/updating user_data
           const { data: userData, error: userError } = await supabase
             .from("user_data")
             .upsert({
-              // stx_address: tx.sender_address,
-              // block_height: block.block_identifier.index,
-              // tx_id: tx.tx_id,
-              // tx_index: tx.tx_index,
+              stx_address: tx.metadata.sender,
+              block_height: block.block_identifier.index,
+              tx_id: tx.transaction_identifier.hash,
+              tx_index: tx.metadata.position.index,
             })
             .select()
             .single();
@@ -118,74 +138,38 @@ Deno.serve(async (req) => {
               }
             );
           }
-        }
-      }
-    }
+          const userDataString = tx.metadata.kind.data.args[1];
+          const userData2 = parseUserData(userDataString);
+          if (userData2 && userData2.addresses) {
+            const currency = userData2.currency;
+            for (let i = 0; i < userData2.addresses.length; i++) {
+              const projectAddress = userData2.addresses[i];
+              const ratio = userData2.ratios[i] || 0; // Default to 0
 
-    // Then apply new canonical transactions
-    if (apply) {
-      for (const block of apply) {
-        //      await processTransactions(block.transactions);
-      }
-    }
+              const { data: projectsData, error: projectsError } =
+                await supabase
+                  .from("projects")
+                  .upsert({
+                    project_stx_address: projectAddress,
+                  })
+                  .select()
+                  .single();
 
-    console.log("User data inserted/updated:", userData);
+              const { data: mappingData, error: mappingError } = await supabase
+                .from("user_project_mapping")
+                .upsert({
+                  user_data_id: userData.id,
+                  project_id: projectsData.id,
+                  ratio: ratio,
+                  currency: currency,
+                })
+                .select()
+                .single();
 
-    // Process each project mapping
-    const results = [];
-    for (const projectMapping of payload.projects) {
-      try {
-        // Insert/get project
-        const { data: project, error: projectError } = await supabase
-          .from("projects")
-          .upsert({
-            project_stx_address: projectMapping.project_address,
-          })
-          .select()
-          .single();
-
-        if (projectError) {
-          console.error("Error inserting project:", projectError);
-          throw new Error(
-            `Failed to insert project ${projectMapping.project_address}: ${projectError.message}`
-          );
-        }
-
-        // Insert user-project mapping
-        const { data: mapping, error: mappingError } = await supabase
-          .from("user_project_mapping")
-          .upsert({
-            user_data_id: userData.id,
-            project_id: project.id,
-            ratio: projectMapping.ratio,
-            currency: projectMapping.currency,
-          })
-          .select()
-          .single();
-
-        if (mappingError) {
-          console.error("Error inserting mapping:", mappingError);
-          throw new Error(`Failed to insert mapping: ${mappingError.message}`);
-        }
-
-        results.push({
-          project_address: projectMapping.project_address,
-          ratio: projectMapping.ratio,
-          currency: projectMapping.currency,
-          mapping_id: mapping.id,
-        });
-      } catch (error) {
-        console.error("Error processing project mapping:", error);
-        return new Response(
-          JSON.stringify({
-            error: "Failed to process project mapping",
-            details: error.message,
-          }),
-          {
-            status: 500,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
+              console.log("projectsData", mappingData, mappingError);
+            }
           }
-        );
+        }
       }
     }
 
@@ -194,21 +178,18 @@ Deno.serve(async (req) => {
     return new Response(
       JSON.stringify({
         success: true,
-        user_data_id: userData.id,
-        processed_projects: results.length,
-        results: results,
       }),
       {
         status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       }
     );
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Webhook error:", error);
     return new Response(
       JSON.stringify({
         error: "Internal server error",
-        details: error.message,
+        details: error instanceof Error ? error.message : String(error),
       }),
       {
         status: 500,

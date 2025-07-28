@@ -23,8 +23,8 @@
 
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*", "./shared/*", "./supabase/functions/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src", "shared", "supabase/functions"]
 }
