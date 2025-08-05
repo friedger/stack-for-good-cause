@@ -1,5 +1,5 @@
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+// @ts-ignore
+declare var Deno: any;
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -253,7 +253,7 @@ async function generateAnalytics(): Promise<AnalyticsResponse> {
   };
 }
 
-serve(async (req) => {
+Deno.serve(async (req: Request) => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });

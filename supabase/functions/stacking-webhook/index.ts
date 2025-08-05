@@ -1,4 +1,6 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+// @ts-ignore
+declare var Deno: any;
+import { createClient } from "@supabase/supabase-js";
 import { parseUserData } from "../../../src/lib/user-data.ts";
 
 const corsHeaders = {
@@ -51,7 +53,7 @@ interface WebhookPayload {
   }[];
 }
 
-Deno.serve(async (req) => {
+Deno.serve(async (req: Request) => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -95,64 +97,79 @@ Deno.serve(async (req) => {
 
     // Parse request body
     const payload: WebhookPayload = await req.json();
-    console.log("Processing webhook payload:", payload);
+    console.log("Processing webhook payload with", payload.apply?.length || 0, "blocks");
 
     const { apply, rollback } = payload;
+    
     // First, rollback orphaned transactions
-    if (rollback) {
+    if (rollback && rollback.length > 0) {
+      console.log("Processing", rollback.length, "rollback blocks");
       for (const block of rollback) {
         for (const tx of block.transactions) {
-          console.log("Processing rollback tx:", tx);
+          console.log("Processing rollback tx:", tx.transaction_identifier.hash);
+          // TODO: Implement rollback logic if needed
         }
       }
     }
 
     // Then apply new canonical transactions
-    if (apply) {
+    if (apply && apply.length > 0) {
+      console.log("Processing", apply.length, "apply blocks");
       for (const block of apply) {
         for (const tx of block.transactions) {
-          console.log("Processing apply tx:", tx);
+          console.log("Processing apply tx:", tx.transaction_identifier.hash);
 
-          // Start transaction by inserting/updating user_data
-          const { data: userData, error: userError } = await supabase
-            .from("user_data")
-            .upsert(
-              {
-                stx_address: tx.metadata.sender,
-                block_height: block.block_identifier.index,
-                tx_id: tx.transaction_identifier.hash,
-                tx_index: tx.metadata.position.index,
-              },
-              {
-                onConflict: "tx_id,tx_index",
-              }
-            )
-            .select()
-            .single();
+          try {
+            // Insert/update user_data with correct conflict resolution
+            const { data: userData, error: userError } = await supabase
+              .from("user_data")
+              .upsert(
+                {
+                  stx_address: tx.metadata.sender,
+                  block_height: block.block_identifier.index,
+                  tx_id: tx.transaction_identifier.hash,
+                  tx_index: tx.metadata.position.index,
+                },
+                {
+                  onConflict: "tx_id,tx_index", // Use the compound unique constraint
+                  ignoreDuplicates: false, // Update existing records
+                }
+              )
+              .select()
+              .single();
 
-          if (userError) {
-            console.error("Error inserting user data:", userError);
-            return new Response(
-              JSON.stringify({
-                error: "Failed to insert user data",
-                details: userError.message,
-              }),
-              {
-                status: 500,
-                headers: { ...corsHeaders, "Content-Type": "application/json" },
-              }
-            );
-          }
-          const userDataString = tx.metadata.kind.data.args[1];
-          const userData2 = parseUserData(userDataString);
-          if (userData2 && userData2.addresses) {
+            if (userError) {
+              console.error("Error upserting user data:", userError);
+              // Log the error but continue processing other transactions
+              continue;
+            }
+
+            if (!userData) {
+              console.error("No user data returned from upsert");
+              continue;
+            }
+
+            console.log("Successfully processed user_data for tx:", tx.transaction_identifier.hash);
+
+            // Parse transaction data
+            const userDataString = tx.metadata.kind.data.args[1];
+            const userData2 = parseUserData(userDataString);
+            
+            if (!userData2 || !userData2.addresses) {
+              console.log("No valid user data found in transaction:", tx.transaction_identifier.hash);
+              continue;
+            }
+
             const currency = userData2.currency;
+            console.log("Processing", userData2.addresses.length, "project mappings for currency:", currency);
+
             for (let i = 0; i < userData2.addresses.length; i++) {
               const projectAddress = userData2.addresses[i];
-              const ratio = userData2.ratios[i] || 0; // Default to 0
+              const ratio = userData2.ratios[i] || 0;
 
-              const { data: projectsData, error: projectsError } =
-                await supabase
+              try {
+                // Upsert project
+                const { data: projectsData, error: projectsError } = await supabase
                   .from("projects")
                   .upsert(
                     {
@@ -160,30 +177,55 @@ Deno.serve(async (req) => {
                     },
                     {
                       onConflict: "project_stx_address",
+                      ignoreDuplicates: false,
                     }
                   )
                   .select()
                   .single();
 
-              const { data: mappingData, error: mappingError } = await supabase
-                .from("user_project_mapping")
-                .upsert(
-                  {
-                    user_data_id: userData.id,
-                    project_id: projectsData.id,
-                    tx_id: tx.transaction_identifier.hash,
-                    ratio: ratio,
-                    currency: currency,
-                  },
-                  {
-                    onConflict: "user_data_id,project_id,tx_id",
-                  }
-                )
-                .select()
-                .single();
+                if (projectsError) {
+                  console.error("Error upserting project:", projectsError);
+                  continue;
+                }
 
-              console.log("projectsData", mappingData, mappingError);
+                if (!projectsData) {
+                  console.error("No project data returned from upsert");
+                  continue;
+                }
+
+                // Upsert user-project mapping
+                const { data: mappingData, error: mappingError } = await supabase
+                  .from("user_project_mapping")
+                  .upsert(
+                    {
+                      user_data_id: userData.id,
+                      project_id: projectsData.id,
+                      tx_id: tx.transaction_identifier.hash,
+                      ratio: ratio,
+                      currency: currency,
+                    },
+                    {
+                      onConflict: "user_data_id,project_id,tx_id",
+                      ignoreDuplicates: false,
+                    }
+                  )
+                  .select()
+                  .single();
+
+                if (mappingError) {
+                  console.error("Error upserting user-project mapping:", mappingError);
+                  continue;
+                }
+
+                console.log("Successfully processed mapping for project:", projectAddress, "ratio:", ratio);
+              } catch (mappingErr) {
+                console.error("Error processing project mapping:", mappingErr);
+                continue;
+              }
             }
+          } catch (txError) {
+            console.error("Error processing transaction:", tx.transaction_identifier.hash, txError);
+            continue;
           }
         }
       }
@@ -194,6 +236,7 @@ Deno.serve(async (req) => {
     return new Response(
       JSON.stringify({
         success: true,
+        message: "Webhook processed successfully"
       }),
       {
         status: 200,

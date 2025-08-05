@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "allowJs": true,
-    "lib": ["deno.window"],
-    "strict": true
+    "lib": ["deno.window", "deno.ns", "es2022"],
+    "strict": false
   },
   "lint": {
     "rules": {
@@ -22,6 +22,7 @@
   "imports": {
     "@stacks/common": "https://esm.sh/@stacks/common@7.0.2",
     "@stacks/transactions": "https://esm.sh/@stacks/transactions@7.1.0",
-    "@supabase/functions-js": "https://esm.sh/@supabase/functions-js@2.4.1"
+    "@supabase/functions-js": "https://esm.sh/@supabase/functions-js@2.4.1",
+    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2.50.3"
   }
 }
