@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useProjectInitialization } from "@/hooks/useProjectInitialization";
-import { useStackingLogic } from "@/hooks/useStackingLogic";
+import { useStackingOperations } from "@/hooks/useStackingOperations";
 import { Project } from "@/lib/projectCore";
 import { Heart, TrendingUp } from "lucide-react";
 import DonationSettings from "./stacking/DonationSettings";
@@ -32,7 +32,7 @@ const RewardsBreakdown = ({
   selectedProjects,
   setSelectedProjects,
 }: RewardsBreakdownProps) => {
-  const { isStacking } = useStackingLogic();
+  const { isStacking } = useStackingOperations();
   // Initialize projects from cart
   useProjectInitialization(setSelectedProjects, enableDonation, setEnableDonation);
 

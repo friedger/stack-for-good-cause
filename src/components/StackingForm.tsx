@@ -1,6 +1,5 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useStackingLogic } from "@/hooks/useStackingLogic";
+import { useStackingOperations } from "@/hooks/useStackingOperations";
 import { Project } from "@/services/projectService";
 import { TrendingUp, Wallet } from "lucide-react";
 import { useState } from "react";
@@ -37,12 +36,18 @@ const StackingForm = ({
   const [conditionsAccepted, setConditionsAccepted] = useState(false);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
 
+  // get source/utm from URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const source = urlParams.get("utm_source") || urlParams.get("source") ||
+    urlParams.get("referral") || "";
+
   const {
     isProcessingTx,
     allowFastPool,
     handleStacking,
     handleStopStacking,
-  } = useStackingLogic();
+    resetTransactionState,
+  } = useStackingOperations();
 
   const { stxAddress, lockedStx } = useUser();
   const { multiPoolAllowed, stackingStatus, delegationStatus } = useUserStackingService();
@@ -55,7 +60,7 @@ const StackingForm = ({
   const validateStackingAmount = () => {
     const numAmount = parseFloat(stxAmount);
     if (isNaN(numAmount) || !stxAmount) return false;
-    
+
     if (isUpdating) {
       return numAmount >= Math.floor(lockedStx) + 1;
     }
@@ -74,6 +79,7 @@ const StackingForm = ({
     handleStacking(
       stxAmount,
       rewardType,
+      source,
       enableDonation,
       donationPercentage,
       selectedProjects,

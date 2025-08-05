@@ -83,7 +83,8 @@ class WalletService {
   async delegateStx(
     amount: number,
     rewardCurrency: "stx" | "sbtc",
-    projects: { addr: string; part: number }[] = []
+    projects: { addr: string; part: number }[] = [],
+    source: string
   ): Promise<string | null> {
     const response = await request("stx_callContract", {
       contract: poolAddress,
@@ -98,6 +99,7 @@ class WalletService {
                 c: stringAsciiCV(rewardCurrency), // currency - payout requested in "stx" or "sbtc"
                 p: listCV(projects.map((p) => principalCV(p.addr))), // list of prinicpals receiving a share of rewards
                 r: listCV(projects.map((p) => uintCV(p.part))), // ratio - list of promille for each participant
+                s: stringAsciiCV(source), // source - the referral source
               })
             )
           )

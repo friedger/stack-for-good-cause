@@ -3,8 +3,15 @@ import { nostrService } from "@/services/nostrService";
 import { Project } from "@/services/projectService";
 import { stackingStatsService } from "@/services/stackingStatsService";
 import { userRejectedRequest, walletService } from "@/services/walletService";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useUser } from "./useUser";
+
+// Clear transaction states - only about what transactions were attempted
+type TransactionState =
+  | "idle" // No transactions attempted
+  | "allowance-sent" // Allow Fast Pool transaction broadcast
+  | "delegate-sent" // Delegate STX transaction broadcast
+  | "revoke-sent"; // Revoke delegation transaction broadcast
 
 type StackingState =
   | "not-stacking"
@@ -12,7 +19,7 @@ type StackingState =
   | "stacking-revoked"
   | "revoked-not-stacking";
 
-export const useStackingLogic = () => {
+export const useStackingOperations = () => {
   const { toast } = useToast();
   const [stackingState, setStackingState] =
     useState<StackingState>("not-stacking");
@@ -48,6 +55,7 @@ export const useStackingLogic = () => {
   const handleStacking = async (
     stxAmount: string,
     rewardType: "stx" | "sbtc",
+    source: string,
     enableDonation: boolean,
     donationPercentage: number[],
     selectedProjects: Project[],
@@ -63,10 +71,12 @@ export const useStackingLogic = () => {
       return;
     }
 
-        if (!stxAmount) {
+    if (!stxAmount) {
       toast({
         title: "Missing Information",
-        description: `Please enter STX amount to ${isUpdating ? "update" : "start"} stacking.`,
+        description: `Please enter STX amount to ${
+          isUpdating ? "update" : "start"
+        } stacking.`,
         variant: "destructive",
       });
       return;
@@ -98,7 +108,8 @@ export const useStackingLogic = () => {
       const txId = await walletService.delegateStx(
         stxAmountNumber,
         rewardType,
-        projectsForDonation
+        projectsForDonation,
+        source
       );
 
       if (txId) {
@@ -221,6 +232,12 @@ export const useStackingLogic = () => {
     }
   };
 
+  const resetTransactionState = useCallback(() => {
+    // Reset any transaction-related state
+    setIsProcessingTx(false);
+    // Add other state resets as needed
+  }, []);
+
   const getStatusMessage = () => {
     switch (stackingState) {
       case "stacking":
@@ -244,6 +261,7 @@ export const useStackingLogic = () => {
     allowFastPool,
     handleStacking,
     handleStopStacking,
+    resetTransactionState,
     getStatusMessage,
   };
 };

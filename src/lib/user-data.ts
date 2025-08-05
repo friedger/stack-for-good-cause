@@ -7,7 +7,7 @@ export const parseUserData = (hexString: string) => {
   const deserializedCV = deserializeCV(bytes);
   console.log("Deserialized CV:", deserializedCV);
   // Extract data from the tuple structure
-  // Assuming the structure is: { v: uint, c: string-ascii, p: list of principals, r: list of uints }
+  // Assuming the structure is: { v: uint, c: string-ascii, p: list of principals, r: list of uints, s: sting-ascii }
   if (deserializedCV.type === ClarityType.Tuple) {
     const tupleData = deserializedCV.value;
 
@@ -15,6 +15,8 @@ export const parseUserData = (hexString: string) => {
       tupleData.v?.type === ClarityType.UInt ? Number(tupleData.v.value) : 0;
     const currency =
       tupleData.c?.type === ClarityType.StringASCII ? tupleData.c.value : "";
+    const source =
+      tupleData.s?.type === ClarityType.StringASCII ? tupleData.s.value : "";
 
     const addresses: string[] = [];
     const ratios: number[] = [];
@@ -43,6 +45,7 @@ export const parseUserData = (hexString: string) => {
       currency,
       addresses,
       ratios,
+      source,
     };
   }
 };
