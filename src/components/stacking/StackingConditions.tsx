@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { AlertTriangle, FileText, Info, Search } from "lucide-react";
+import { AlertTriangle, FileText, Search } from "lucide-react";
 
 interface StackingConditionsProps {
     accepted: boolean;
@@ -13,6 +13,7 @@ const StackingConditions = ({
     onAcceptedChange,
     disabled = false
 }: StackingConditionsProps) => {
+
     return (
         <Card className="bg-white/5 backdrop-blur-sm border-white/10">
             <CardHeader className="pb-4">

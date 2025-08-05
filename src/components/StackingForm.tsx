@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useStackingOperations } from "@/hooks/useStackingOperations";
+import { useSourceTracking } from "@/hooks/useSourceTracking";
 import { Project } from "@/services/projectService";
 import { TrendingUp, Wallet } from "lucide-react";
 import { useState } from "react";
@@ -7,6 +8,7 @@ import RewardTypeSelector from "./stacking/RewardTypeSelector";
 import StackingActions from "./stacking/StackingActions";
 import StackingAmountInput from "./stacking/StackingAmountInput";
 import StackingConditions from "./stacking/StackingConditions";
+import ReferralSource from "./stacking/ReferralSource";
 import UserDataVerificationModal from "./stacking/UserDataVerificationModal";
 import { useUser } from "@/hooks/useUser";
 import { useUserStackingService } from "@/hooks/useStackingInfo";
@@ -36,10 +38,8 @@ const StackingForm = ({
   const [conditionsAccepted, setConditionsAccepted] = useState(false);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
 
-  // get source/utm from URL
-  const urlParams = new URLSearchParams(window.location.search);
-  const source = urlParams.get("utm_source") || urlParams.get("source") ||
-    urlParams.get("referral") || "";
+  // Use the source tracking hook
+  const { currentSource } = useSourceTracking();
 
   const {
     isProcessingTx,
@@ -79,7 +79,7 @@ const StackingForm = ({
     handleStacking(
       stxAmount,
       rewardType,
-      source,
+      currentSource,
       enableDonation,
       donationPercentage,
       selectedProjects,
@@ -115,8 +115,9 @@ const StackingForm = ({
             disabled={false}
           />
 
-          {stxAddress ?
+          <ReferralSource />
 
+          {stxAddress ?
             <StackingActions
               isStacking={isStacking}
               canStopStacking={canStopStacking}
