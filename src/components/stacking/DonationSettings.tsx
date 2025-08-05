@@ -45,7 +45,7 @@ const DonationSettings = ({
         {enableDonation ? (
           <>
             <div className="text-sm text-green-400">
-              Fast Pool adds 4% on top of your contribution during cycle #114 and #115.
+              Fast Pool adds 4% on top of your contribution during cycle #115 and #116.
             </div>
             <DonationPercentageSlider
               donationPercentage={donationPercentage}
